@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# ?? sh/zsh ??????? bash ??????? pipefail ??
+# 若被 sh/zsh 调用，自动切回 bash 重新执行，避免 pipefail 报错
 if [ -z "${BASH_VERSION:-}" ]; then
   exec bash "$0" "$@"
 fi
@@ -25,6 +25,8 @@ MODEL_TYPE="mamba"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-luna16_dl}"
 SEG_EPOCHS_OVERRIDE=""
 CLS_EPOCHS_OVERRIDE=""
+SEG_BATCH_SIZE_OVERRIDE=""
+CLS_BATCH_SIZE_OVERRIDE=""
 
 usage() {
   cat <<'EOF'
@@ -101,6 +103,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --cls-epochs)
       CLS_EPOCHS_OVERRIDE="${2:-}"
+      shift 2
+      ;;
+    --seg-batch-size)
+      SEG_BATCH_SIZE_OVERRIDE="${2:-}"
+      shift 2
+      ;;
+    --cls-batch-size)
+      CLS_BATCH_SIZE_OVERRIDE="${2:-}"
       shift 2
       ;;
     -h|--help)
@@ -188,23 +198,25 @@ run_step() {
       ;;
     train_seg)
       echo "==== [STEP] train_seg ===="
+      local seg_cmd=(python train/train_seg.py --config "$SEG_CONFIG")
       if [[ -n "$SEG_EPOCHS_OVERRIDE" ]]; then
-        LUNG_RUN_DIR="$RUN_ROOT" LUNG_RUN_STEP="train_seg" \
-          python train/train_seg.py --config "$SEG_CONFIG" --epochs "$SEG_EPOCHS_OVERRIDE"
-      else
-        LUNG_RUN_DIR="$RUN_ROOT" LUNG_RUN_STEP="train_seg" \
-          python train/train_seg.py --config "$SEG_CONFIG"
+        seg_cmd+=(--epochs "$SEG_EPOCHS_OVERRIDE")
       fi
+      if [[ -n "$SEG_BATCH_SIZE_OVERRIDE" ]]; then
+        seg_cmd+=(--batch-size "$SEG_BATCH_SIZE_OVERRIDE")
+      fi
+      LUNG_RUN_DIR="$RUN_ROOT" LUNG_RUN_STEP="train_seg" "${seg_cmd[@]}"
       ;;
     train_cls)
       echo "==== [STEP] train_cls (${MODEL_TYPE}) ===="
+      local cls_cmd=(python train/train_cls.py --config "$CLS_CONFIG" --model "$MODEL_TYPE")
       if [[ -n "$CLS_EPOCHS_OVERRIDE" ]]; then
-        LUNG_RUN_DIR="$RUN_ROOT" LUNG_RUN_STEP="train_cls" \
-          python train/train_cls.py --config "$CLS_CONFIG" --model "$MODEL_TYPE" --epochs "$CLS_EPOCHS_OVERRIDE"
-      else
-        LUNG_RUN_DIR="$RUN_ROOT" LUNG_RUN_STEP="train_cls" \
-          python train/train_cls.py --config "$CLS_CONFIG" --model "$MODEL_TYPE"
+        cls_cmd+=(--epochs "$CLS_EPOCHS_OVERRIDE")
       fi
+      if [[ -n "$CLS_BATCH_SIZE_OVERRIDE" ]]; then
+        cls_cmd+=(--batch-size "$CLS_BATCH_SIZE_OVERRIDE")
+      fi
+      LUNG_RUN_DIR="$RUN_ROOT" LUNG_RUN_STEP="train_cls" "${cls_cmd[@]}"
       ;;
     infer)
       echo "==== [STEP] infer_pipeline ===="

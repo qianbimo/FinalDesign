@@ -1,5 +1,5 @@
 seed: 42
-device: "auto"
+device: "cuda"
 
 data:
   lidc_meta_npy: "/mnt/e/dataset/LIDC-IDRI_1176/LIDC-IDRI_1176.npy"

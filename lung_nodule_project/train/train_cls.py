@@ -102,7 +102,7 @@ def _build_model(model_type: str, cfg: Dict, num_classes: int) -> nn.Module:
     )
 
 
-def train_cls(config: Dict, model_override: str = "", epochs_override: int = -1) -> None:
+def train_cls(config: Dict, model_override: str = "", epochs_override: int = -1, batch_size_override: int = -1) -> None:
     set_seed(int(config.get("seed", 42)))
     device = _pick_device(str(config.get("device", "auto")).lower())
 
@@ -120,7 +120,7 @@ def train_cls(config: Dict, model_override: str = "", epochs_override: int = -1)
         raise ValueError("loss_type 仅支持 ce 或 bce")
 
     epochs = int(train_cfg["epochs"]) if epochs_override <= 0 else int(epochs_override)
-    batch_size = int(train_cfg["batch_size"])
+    batch_size = int(train_cfg["batch_size"]) if batch_size_override <= 0 else int(batch_size_override)
     num_workers = int(train_cfg["num_workers"])
     amp = bool(train_cfg.get("amp", True)) and device.type == "cuda"
     grad_clip = float(train_cfg.get("grad_clip", 0.0))
@@ -293,10 +293,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config", type=str, default="configs/cls_config.yaml", help="分类配置文件")
     parser.add_argument("--model", type=str, default="", help="覆盖模型类型：mamba/cnn/cnn_transformer")
     parser.add_argument("--epochs", type=int, default=-1, help="覆盖配置中的 epoch")
+    parser.add_argument("--batch-size", type=int, default=-1, help="override batch size")
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
     cfg = _load_yaml(args.config)
-    train_cls(cfg, model_override=args.model, epochs_override=args.epochs)
+    train_cls(cfg, model_override=args.model, epochs_override=args.epochs, batch_size_override=args.batch_size)

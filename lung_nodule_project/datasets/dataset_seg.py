@@ -1,4 +1,4 @@
-"""
+﻿"""
 分割任务 Dataset。
 """
 
@@ -27,9 +27,7 @@ def _read_pair_list(list_path: str) -> List[Tuple[str, str]]:
 
 
 class SegmentationDataset(Dataset):
-    """
-    读取预处理后的 image/mask .npy 对。
-    """
+    """读取预处理后的 image/mask .npy 对。"""
 
     def __init__(self, list_path: str, augment: bool = False):
         self.items = _read_pair_list(list_path)
@@ -39,7 +37,7 @@ class SegmentationDataset(Dataset):
         return len(self.items)
 
     def _random_flip(self, image: np.ndarray, mask: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        # 三个维度随机翻转，增强泛化。
+        # 三个维度随机翻转
         for axis in [0, 1, 2]:
             if random.random() < 0.5:
                 image = np.flip(image, axis=axis).copy()
@@ -55,7 +53,9 @@ class SegmentationDataset(Dataset):
         if self.augment:
             image, mask = self._random_flip(image, mask)
 
-        # 转成 [C,D,H,W]
-        image_t = torch.from_numpy(image[None, ...])
-        mask_t = torch.from_numpy(mask[None, ...])
+        # 转成 [C,D,H,W]，并确保为 contiguous + 独立 storage
+        image = np.ascontiguousarray(image[None, ...])
+        mask = np.ascontiguousarray(mask[None, ...])
+        image_t = torch.tensor(image, dtype=torch.float32).contiguous()
+        mask_t = torch.tensor(mask, dtype=torch.float32).contiguous()
         return image_t, mask_t

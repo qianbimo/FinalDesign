@@ -60,6 +60,6 @@ class ClassificationDataset(Dataset):
         roi = np.load(roi_path).astype(np.float32)  # z,y,x
         if self.augment:
             roi = self._random_aug(roi)
-        roi_t = torch.from_numpy(roi[None, ...])  # [1,D,H,W]
+        roi_t = torch.tensor(np.ascontiguousarray(roi[None, ...]), dtype=torch.float32).contiguous()  # [1,D,H,W]
         label_t = torch.tensor(int(label), dtype=torch.long)
         return roi_t, label_t

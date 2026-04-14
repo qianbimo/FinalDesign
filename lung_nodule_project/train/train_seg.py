@@ -127,7 +127,28 @@ def _sample_patch(
     )
 
 
-def train_seg(config: Dict, override_epochs: int = -1) -> None:
+def _collate_pad_3d(batch):
+    """
+    ??? collate??????? [C,D,H,W] ??? batch ??????????
+    ?????? batch_size ???????? collate ??????????????
+    """
+    images, masks = zip(*batch)
+    b = len(images)
+    c = int(images[0].shape[0])
+    max_d = max(int(x.shape[1]) for x in images)
+    max_h = max(int(x.shape[2]) for x in images)
+    max_w = max(int(x.shape[3]) for x in images)
+
+    img_out = images[0].new_zeros((b, c, max_d, max_h, max_w))
+    msk_out = masks[0].new_zeros((b, c, max_d, max_h, max_w))
+    for i, (img, msk) in enumerate(zip(images, masks)):
+        d, h, w = int(img.shape[1]), int(img.shape[2]), int(img.shape[3])
+        img_out[i, :, :d, :h, :w] = img
+        msk_out[i, :, :d, :h, :w] = msk
+    return img_out, msk_out
+
+
+def train_seg(config: Dict, override_epochs: int = -1, batch_size_override: int = -1) -> None:
     set_seed(int(config.get("seed", 42)))
     device = _pick_device(str(config.get("device", "auto")).lower())
 
@@ -142,7 +163,7 @@ def train_seg(config: Dict, override_epochs: int = -1) -> None:
         raise FileNotFoundError("未找到 train/val 列表，请先运行 datasets/preprocess_luna16.py")
 
     epochs = int(train_cfg["epochs"]) if override_epochs <= 0 else int(override_epochs)
-    batch_size = int(train_cfg["batch_size"])
+    batch_size = int(train_cfg["batch_size"]) if batch_size_override <= 0 else int(batch_size_override)
     num_workers = int(train_cfg["num_workers"])
     amp = bool(train_cfg.get("amp", True)) and device.type == "cuda"
     patch_zyx = tuple(config.get("infer", {}).get("patch_size_zyx", [96, 96, 96]))
@@ -164,8 +185,22 @@ def train_seg(config: Dict, override_epochs: int = -1) -> None:
 
     train_ds = SegmentationDataset(train_list, augment=True)
     val_ds = SegmentationDataset(val_list, augment=False)
-    train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
-    val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=num_workers, pin_memory=True)
+    train_loader = DataLoader(
+        train_ds,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers,
+        pin_memory=True,
+        collate_fn=_collate_pad_3d,
+    )
+    val_loader = DataLoader(
+        val_ds,
+        batch_size=1,
+        shuffle=False,
+        num_workers=num_workers,
+        pin_memory=True,
+        collate_fn=_collate_pad_3d,
+    )
 
     model = ResUNet3D(
         in_channels=int(model_cfg["in_channels"]),
@@ -290,10 +325,11 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train Segmentation (Res-UNet3D)")
     parser.add_argument("--config", type=str, default="configs/seg_config.yaml", help="分割配置文件")
     parser.add_argument("--epochs", type=int, default=-1, help="覆盖配置中的 epoch")
+    parser.add_argument("--batch-size", type=int, default=-1, help="override batch size")
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
     cfg = _load_yaml(args.config)
-    train_seg(cfg, override_epochs=args.epochs)
+    train_seg(cfg, override_epochs=args.epochs, batch_size_override=args.batch_size)
