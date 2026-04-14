@@ -1,0 +1,55 @@
+﻿server:
+  port: 8080
+
+spring:
+  application:
+    name: lung-nodule-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/lung_nodule?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  type-aliases-package: com.finaldesign.lungnodule.entity
+  global-config:
+    db-config:
+      id-type: assign_id
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+jwt:
+  secret: lungNoduleJwtSecretKeyForSpringBoot3Backend12345
+  expire-hours: 24
+
+storage:
+  base-path: E:/code/FinalDesign/storage
+  access-prefix: /files
+  max-size-mb: 1024
+  allowed-extensions:
+    - dcm
+    - nii
+    - nii.gz
+
+ai:
+  base-url: http://localhost:8000
+  predict-path: /api/inference/predict
+  timeout-seconds: 30
+  mock-enabled: true

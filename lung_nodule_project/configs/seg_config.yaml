@@ -1,0 +1,48 @@
+seed: 42
+device: "cuda"
+
+data:
+  luna_root: "/mnt/e/dataset/LUNA16/release"
+  annotations_csv: "/mnt/e/dataset/LUNA16/annotations.csv"
+  processed_root: "/mnt/e/dataset/LUNA16/luna16_cache"
+  image_dir: "/mnt/e/dataset/LUNA16/luna16_cache/images"
+  mask_dir: "/mnt/e/dataset/LUNA16/luna16_cache/masks"
+  train_list: "/mnt/e/dataset/LUNA16/luna16_cache/train_list.txt"
+  val_list: "/mnt/e/dataset/LUNA16/luna16_cache/val_list.txt"
+  test_list: "/mnt/e/dataset/LUNA16/luna16_cache/test_list.txt"
+
+preprocess:
+  target_spacing_xyz: [1.0, 1.0, 1.0]
+  hu_clip: [-1200, 600]
+  split_ratio: [0.8, 0.2, 0.0]
+  num_workers: 4
+  overwrite: false
+  max_cases: -1
+
+train:
+  epochs: 100
+  batch_size: 8
+  num_workers: 2
+  learning_rate: 0.0002
+  weight_decay: 0.00001
+  optimizer: "adam"
+  scheduler: "cosine"
+  amp: true
+  grad_clip: 3.0
+  save_dir: "./workspace/weights"
+  log_dir: "./workspace/outputs/logs"
+  fig_dir: "./workspace/outputs/figures"
+
+model:
+  in_channels: 1
+  out_channels: 1
+  base_channels: 16
+
+loss:
+  dice_weight: 0.7
+  bce_weight: 0.3
+  bce_pos_weight: 4.0
+
+infer:
+  patch_size_zyx: [96, 96, 96]
+  stride_zyx: [64, 64, 64]

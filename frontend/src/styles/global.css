@@ -1,0 +1,14 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(160deg, #f4f7fb 0%, #eef3ff 100%);
+  color: #1f2937;
+}
+
+#app {
+  min-height: 100vh;
+}
