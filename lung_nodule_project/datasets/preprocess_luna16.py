@@ -1,14 +1,14 @@
-"""
-LUNA16 预处理脚本。
+﻿"""
+LUNA16 preprocessing script.
 
-功能:
-1. 读取 .mhd/.raw CT
-2. 读取 annotations.csv
-3. 根据结节中心与直径生成 3D 球形 mask(0/1)
-4. 重采样到统一 spacing(默认 1mm^3)
-5. HU 截断并归一化
-6. 保存为 .npy，并生成 train/val/test 列表(8/2/0)
-7. 运行日志写入 workspace/runs/<...>/logs
+Functions:
+1. Read .mhd/.raw CT
+2. Read annotations.csv
+3. Build 3D spherical nodule mask (0/1)
+4. Resample to uniform spacing
+5. HU clip + normalize
+6. Save .npy and split train/val/test list
+7. Build patch index cache for segmentation training (once in preprocessing)
 """
 
 from __future__ import annotations
@@ -17,6 +17,8 @@ import argparse
 import json
 import os
 import random
+import re
+import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
@@ -27,6 +29,12 @@ import pandas as pd
 import SimpleITK as sitk
 import yaml
 from tqdm import tqdm
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+from datasets.dataset_seg import build_patch_index_from_list
 
 
 def _ensure_dir(path: str) -> None:
@@ -61,7 +69,6 @@ def _append_run_log(run_log_path: str, text: str) -> None:
 
 
 def _find_series_map(luna_root: str) -> Dict[str, str]:
-    """扫描 subset* 目录，建立 seriesuid -> mhd 路径映射。"""
     root = Path(luna_root)
     mapping: Dict[str, str] = {}
     for sub in sorted(root.glob("subset*")):
@@ -70,12 +77,7 @@ def _find_series_map(luna_root: str) -> Dict[str, str]:
     return mapping
 
 
-def _resample_image(
-    image: sitk.Image,
-    target_spacing_xyz: Tuple[float, float, float],
-    is_mask: bool,
-) -> sitk.Image:
-    """将 SITK 图像重采样到目标 spacing。"""
+def _resample_image(image: sitk.Image, target_spacing_xyz: Tuple[float, float, float], is_mask: bool) -> sitk.Image:
     old_spacing = np.array(list(image.GetSpacing()), dtype=np.float64)
     old_size = np.array(list(image.GetSize()), dtype=np.int32)
     target_spacing = np.array(target_spacing_xyz, dtype=np.float64)
@@ -93,13 +95,9 @@ def _resample_image(
 
 
 def _build_spherical_mask(image: sitk.Image, ann_rows: pd.DataFrame) -> sitk.Image:
-    """
-    按注释中心与直径生成球形 mask。
-    注释坐标为世界坐标(mm)，先映射到体素坐标。
-    """
     size_x, size_y, size_z = image.GetSize()
     spacing_x, spacing_y, spacing_z = image.GetSpacing()
-    mask = np.zeros((size_z, size_y, size_x), dtype=np.uint8)  # z,y,x
+    mask = np.zeros((size_z, size_y, size_x), dtype=np.uint8)
 
     for _, row in ann_rows.iterrows():
         cx_mm = float(row["coordX"])
@@ -140,7 +138,6 @@ def _build_spherical_mask(image: sitk.Image, ann_rows: pd.DataFrame) -> sitk.Ima
 
 
 def _window_normalize(volume_zyx: np.ndarray, hu_clip: Tuple[float, float]) -> np.ndarray:
-    """肺窗截断 + 归一化到 [0, 1]。"""
     lo, hi = float(hu_clip[0]), float(hu_clip[1])
     vol = np.clip(volume_zyx.astype(np.float32), lo, hi)
     vol = (vol - lo) / (hi - lo + 1e-8)
@@ -187,7 +184,6 @@ def _write_split_lists(
     split_ratio: Tuple[float, float, float],
     seed: int,
 ) -> None:
-    """按 8/2/0 生成列表文件，test 为空占位。"""
     pairs = list(pairs)
     random.Random(seed).shuffle(pairs)
 
@@ -210,6 +206,32 @@ def _write_split_lists(
     _write(test_list_path, test_pairs)
 
 
+def _safe_float_tag(v: float) -> str:
+    return re.sub(r"[^0-9a-zA-Z]+", "", str(v).replace(".", "p"))
+
+
+def _resolve_patch_index_paths(config: Dict) -> Tuple[str, str, str]:
+    data_cfg = config["data"]
+    train_cfg = config.get("train", {})
+
+    patch_size = tuple(train_cfg.get("patch_size_zyx", [96, 96, 32]))
+    stride = tuple(train_cfg.get("patch_stride_zyx", [48, 48, 16]))
+    neg_pos_ratio = float(train_cfg.get("neg_pos_ratio", 1.0))
+    max_neg_per_case = int(train_cfg.get("max_neg_per_case", 64))
+
+    index_dir = train_cfg.get("patch_index_dir", os.path.join(data_cfg["processed_root"], "patch_index"))
+    _ensure_dir(index_dir)
+
+    default_name = (
+        f"p{patch_size[0]}x{patch_size[1]}x{patch_size[2]}_"
+        f"s{stride[0]}x{stride[1]}x{stride[2]}_"
+        f"npr{_safe_float_tag(neg_pos_ratio)}_mn{max_neg_per_case}"
+    )
+    train_index = train_cfg.get("train_patch_index", os.path.join(index_dir, f"train_{default_name}.txt"))
+    val_index = train_cfg.get("val_patch_index", os.path.join(index_dir, f"val_{default_name}.txt"))
+    return index_dir, train_index, val_index
+
+
 def run_preprocess(config: Dict) -> None:
     seed = int(config.get("seed", 42))
     random.seed(seed)
@@ -222,6 +244,8 @@ def run_preprocess(config: Dict) -> None:
 
     data_cfg = config["data"]
     pp_cfg = config["preprocess"]
+    train_cfg = config.get("train", {})
+
     luna_root = data_cfg["luna_root"]
     ann_csv = data_cfg["annotations_csv"]
     image_dir = data_cfg["image_dir"]
@@ -235,12 +259,12 @@ def run_preprocess(config: Dict) -> None:
     _ensure_dir(mask_dir)
 
     if not os.path.exists(ann_csv):
-        raise FileNotFoundError(f"未找到 annotations.csv: {ann_csv}")
+        raise FileNotFoundError(f"Cannot find annotations.csv: {ann_csv}")
     ann_df = pd.read_csv(ann_csv)
 
     series_map = _find_series_map(luna_root)
     if not series_map:
-        raise FileNotFoundError(f"在 {luna_root}/subset* 下未找到 .mhd 文件")
+        raise FileNotFoundError(f"No .mhd found under: {luna_root}/subset*")
 
     max_cases = int(pp_cfg.get("max_cases", -1))
     series_items = sorted(series_map.items(), key=lambda x: x[0])
@@ -283,6 +307,36 @@ def run_preprocess(config: Dict) -> None:
     with open(test_list, "r", encoding="utf-8") as f:
         test_count = sum(1 for line in f if line.strip())
 
+    # Build patch index cache once in preprocessing
+    patch_size = tuple(train_cfg.get("patch_size_zyx", [96, 96, 32]))
+    patch_stride = tuple(train_cfg.get("patch_stride_zyx", [48, 48, 16]))
+    neg_pos_ratio = float(train_cfg.get("neg_pos_ratio", 1.0))
+    max_neg_per_case = int(train_cfg.get("max_neg_per_case", 64))
+    index_dir, train_patch_index, val_patch_index = _resolve_patch_index_paths(config)
+
+    train_index_stat = build_patch_index_from_list(
+        list_path=train_list,
+        index_path=train_patch_index,
+        patch_size_zyx=patch_size,
+        stride_zyx=patch_stride,
+        neg_pos_ratio=neg_pos_ratio,
+        max_neg_per_case=max_neg_per_case,
+        seed=seed,
+        overwrite=overwrite,
+        desc="Build train patch index",
+    )
+    val_index_stat = build_patch_index_from_list(
+        list_path=val_list,
+        index_path=val_patch_index,
+        patch_size_zyx=patch_size,
+        stride_zyx=patch_stride,
+        neg_pos_ratio=1.0,
+        max_neg_per_case=max_neg_per_case,
+        seed=seed + 1,
+        overwrite=overwrite,
+        desc="Build val patch index",
+    )
+
     summary = {
         "task": "preprocess_luna",
         "run_dir": run_dir,
@@ -292,24 +346,34 @@ def run_preprocess(config: Dict) -> None:
         "num_val": val_count,
         "num_test": test_count,
         "seed": seed,
+        "patch_index_dir": index_dir,
+        "train_patch_index": train_patch_index,
+        "val_patch_index": val_patch_index,
+        "train_patch_index_stat": train_index_stat,
+        "val_patch_index_stat": val_index_stat,
     }
     with open(summary_json, "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
-    _append_run_log(run_log, f"[DONE] total={len(pairs)} train={train_count} val={val_count} test={test_count}")
 
-    print("预处理完成:")
-    print(f"- 样本数: {len(pairs)}")
-    print(f"- 图像目录: {image_dir}")
-    print(f"- 掩码目录: {mask_dir}")
+    _append_run_log(
+        run_log,
+        f"[DONE] total={len(pairs)} train={train_count} val={val_count} test={test_count} "
+        f"train_idx={train_patch_index} val_idx={val_patch_index}",
+    )
+
+    print("Preprocess done:")
+    print(f"- cases: {len(pairs)}")
     print(f"- train_list: {train_list}")
     print(f"- val_list: {val_list}")
-    print(f"- test_list(空): {test_list}")
+    print(f"- test_list(empty): {test_list}")
+    print(f"- train_patch_index: {train_patch_index}")
+    print(f"- val_patch_index: {val_patch_index}")
     print(f"- run_dir: {run_dir}")
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="LUNA16 预处理")
-    parser.add_argument("--config", type=str, default="configs/seg_config.yaml", help="分割配置文件路径")
+    parser = argparse.ArgumentParser(description="LUNA16 preprocessing")
+    parser.add_argument("--config", type=str, default="configs/seg_config.yaml", help="seg config path")
     return parser.parse_args()
 
 

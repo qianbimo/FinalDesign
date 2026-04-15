@@ -1,48 +1,70 @@
 seed: 42
-device: "cuda"
-
+device: cuda
 data:
-  luna_root: "/mnt/e/dataset/LUNA16/release"
-  annotations_csv: "/mnt/e/dataset/LUNA16/annotations.csv"
-  processed_root: "/mnt/e/dataset/LUNA16/luna16_cache_smoke"
-  image_dir: "/mnt/e/dataset/LUNA16/luna16_cache_smoke/images"
-  mask_dir: "/mnt/e/dataset/LUNA16/luna16_cache_smoke/masks"
-  train_list: "/mnt/e/dataset/LUNA16/luna16_cache_smoke/train_list.txt"
-  val_list: "/mnt/e/dataset/LUNA16/luna16_cache_smoke/val_list.txt"
-  test_list: "/mnt/e/dataset/LUNA16/luna16_cache_smoke/test_list.txt"
-
+  luna_root: /mnt/e/dataset/LUNA16/release
+  annotations_csv: /mnt/e/dataset/LUNA16/annotations.csv
+  processed_root: /home/qianbimo/dataset_cache/luna16_cache_smoke
+  image_dir: /home/qianbimo/dataset_cache/luna16_cache_smoke/images
+  mask_dir: /home/qianbimo/dataset_cache/luna16_cache_smoke/masks
+  train_list: /home/qianbimo/dataset_cache/luna16_cache_smoke/train_list.txt
+  val_list: /home/qianbimo/dataset_cache/luna16_cache_smoke/val_list.txt
+  test_list: /home/qianbimo/dataset_cache/luna16_cache_smoke/test_list.txt
 preprocess:
-  target_spacing_xyz: [1.0, 1.0, 1.0]
-  hu_clip: [-1200, 600]
-  split_ratio: [0.8, 0.2, 0.0]
+  target_spacing_xyz:
+  - 1.0
+  - 1.0
+  - 1.0
+  hu_clip:
+  - -1200
+  - 600
+  split_ratio:
+  - 0.8
+  - 0.2
+  - 0.0
   num_workers: 2
   overwrite: true
   max_cases: 6
-
 train:
   epochs: 1
-  batch_size: 1
+  batch_size: 2
   num_workers: 0
+  pin_memory: false
+  patch_size_zyx:
+  - 96
+  - 96
+  - 32
+  patch_stride_zyx:
+  - 96
+  - 96
+  - 32
+  neg_pos_ratio: 1.0
+  max_neg_per_case: 32
+  patch_index_dir: /home/qianbimo/dataset_cache/luna16_cache_smoke/patch_index
+  train_patch_index: /home/qianbimo/dataset_cache/luna16_cache_smoke/patch_index/train_p96x96x32_s96x96x32_npr1p0_mn32.txt
+  val_patch_index: /home/qianbimo/dataset_cache/luna16_cache_smoke/patch_index/val_p96x96x32_s96x96x32_npr1p0_mn32.txt
   learning_rate: 0.0002
-  weight_decay: 0.00001
-  optimizer: "adam"
-  scheduler: "cosine"
+  weight_decay: 1.0e-05
+  optimizer: adam
+  scheduler: cosine
   amp: true
   grad_clip: 3.0
-  save_dir: "./workspace/weights"
-  log_dir: "./workspace/outputs/logs"
-  fig_dir: "./workspace/outputs/figures"
-
+  save_dir: ./workspace/weights
+  log_dir: ./workspace/outputs/logs
+  fig_dir: ./workspace/outputs/figures
 model:
   in_channels: 1
   out_channels: 1
   base_channels: 16
-
 loss:
   dice_weight: 0.7
   bce_weight: 0.3
   bce_pos_weight: 4.0
-
 infer:
-  patch_size_zyx: [160, 160, 160]
-  stride_zyx: [160, 160, 160]
+  patch_size_zyx:
+  - 160
+  - 160
+  - 160
+  stride_zyx:
+  - 160
+  - 160
+  - 160

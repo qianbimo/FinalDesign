@@ -1,43 +1,47 @@
 seed: 42
-device: "cuda"
-
+device: cuda
 data:
-  lidc_meta_npy: "/mnt/e/dataset/LIDC-IDRI_1176/LIDC-IDRI_1176.npy"
-  lidc_zip: "/mnt/e/dataset/LIDC-IDRI_1176/LIDC-IDRI_1176.zip"
-  extracted_root: "/mnt/e/dataset/LIDC-IDRI_1176/lidc_cache/_extracted"
-  processed_root: "/mnt/e/dataset/LIDC-IDRI_1176/lidc_cache"
-  benign_dir: "/mnt/e/dataset/LIDC-IDRI_1176/lidc_cache/benign"
-  malignant_dir: "/mnt/e/dataset/LIDC-IDRI_1176/lidc_cache/malignant"
-  train_list: "/mnt/e/dataset/LIDC-IDRI_1176/lidc_cache/train.txt"
-  val_list: "/mnt/e/dataset/LIDC-IDRI_1176/lidc_cache/val.txt"
-  test_list: "/mnt/e/dataset/LIDC-IDRI_1176/lidc_cache/test.txt"
-
+  lidc_meta_npy: /mnt/e/dataset/LIDC-IDRI_1176/LIDC-IDRI_1176.npy
+  lidc_zip: /mnt/e/dataset/LIDC-IDRI_1176/LIDC-IDRI_1176.zip
+  extracted_root: /home/qianbimo/dataset_cache/lidc_cache/_extracted
+  processed_root: /home/qianbimo/dataset_cache/lidc_cache
+  benign_dir: /home/qianbimo/dataset_cache/lidc_cache/benign
+  malignant_dir: /home/qianbimo/dataset_cache/lidc_cache/malignant
+  train_list: /home/qianbimo/dataset_cache/lidc_cache/train.txt
+  val_list: /home/qianbimo/dataset_cache/lidc_cache/val.txt
+  test_list: /home/qianbimo/dataset_cache/lidc_cache/test.txt
 preprocess:
-  roi_size_zyx: [64, 64, 64]
-  crop_mode: "center"
-  hu_clip: [-1200, 600]
-  split_ratio: [0.8, 0.2, 0.0]
+  roi_size_zyx:
+  - 64
+  - 64
+  - 64
+  crop_mode: center
+  hu_clip:
+  - -1200
+  - 600
+  split_ratio:
+  - 0.8
+  - 0.2
+  - 0.0
   overwrite: false
   extract_zip_if_needed: true
   max_cases: -1
-
 train:
   epochs: 100
   batch_size: 8
   num_workers: 2
   learning_rate: 0.0001
   weight_decay: 0.0001
-  optimizer: "adam"
-  scheduler: "cosine"
+  optimizer: adam
+  scheduler: cosine
   amp: true
   grad_clip: 3.0
-  save_dir: "./workspace/weights"
-  log_dir: "./workspace/outputs/logs"
-  fig_dir: "./workspace/outputs/figures"
-  model_type: "mamba"
-  loss_type: "ce"
+  save_dir: ./workspace/weights
+  log_dir: ./workspace/outputs/logs
+  fig_dir: ./workspace/outputs/figures
+  model_type: mamba
+  loss_type: ce
   use_class_weight: true
-
 model:
   in_channels: 1
   num_classes: 2
