@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -11,15 +11,15 @@ const aiLoadingId = ref(null)
 const tableData = ref([])
 const pager = reactive({ current: 1, size: 10, total: 0 })
 const studyStatusMap = {
-  UPLOADED: 'Uploaded',
-  PREPROCESSING: 'Preprocessing',
-  ANALYZING: 'Analyzing',
-  FINISHED: 'Finished',
-  FAILED: 'Failed'
+  UPLOADED: '已上传',
+  PREPROCESSING: '预处理中',
+  ANALYZING: '分析中',
+  FINISHED: '已完成',
+  FAILED: '失败'
 }
 
 function studyStatusText(status) {
-  return studyStatusMap[status] || status
+  return studyStatusMap[status] || '未知状态'
 }
 
 async function loadData() {
@@ -41,7 +41,7 @@ async function startAi(row) {
   aiLoadingId.value = row.id
   try {
     const data = await startAiTaskApi(row.id)
-    ElMessage.success(`AI task started: ${data.taskId}`)
+    ElMessage.success(`智能分析任务已启动，任务编号：${data.taskId}`)
     await loadData()
   } finally {
     aiLoadingId.value = null
@@ -53,20 +53,20 @@ onMounted(loadData)
 
 <template>
   <el-card>
-    <template #header>Studies</template>
+    <template #header>病例列表</template>
     <el-table :data="tableData" v-loading="loading">
-      <el-table-column prop="id" label="Study ID" width="120" />
-      <el-table-column prop="studyNo" label="Study No" min-width="180" />
-      <el-table-column prop="patientId" label="Patient ID" width="120" />
-      <el-table-column prop="studyDate" label="Study Date" width="130" />
-      <el-table-column label="Status" width="140">
+      <el-table-column prop="id" label="检查编号" width="120" />
+      <el-table-column prop="studyNo" label="检查编号" min-width="180" />
+      <el-table-column prop="patientId" label="患者编号" width="120" />
+      <el-table-column prop="studyDate" label="检查日期" width="130" />
+      <el-table-column label="状态" width="140">
         <template #default="scope">{{ studyStatusText(scope.row.status) }}</template>
       </el-table-column>
-      <el-table-column label="Action" min-width="240">
+      <el-table-column label="操作" min-width="240">
         <template #default="scope">
-          <el-button link type="primary" @click="toDetail(scope.row)">Detail</el-button>
+          <el-button link type="primary" @click="toDetail(scope.row)">详情</el-button>
           <el-button link type="success" :loading="aiLoadingId === scope.row.id" @click="startAi(scope.row)">
-            Start AI
+            启动智能分析
           </el-button>
         </template>
       </el-table-column>

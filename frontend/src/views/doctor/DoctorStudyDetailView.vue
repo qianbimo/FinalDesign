@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -16,25 +16,25 @@ const study = ref(null)
 const files = ref([])
 const aiResult = ref(null)
 const studyStatusMap = {
-  UPLOADED: 'Uploaded',
-  PREPROCESSING: 'Preprocessing',
-  ANALYZING: 'Analyzing',
-  FINISHED: 'Finished',
-  FAILED: 'Failed'
+  UPLOADED: '已上传',
+  PREPROCESSING: '预处理中',
+  ANALYZING: '分析中',
+  FINISHED: '已完成',
+  FAILED: '失败'
 }
 const taskStatusMap = {
-  WAITING: 'Waiting',
-  RUNNING: 'Running',
-  SUCCESS: 'Success',
-  FAILED: 'Failed'
+  WAITING: '等待中',
+  RUNNING: '运行中',
+  SUCCESS: '成功',
+  FAILED: '失败'
 }
 
 function studyStatusText(status) {
-  return studyStatusMap[status] || status
+  return studyStatusMap[status] || '未知状态'
 }
 
 function taskStatusText(status) {
-  return taskStatusMap[status] || status
+  return taskStatusMap[status] || '未知状态'
 }
 
 async function loadData() {
@@ -56,7 +56,7 @@ async function startAi() {
   aiLoading.value = true
   try {
     const data = await startAiTaskApi(studyId)
-    ElMessage.success(`AI task started: ${data.taskId}`)
+    ElMessage.success(`智能分析任务已启动，任务编号：${data.taskId}`)
     await loadData()
   } finally {
     aiLoading.value = false
@@ -71,36 +71,36 @@ onMounted(loadData)
     <el-card style="margin-bottom: 16px">
       <template #header>
         <div style="display: flex; justify-content: space-between; align-items: center">
-          <span>Case Detail</span>
-          <el-button type="success" :loading="aiLoading" @click="startAi">Start AI</el-button>
+          <span>病例详情</span>
+          <el-button type="success" :loading="aiLoading" @click="startAi">启动智能分析</el-button>
         </div>
       </template>
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="Study ID">{{ study?.id }}</el-descriptions-item>
-        <el-descriptions-item label="Study No">{{ study?.studyNo }}</el-descriptions-item>
-        <el-descriptions-item label="Patient ID">{{ study?.patientId }}</el-descriptions-item>
-        <el-descriptions-item label="Status">{{ studyStatusText(study?.status) }}</el-descriptions-item>
+        <el-descriptions-item label="检查编号">{{ study?.id }}</el-descriptions-item>
+        <el-descriptions-item label="检查编号">{{ study?.studyNo }}</el-descriptions-item>
+        <el-descriptions-item label="患者编号">{{ study?.patientId }}</el-descriptions-item>
+        <el-descriptions-item label="状态">{{ studyStatusText(study?.status) }}</el-descriptions-item>
       </el-descriptions>
     </el-card>
 
     <el-card style="margin-bottom: 16px">
-      <template #header>CT Files</template>
+      <template #header>影像文件</template>
       <el-table :data="files">
-        <el-table-column prop="id" label="File ID" width="120" />
-        <el-table-column prop="fileName" label="File Name" min-width="200" />
-        <el-table-column prop="fileType" label="Type" width="120" />
-        <el-table-column prop="fileSize" label="Size" width="140" />
+        <el-table-column prop="id" label="文件编号" width="120" />
+        <el-table-column prop="fileName" label="文件名" min-width="200" />
+        <el-table-column prop="fileType" label="类型" width="120" />
+        <el-table-column prop="fileSize" label="大小" width="140" />
       </el-table>
     </el-card>
 
     <el-card>
-      <template #header>AI Summary</template>
-      <el-empty v-if="!aiResult" description="No AI result yet" />
+      <template #header>智能分析结果概览</template>
+      <el-empty v-if="!aiResult" description="暂无智能分析结果" />
       <el-descriptions v-else :column="2" border>
-        <el-descriptions-item label="Task ID">{{ aiResult?.task?.id }}</el-descriptions-item>
-        <el-descriptions-item label="Task Status">{{ taskStatusText(aiResult?.task?.taskStatus) }}</el-descriptions-item>
-        <el-descriptions-item label="Nodules">{{ aiResult?.nodules?.length || 0 }}</el-descriptions-item>
-        <el-descriptions-item label="Annotations">{{ aiResult?.annotations?.length || 0 }}</el-descriptions-item>
+        <el-descriptions-item label="任务编号">{{ aiResult?.task?.id }}</el-descriptions-item>
+        <el-descriptions-item label="任务状态">{{ taskStatusText(aiResult?.task?.taskStatus) }}</el-descriptions-item>
+        <el-descriptions-item label="结节数量">{{ aiResult?.nodules?.length || 0 }}</el-descriptions-item>
+        <el-descriptions-item label="标注数量">{{ aiResult?.annotations?.length || 0 }}</el-descriptions-item>
       </el-descriptions>
     </el-card>
   </div>

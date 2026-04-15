@@ -156,3 +156,25 @@
 
 - 系统统一返回体为 `Result<T>`，部分权限拒绝走业务返回：HTTP 200 + `code=403`。
 - 未登录鉴权拦截仍为 HTTP 401。
+
+## 14. 报告总览专项测试（管理员）
+
+### 14.1 启动可用性
+
+- [ ] `T14-01` `start-backend.bat` 可正常启动后端，`8080` 端口可监听
+- [ ] `T14-02` `start-frontend.bat` 可正常启动前端，`5173` 端口可监听
+
+### 14.2 后端接口（`/api/admin/reports`）
+
+- [ ] `T14-03` 管理员账号登录成功并拿到 token
+- [ ] `T14-04` `GET /api/admin/reports` 默认分页返回 `records/total/current/size`
+- [ ] `T14-05` `status=DRAFT` 过滤生效
+- [ ] `T14-06` `keyword`（标题/摘要）过滤生效
+- [ ] `T14-07` 患者账号访问 `/api/admin/reports` 被拒绝（`code=403` 或 HTTP 403）
+- [ ] `T14-08` 列表项包含关键字段：`studyNo`、`patientName`、`doctorName`、`versionNo`、`status`
+
+### 14.3 前端联调（管理员“报告总览”）
+
+- [ ] `T14-09` 管理员菜单显示“报告总览”
+- [ ] `T14-10` 路由 `/app/admin/reports` 可访问并成功拉取列表
+- [ ] `T14-11` 点击“查看”可拉取并展示报告详情

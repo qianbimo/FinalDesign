@@ -1,4 +1,4 @@
-﻿import axios from 'axios'
+import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
 const request = axios.create({
@@ -9,16 +9,30 @@ const request = axios.create({
 const errorMessageMap = {
   'Request failed': '请求失败',
   'Network error': '网络异常，请稍后重试',
+  'Network Error': '网络异常，请稍后重试',
   'Access denied': '无权限访问',
   'Username already exists': '用户名已存在',
   'Username or password is incorrect': '用户名或密码错误',
   'Only PATIENT can register via public signup': '公开注册仅允许患者角色',
-  'patientId is required': '缺少 patientId 参数'
+  'patientId is required': '缺少患者编号参数',
+  'doctorId is required': '医生编号不能为空',
+  'appointmentTime is required': '预约时间不能为空',
+  'Study not found': '检查记录不存在',
+  'Patient profile not found': '患者档案不存在',
+  'Doctor profile not found': '医生档案不存在',
+  'AI task not found': '智能分析任务不存在',
+  'No AI task found for this study': '该检查暂无智能分析任务',
+  'Please upload CT file first': '请先上传影像文件',
+  'File size exceeds limit': '文件大小超出限制',
+  'Report not found': '报告不存在',
+  'Registration record not found': '挂号记录不存在'
 }
 
 function toReadableMessage(message, fallback) {
   if (!message) return fallback
-  return errorMessageMap[message] || message
+  if (errorMessageMap[message]) return errorMessageMap[message]
+  if (/[A-Za-z]/.test(message)) return fallback
+  return message
 }
 
 request.interceptors.request.use((config) => {

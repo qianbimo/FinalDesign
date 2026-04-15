@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { getDoctorPatientsApi } from '@/api/doctor'
 
@@ -6,12 +6,12 @@ const loading = ref(false)
 const tableData = ref([])
 const pager = reactive({ current: 1, size: 10, total: 0 })
 const genderMap = {
-  MALE: 'Male',
-  FEMALE: 'Female'
+  MALE: '男',
+  FEMALE: '女'
 }
 
 function genderText(gender) {
-  return genderMap[gender] || gender || '-'
+  return genderMap[gender] || '未知'
 }
 
 async function loadData() {
@@ -30,15 +30,15 @@ onMounted(loadData)
 
 <template>
   <el-card>
-    <template #header>Patients</template>
+    <template #header>患者列表</template>
     <el-table :data="tableData" v-loading="loading">
-      <el-table-column prop="id" label="Patient ID" width="120" />
-      <el-table-column prop="medicalRecordNo" label="Medical Record No" min-width="180" />
-      <el-table-column label="Gender" width="120">
+      <el-table-column prop="id" label="患者编号" width="120" />
+      <el-table-column prop="medicalRecordNo" label="病历号" min-width="180" />
+      <el-table-column label="性别" width="120">
         <template #default="scope">{{ genderText(scope.row.gender) }}</template>
       </el-table-column>
-      <el-table-column prop="age" label="Age" width="100" />
-      <el-table-column prop="address" label="Address" min-width="220" />
+      <el-table-column prop="age" label="年龄" width="100" />
+      <el-table-column prop="address" label="地址" min-width="220" />
     </el-table>
     <el-pagination
       style="margin-top: 16px"

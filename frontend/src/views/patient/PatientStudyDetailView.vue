@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPatientAiResultApi, getPatientReportApi, getPatientStudyDetailApi } from '@/api/patient'
@@ -11,34 +11,34 @@ const study = ref(null)
 const aiTask = ref(null)
 const report = ref(null)
 const studyStatusMap = {
-  UPLOADED: 'Uploaded',
-  PREPROCESSING: 'Preprocessing',
-  ANALYZING: 'Analyzing',
-  FINISHED: 'Finished',
-  FAILED: 'Failed'
+  UPLOADED: '已上传',
+  PREPROCESSING: '预处理中',
+  ANALYZING: '分析中',
+  FINISHED: '已完成',
+  FAILED: '失败'
 }
 const taskStatusMap = {
-  WAITING: 'Waiting',
-  RUNNING: 'Running',
-  SUCCESS: 'Success',
-  FAILED: 'Failed'
+  WAITING: '等待中',
+  RUNNING: '运行中',
+  SUCCESS: '成功',
+  FAILED: '失败'
 }
 const reportStatusMap = {
-  DRAFT: 'Draft',
-  REVIEWED: 'Reviewed',
-  FINAL: 'Final'
+  DRAFT: '草稿',
+  REVIEWED: '已审核',
+  FINAL: '最终版'
 }
 
 function studyStatusText(status) {
-  return studyStatusMap[status] || status
+  return studyStatusMap[status] || '未知状态'
 }
 
 function taskStatusText(status) {
-  return taskStatusMap[status] || status
+  return taskStatusMap[status] || '未知状态'
 }
 
 function reportStatusText(status) {
-  return reportStatusMap[status] || status
+  return reportStatusMap[status] || '未知状态'
 }
 
 async function loadData() {
@@ -66,36 +66,36 @@ onMounted(loadData)
 <template>
   <div v-loading="loading">
     <el-card style="margin-bottom: 16px">
-      <template #header>Study Detail</template>
+      <template #header>检查详情</template>
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="ID">{{ study?.id }}</el-descriptions-item>
-        <el-descriptions-item label="Study No">{{ study?.studyNo }}</el-descriptions-item>
-        <el-descriptions-item label="Study Date">{{ study?.studyDate }}</el-descriptions-item>
-        <el-descriptions-item label="Status">{{ studyStatusText(study?.status) }}</el-descriptions-item>
-        <el-descriptions-item label="Device">{{ study?.deviceInfo || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="Description">{{ study?.studyDesc || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="编号">{{ study?.id }}</el-descriptions-item>
+        <el-descriptions-item label="检查编号">{{ study?.studyNo }}</el-descriptions-item>
+        <el-descriptions-item label="检查日期">{{ study?.studyDate }}</el-descriptions-item>
+        <el-descriptions-item label="状态">{{ studyStatusText(study?.status) }}</el-descriptions-item>
+        <el-descriptions-item label="设备信息">{{ study?.deviceInfo || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="检查描述">{{ study?.studyDesc || '-' }}</el-descriptions-item>
       </el-descriptions>
     </el-card>
 
     <el-card style="margin-bottom: 16px">
-      <template #header>AI Result</template>
-      <el-empty v-if="!aiTask" description="No AI task yet" />
+      <template #header>智能分析结果</template>
+      <el-empty v-if="!aiTask" description="暂无智能分析任务" />
       <el-descriptions v-else :column="2" border>
-        <el-descriptions-item label="Task ID">{{ aiTask?.id }}</el-descriptions-item>
-        <el-descriptions-item label="Task Status">{{ taskStatusText(aiTask?.taskStatus) }}</el-descriptions-item>
-        <el-descriptions-item label="Model Version">{{ aiTask?.modelVersion }}</el-descriptions-item>
-        <el-descriptions-item label="Finished At">{{ aiTask?.finishedAt || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="任务编号">{{ aiTask?.id }}</el-descriptions-item>
+        <el-descriptions-item label="任务状态">{{ taskStatusText(aiTask?.taskStatus) }}</el-descriptions-item>
+        <el-descriptions-item label="模型版本">{{ aiTask?.modelVersion }}</el-descriptions-item>
+        <el-descriptions-item label="完成时间">{{ aiTask?.finishedAt || '-' }}</el-descriptions-item>
       </el-descriptions>
     </el-card>
 
     <el-card>
-      <template #header>Report</template>
-      <el-empty v-if="!report" description="No report yet" />
+      <template #header>报告单</template>
+      <el-empty v-if="!report" description="暂无报告" />
       <el-descriptions v-else :column="1" border>
-        <el-descriptions-item label="Title">{{ report?.reportTitle }}</el-descriptions-item>
-        <el-descriptions-item label="Summary">{{ report?.reportSummary }}</el-descriptions-item>
-        <el-descriptions-item label="Status">{{ reportStatusText(report?.status) }}</el-descriptions-item>
-        <el-descriptions-item label="Content">
+        <el-descriptions-item label="标题">{{ report?.reportTitle }}</el-descriptions-item>
+        <el-descriptions-item label="摘要">{{ report?.reportSummary }}</el-descriptions-item>
+        <el-descriptions-item label="状态">{{ reportStatusText(report?.status) }}</el-descriptions-item>
+        <el-descriptions-item label="内容">
           <pre style="white-space: pre-wrap; margin: 0">{{ report?.reportContent }}</pre>
         </el-descriptions-item>
       </el-descriptions>

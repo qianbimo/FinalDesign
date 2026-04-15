@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getPatientStudiesApi } from '@/api/patient'
@@ -19,15 +19,15 @@ const createForm = reactive({
 })
 
 const studyStatusMap = {
-  UPLOADED: 'Uploaded',
-  PREPROCESSING: 'Preprocessing',
-  ANALYZING: 'Analyzing',
-  FINISHED: 'Finished',
-  FAILED: 'Failed'
+  UPLOADED: '已上传',
+  PREPROCESSING: '预处理中',
+  ANALYZING: '分析中',
+  FINISHED: '已完成',
+  FAILED: '失败'
 }
 
 function studyStatusText(status) {
-  return studyStatusMap[status] || status
+  return studyStatusMap[status] || '未知状态'
 }
 
 async function loadStudies() {
@@ -40,7 +40,7 @@ async function loadStudies() {
 
 async function createStudy() {
   if (!createForm.doctorId) {
-    ElMessage.warning('Doctor profile ID is required')
+    ElMessage.warning('医生档案编号 不能为空')
     return
   }
   createLoading.value = true
@@ -52,7 +52,7 @@ async function createStudy() {
       deviceInfo: createForm.deviceInfo || undefined
     })
     selectedStudyId.value = data.studyId
-    ElMessage.success(`Study created: ${data.studyId}`)
+    ElMessage.success(`检查记录创建成功，编号：${data.studyId}`)
     await loadStudies()
   } finally {
     createLoading.value = false
@@ -65,24 +65,24 @@ function onFileChange(uploadFile) {
 
 async function submitUpload() {
   if (!selectedStudyId.value) {
-    ElMessage.warning('Please select a study')
+    ElMessage.warning('请先选择检查记录')
     return
   }
   if (!file.value) {
-    ElMessage.warning('Please select file')
+    ElMessage.warning('请先选择文件')
     return
   }
 
   const name = file.value.name.toLowerCase()
   if (!(name.endsWith('.dcm') || name.endsWith('.nii') || name.endsWith('.nii.gz'))) {
-    ElMessage.error('Only .dcm, .nii, .nii.gz are allowed')
+    ElMessage.error('仅支持 .dcm、.nii、.nii.gz 格式')
     return
   }
 
   loading.value = true
   try {
     uploadResult.value = await uploadCtFileApi(selectedStudyId.value, file.value)
-    ElMessage.success('Upload success')
+    ElMessage.success('上传成功')
     await loadStudies()
   } finally {
     loading.value = false
@@ -94,32 +94,32 @@ onMounted(loadStudies)
 
 <template>
   <el-card style="margin-bottom: 16px">
-    <template #header>Create Study</template>
+    <template #header>创建检查记录</template>
     <el-form label-width="160px">
-      <el-form-item label="Doctor Profile ID">
+      <el-form-item label="医生档案编号">
         <el-input-number v-model="createForm.doctorId" :min="1" />
       </el-form-item>
-      <el-form-item label="Study Date">
+      <el-form-item label="检查日期">
         <el-date-picker v-model="createForm.studyDate" type="date" value-format="YYYY-MM-DD" />
       </el-form-item>
-      <el-form-item label="Study Description">
+      <el-form-item label="检查描述">
         <el-input v-model="createForm.studyDesc" />
       </el-form-item>
-      <el-form-item label="Device Info">
+      <el-form-item label="设备信息">
         <el-input v-model="createForm.deviceInfo" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" :loading="createLoading" @click="createStudy">Create Study</el-button>
+        <el-button type="primary" :loading="createLoading" @click="createStudy">创建记录</el-button>
       </el-form-item>
     </el-form>
   </el-card>
 
   <el-card>
-    <template #header>Upload CT File</template>
+    <template #header>上传影像文件</template>
 
     <el-form label-width="160px">
-      <el-form-item label="Select Study">
-        <el-select v-model="selectedStudyId" placeholder="Please select a study" style="width: 360px">
+      <el-form-item label="选择检查记录">
+        <el-select v-model="selectedStudyId" placeholder="请选择检查记录" style="width: 360px">
           <el-option
             v-for="s in studies"
             :key="s.id"
@@ -129,22 +129,22 @@ onMounted(loadStudies)
         </el-select>
       </el-form-item>
 
-      <el-form-item label="CT File">
+      <el-form-item label="影像文件">
         <el-upload :auto-upload="false" :limit="1" :on-change="onFileChange">
           <template #trigger>
-            <el-button>Select File</el-button>
+            <el-button>选择文件</el-button>
           </template>
         </el-upload>
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" :loading="loading" @click="submitUpload">Upload</el-button>
+        <el-button type="primary" :loading="loading" @click="submitUpload">开始上传</el-button>
       </el-form-item>
     </el-form>
 
     <el-alert v-if="uploadResult" type="success" :closable="false" show-icon>
       <template #title>
-        Upload success: fileId={{ uploadResult.fileId }}, type={{ uploadResult.fileType }}
+        上传成功：文件编号={{ uploadResult.fileId }}，类型={{ uploadResult.fileType }}
       </template>
     </el-alert>
   </el-card>

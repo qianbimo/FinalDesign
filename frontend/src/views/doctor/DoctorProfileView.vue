@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { onMounted, ref } from 'vue'
 import { getDoctorProfileApi } from '@/api/doctor'
 
@@ -19,14 +19,14 @@ onMounted(loadData)
 
 <template>
   <el-card v-loading="loading">
-    <template #header>Doctor Profile</template>
+    <template #header>医生资料</template>
     <el-descriptions :column="2" border>
-      <el-descriptions-item label="ID">{{ profile?.id }}</el-descriptions-item>
-      <el-descriptions-item label="Department">{{ profile?.department }}</el-descriptions-item>
-      <el-descriptions-item label="Title">{{ profile?.title }}</el-descriptions-item>
-      <el-descriptions-item label="Specialty">{{ profile?.specialty }}</el-descriptions-item>
-      <el-descriptions-item label="License No">{{ profile?.licenseNo }}</el-descriptions-item>
-      <el-descriptions-item label="Introduction">{{ profile?.introduction }}</el-descriptions-item>
+      <el-descriptions-item label="编号">{{ profile?.id }}</el-descriptions-item>
+      <el-descriptions-item label="科室">{{ profile?.department }}</el-descriptions-item>
+      <el-descriptions-item label="职称">{{ profile?.title }}</el-descriptions-item>
+      <el-descriptions-item label="专业方向">{{ profile?.specialty }}</el-descriptions-item>
+      <el-descriptions-item label="执业证号">{{ profile?.licenseNo }}</el-descriptions-item>
+      <el-descriptions-item label="个人简介">{{ profile?.introduction }}</el-descriptions-item>
     </el-descriptions>
   </el-card>
 </template>

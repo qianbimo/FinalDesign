@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getPatientStudiesApi } from '@/api/patient'
@@ -8,15 +8,15 @@ const loading = ref(false)
 const tableData = ref([])
 const pager = reactive({ current: 1, size: 10, total: 0 })
 const studyStatusMap = {
-  UPLOADED: 'Uploaded',
-  PREPROCESSING: 'Preprocessing',
-  ANALYZING: 'Analyzing',
-  FINISHED: 'Finished',
-  FAILED: 'Failed'
+  UPLOADED: '已上传',
+  PREPROCESSING: '预处理中',
+  ANALYZING: '分析中',
+  FINISHED: '已完成',
+  FAILED: '失败'
 }
 
 function studyStatusText(status) {
-  return studyStatusMap[status] || status
+  return studyStatusMap[status] || '未知状态'
 }
 
 async function loadData() {
@@ -39,18 +39,18 @@ onMounted(loadData)
 
 <template>
   <el-card>
-    <template #header>My Studies</template>
+    <template #header>检查记录</template>
     <el-table :data="tableData" v-loading="loading">
-      <el-table-column prop="id" label="ID" width="110" />
-      <el-table-column prop="studyNo" label="Study No" min-width="180" />
-      <el-table-column prop="studyDate" label="Study Date" width="130" />
-      <el-table-column label="Status" width="140">
+      <el-table-column prop="id" label="编号" width="110" />
+      <el-table-column prop="studyNo" label="检查编号" min-width="180" />
+      <el-table-column prop="studyDate" label="检查日期" width="130" />
+      <el-table-column label="状态" width="140">
         <template #default="scope">{{ studyStatusText(scope.row.status) }}</template>
       </el-table-column>
-      <el-table-column prop="studyDesc" label="Description" min-width="200" />
-      <el-table-column label="Action" width="120">
+      <el-table-column prop="studyDesc" label="检查描述" min-width="200" />
+      <el-table-column label="操作" width="120">
         <template #default="scope">
-          <el-button type="primary" link @click="toDetail(scope.row.id)">Detail</el-button>
+          <el-button type="primary" link @click="toDetail(scope.row.id)">详情</el-button>
         </template>
       </el-table-column>
     </el-table>

@@ -20,6 +20,7 @@ import com.finaldesign.lungnodule.mapper.SysUserMapper;
 import com.finaldesign.lungnodule.service.AdminService;
 import com.finaldesign.lungnodule.utils.NoGenerator;
 import com.finaldesign.lungnodule.vo.AdminDashboardVO;
+import com.finaldesign.lungnodule.vo.AdminReportVO;
 import com.finaldesign.lungnodule.vo.AdminUserVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -114,6 +115,96 @@ public class AdminServiceImpl implements AdminService {
         }).toList();
 
         Page<AdminUserVO> voPage = new Page<>(current, size, userPage.getTotal());
+        voPage.setRecords(vos);
+        return voPage;
+    }
+
+    @Override
+    public IPage<AdminReportVO> pageReports(Long current, Long size, String status, String keyword) {
+        Page<ReportRecord> page = new Page<>(current, size);
+        LambdaQueryWrapper<ReportRecord> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByDesc(ReportRecord::getCreatedAt);
+
+        if (StringUtils.isNotBlank(status)) {
+            wrapper.eq(ReportRecord::getStatus, status);
+        }
+
+        if (StringUtils.isNotBlank(keyword)) {
+            wrapper.and(w -> w.like(ReportRecord::getReportTitle, keyword)
+                    .or().like(ReportRecord::getReportSummary, keyword));
+        }
+
+        IPage<ReportRecord> reportPage = reportRecordMapper.selectPage(page, wrapper);
+        List<ReportRecord> records = reportPage.getRecords();
+
+        List<Long> studyIds = records.stream()
+                .map(ReportRecord::getStudyId)
+                .filter(id -> id != null)
+                .distinct()
+                .toList();
+        List<Long> patientIds = records.stream()
+                .map(ReportRecord::getPatientId)
+                .filter(id -> id != null)
+                .distinct()
+                .toList();
+        List<Long> doctorIds = records.stream()
+                .map(ReportRecord::getDoctorId)
+                .filter(id -> id != null)
+                .distinct()
+                .toList();
+
+        Map<Long, String> studyNoMap = new HashMap<>();
+        if (!studyIds.isEmpty()) {
+            List<CtStudy> studies = ctStudyMapper.selectBatchIds(studyIds);
+            studyNoMap.putAll(studies.stream().collect(Collectors.toMap(CtStudy::getId, CtStudy::getStudyNo)));
+        }
+
+        Map<Long, Long> patientUserIdMap = new HashMap<>();
+        if (!patientIds.isEmpty()) {
+            List<PatientProfile> patients = patientProfileMapper.selectBatchIds(patientIds);
+            patientUserIdMap.putAll(patients.stream().collect(Collectors.toMap(PatientProfile::getId, PatientProfile::getUserId)));
+        }
+
+        Map<Long, Long> doctorUserIdMap = new HashMap<>();
+        if (!doctorIds.isEmpty()) {
+            List<DoctorProfile> doctors = doctorProfileMapper.selectBatchIds(doctorIds);
+            doctorUserIdMap.putAll(doctors.stream().collect(Collectors.toMap(DoctorProfile::getId, DoctorProfile::getUserId)));
+        }
+
+        List<Long> relatedUserIds = java.util.stream.Stream.concat(
+                        patientUserIdMap.values().stream(),
+                        doctorUserIdMap.values().stream())
+                .distinct()
+                .toList();
+
+        Map<Long, String> userNameMap = new HashMap<>();
+        if (!relatedUserIds.isEmpty()) {
+            List<SysUser> users = sysUserMapper.selectBatchIds(relatedUserIds);
+            userNameMap.putAll(users.stream().collect(Collectors.toMap(SysUser::getId, SysUser::getRealName)));
+        }
+
+        List<AdminReportVO> vos = records.stream().map(report -> {
+            AdminReportVO vo = new AdminReportVO();
+            vo.setId(report.getId());
+            vo.setStudyId(report.getStudyId());
+            vo.setStudyNo(studyNoMap.get(report.getStudyId()));
+            vo.setPatientId(report.getPatientId());
+            vo.setPatientName(userNameMap.get(patientUserIdMap.get(report.getPatientId())));
+            vo.setDoctorId(report.getDoctorId());
+            vo.setDoctorName(userNameMap.get(doctorUserIdMap.get(report.getDoctorId())));
+            vo.setAiTaskId(report.getAiTaskId());
+            vo.setReportTitle(report.getReportTitle());
+            vo.setReportSummary(report.getReportSummary());
+            vo.setStatus(report.getStatus());
+            vo.setVersionNo(report.getVersionNo());
+            vo.setGeneratedBy(report.getGeneratedBy());
+            vo.setAuditTime(report.getAuditTime());
+            vo.setCreatedAt(report.getCreatedAt());
+            vo.setUpdatedAt(report.getUpdatedAt());
+            return vo;
+        }).toList();
+
+        Page<AdminReportVO> voPage = new Page<>(current, size, reportPage.getTotal());
         voPage.setRecords(vos);
         return voPage;
     }

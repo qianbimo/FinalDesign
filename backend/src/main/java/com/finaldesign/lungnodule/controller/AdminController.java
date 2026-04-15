@@ -8,6 +8,7 @@ import com.finaldesign.lungnodule.dto.AdminUserCreateRequest;
 import com.finaldesign.lungnodule.dto.AdminUserStatusUpdateRequest;
 import com.finaldesign.lungnodule.service.AdminService;
 import com.finaldesign.lungnodule.vo.AdminDashboardVO;
+import com.finaldesign.lungnodule.vo.AdminReportVO;
 import com.finaldesign.lungnodule.vo.AdminUserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -42,6 +43,16 @@ public class AdminController {
                                                   @RequestParam(required = false) Integer status,
                                                   @RequestParam(required = false) String keyword) {
         IPage<AdminUserVO> page = adminService.pageUsers(current, size, role, status, keyword);
+        return Result.success(new PageResult<>(page.getTotal(), page.getCurrent(), page.getSize(), page.getRecords()));
+    }
+
+    @GetMapping("/reports")
+    @Operation(summary = "Admin list all reports")
+    public Result<PageResult<AdminReportVO>> reports(@RequestParam(defaultValue = "1") Long current,
+                                                      @RequestParam(defaultValue = "10") Long size,
+                                                      @RequestParam(required = false) String status,
+                                                      @RequestParam(required = false) String keyword) {
+        IPage<AdminReportVO> page = adminService.pageReports(current, size, status, keyword);
         return Result.success(new PageResult<>(page.getTotal(), page.getCurrent(), page.getSize(), page.getRecords()));
     }
 

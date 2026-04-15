@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -19,7 +19,7 @@ const menuMap = {
     { title: '个人资料', path: '/app/patient/profile' },
     { title: '检查记录', path: '/app/patient/studies' },
     { title: '挂号申请', path: '/app/patient/registration' },
-    { title: 'CT上传', path: '/app/patient/upload' }
+    { title: '影像上传', path: '/app/patient/upload' }
   ],
   DOCTOR: [
     { title: '工作台', path: '/app/workspace' },
@@ -32,13 +32,14 @@ const menuMap = {
   ADMIN: [
     { title: '工作台', path: '/app/workspace' },
     { title: '管理员概览', path: '/app/admin/dashboard' },
-    { title: '用户管理', path: '/app/admin/users' }
+    { title: '用户管理', path: '/app/admin/users' },
+    { title: '报告总览', path: '/app/admin/reports' }
   ]
 }
 
 const menus = computed(() => menuMap[authStore.role] || [])
 const activePath = computed(() => route.path)
-const roleLabel = computed(() => roleLabelMap[authStore.role] || authStore.role)
+const roleLabel = computed(() => roleLabelMap[authStore.role] || '未知角色')
 
 function onSelect(path) {
   router.push(path)

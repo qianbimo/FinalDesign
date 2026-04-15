@@ -27,3 +27,7 @@ export function resetAdminUserPasswordApi(id, newPassword) {
 export function getAdminDashboardApi() {
   return request({ url: '/api/admin/dashboard', method: 'get' })
 }
+
+export function getAdminReportsApi(params) {
+  return request({ url: '/api/admin/reports', method: 'get', params })
+}
