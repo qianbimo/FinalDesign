@@ -53,3 +53,1602 @@ Initialization Sequence datacenterId:18 workerId:13
 2026-04-15T16:27:07.829+08:00  INFO 38944 --- [lung-nodule-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
 2026-04-15T16:27:08.180+08:00  INFO 38944 --- [lung-nodule-backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
 2026-04-15T16:27:08.184+08:00  INFO 38944 --- [lung-nodule-backend] [           main] c.f.l.LungNoduleBackendApplication       : Started LungNoduleBackendApplication in 1.488 seconds (process running for 1.646)
+2026-04-15T16:29:02.600+08:00  INFO 38944 --- [lung-nodule-backend] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-15T16:29:02.602+08:00  INFO 38944 --- [lung-nodule-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-15T16:29:02.602+08:00  INFO 38944 --- [lung-nodule-backend] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2026-04-15T16:29:02.716+08:00  INFO 38944 --- [lung-nodule-backend] [nio-8080-exec-2] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-15T16:29:02.784+08:00  INFO 38944 --- [lung-nodule-backend] [nio-8080-exec-2] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1226ab9f
+2026-04-15T16:29:02.786+08:00  INFO 38944 --- [lung-nodule-backend] [nio-8080-exec-2] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+Creating a new SqlSession
+Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@200bab11]
+JDBC Connection [HikariProxyConnection@1335320212 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_reg_0415162902(String)
+<==      Total: 0
+Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@200bab11]
+Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@200bab11] from current transaction
+==>  Preparing: INSERT INTO sys_user ( id, username, password, role, real_name, phone, email, status, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 2044332157687877634(Long), qa_reg_0415162902(String), $2a$10$ytHWlFBlNXIxO/RjqU0oN.fmPSKyCJ8o7klA4E3u/Lv87rhZpPj5.(String), PATIENT(String), Reg User(String), 13800000000(String), qa_reg_0415162902@example.com(String), 1(Integer), 2026-04-15T16:29:02.905495100(LocalDateTime), 2026-04-15T16:29:02.905495100(LocalDateTime)
+<==    Updates: 1
+Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@200bab11]
+Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@200bab11] from current transaction
+==>  Preparing: INSERT INTO patient_profile ( id, user_id, medical_record_no, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ? )
+==> Parameters: 2044332157687877635(Long), 2044332157687877634(Long), MR202604151629028B7A88(String), 2026-04-15T16:29:02.910700600(LocalDateTime), 2026-04-15T16:29:02.910700600(LocalDateTime)
+<==    Updates: 1
+Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@200bab11]
+Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@200bab11]
+Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@200bab11]
+Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@200bab11]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4bbac3a8] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1590578902 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_reg_0415162902(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 2044332157687877634, qa_reg_0415162902, $2a$10$ytHWlFBlNXIxO/RjqU0oN.fmPSKyCJ8o7klA4E3u/Lv87rhZpPj5., PATIENT, Reg User, 13800000000, qa_reg_0415162902@example.com, 1, 2026-04-15 16:29:03, 2026-04-15 16:29:03
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4bbac3a8]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2e3bf511] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1820538020 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE id=?
+==> Parameters: 2044332157687877634(Long)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 2044332157687877634, qa_reg_0415162902, $2a$10$ytHWlFBlNXIxO/RjqU0oN.fmPSKyCJ8o7klA4E3u/Lv87rhZpPj5., PATIENT, Reg User, 13800000000, qa_reg_0415162902@example.com, 1, 2026-04-15 16:29:03, 2026-04-15 16:29:03
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2e3bf511]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@47afd372] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1231562231 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@47afd372]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@8552fcc] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@827869687 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE id=?
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@8552fcc]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@39a4d6d6] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@929251218 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@39a4d6d6]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@765e35a9] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1775456210 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE id=?
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@765e35a9]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1bf4e0] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@249305747 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_admin(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305092843, qa_admin, $2b$10$4BiRsIAKjkV0k6vT/R9cJu3aXjCHBE2ZS09v1VXVzXhLHzkEYx3Pa, ADMIN, QA Admin, 13800000000, qa_admin@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1bf4e0]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4fe110a8] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@268587328 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE id=?
+==> Parameters: 1776241305092843(Long)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305092843, qa_admin, $2b$10$4BiRsIAKjkV0k6vT/R9cJu3aXjCHBE2ZS09v1VXVzXhLHzkEYx3Pa, ADMIN, QA Admin, 13800000000, qa_admin@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4fe110a8]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4150877] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1776129088 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4150877]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@136c413e] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@497790243 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@136c413e]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@670d497e] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1774894063 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_admin(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305092843, qa_admin, $2b$10$4BiRsIAKjkV0k6vT/R9cJu3aXjCHBE2ZS09v1VXVzXhLHzkEYx3Pa, ADMIN, QA Admin, 13800000000, qa_admin@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@670d497e]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@19159996] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1572089320 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user
+==> Parameters: 
+<==    Columns: total
+<==        Row: 53
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@19159996]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4c9672f2] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@457176382 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE (role = ?)
+==> Parameters: PATIENT(String)
+<==    Columns: total
+<==        Row: 33
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4c9672f2]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@25a93d09] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1104919175 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE (role = ?)
+==> Parameters: DOCTOR(String)
+<==    Columns: total
+<==        Row: 17
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@25a93d09]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@44bd3ab4] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1479454502 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE (role = ?)
+==> Parameters: ADMIN(String)
+<==    Columns: total
+<==        Row: 3
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@44bd3ab4]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5817c34f] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1970082036 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE (status = ?)
+==> Parameters: 1(Integer)
+<==    Columns: total
+<==        Row: 52
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5817c34f]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6de23e6d] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@193561893 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT( * ) AS total FROM ct_study
+==> Parameters: 
+<==    Columns: total
+<==        Row: 19
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6de23e6d]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4c29056f] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@809786321 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT( * ) AS total FROM ai_task
+==> Parameters: 
+<==    Columns: total
+<==        Row: 11
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4c29056f]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@17cd0eeb] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@323707648 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT( * ) AS total FROM report_record
+==> Parameters: 
+<==    Columns: total
+<==        Row: 6
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@17cd0eeb]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@c4154e9] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@42384145 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@c4154e9]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@72b23631] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1027119625 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@72b23631]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7f634640] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1632656758 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7f634640]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@55e6734f] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@918437736 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@55e6734f]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1ed9e01a] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@255391554 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1ed9e01a]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@66d3e86e] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1767819217 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@66d3e86e]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@23df6036] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@814348409 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: UPDATE patient_profile SET user_id=?, gender=?, age=?, address=?, remark=?, created_at=?, updated_at=? WHERE id=?
+==> Parameters: 1776241305014819(Long), MALE(String), 36(Integer), Shanghai Pudong(String), Regression test profile update(String), 2026-04-15T16:21:45(LocalDateTime), 2026-04-15T16:21:45(LocalDateTime), 1776241305093405(Long)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@23df6036]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4753e9b8] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@917573438 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4753e9b8]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@46b9b51] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1536011635 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@46b9b51]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@536ae28d] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@184765090 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: INSERT INTO registration_record ( id, patient_id, doctor_id, appointment_time, status, description, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 2044332159709532161(Long), 1776241305093405(Long), 1776241305093513(Long), 2026-04-20T10:30(LocalDateTime), PENDING(String), Regression appointment request(String), 2026-04-15T16:29:03.392227200(LocalDateTime), 2026-04-15T16:29:03.392227200(LocalDateTime)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@536ae28d]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4970bd2e] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1752879235 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4970bd2e]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4f3277be] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1915837748 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4f3277be]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7ff3b0f2] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@703437432 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT(*) AS total FROM registration_record WHERE (doctor_id = ?)
+==> Parameters: 1776241305093513(Long)
+<==    Columns: total
+<==        Row: 1
+<==      Total: 1
+==>  Preparing: SELECT id,patient_id,doctor_id,appointment_time,status,description,created_at,updated_at FROM registration_record WHERE (doctor_id = ?) ORDER BY created_at DESC LIMIT ?
+==> Parameters: 1776241305093513(Long), 50(Long)
+<==    Columns: id, patient_id, doctor_id, appointment_time, status, description, created_at, updated_at
+<==        Row: 2044332159709532161, 1776241305093405, 1776241305093513, 2026-04-20 10:30:00, PENDING, Regression appointment request, 2026-04-15 16:29:03, 2026-04-15 16:29:03
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7ff3b0f2]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@11054612] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@376556262 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@11054612]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@435b6462] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1177856990 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@435b6462]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6d0e592a] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1970165917 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,patient_id,doctor_id,appointment_time,status,description,created_at,updated_at FROM registration_record WHERE id=?
+==> Parameters: 2044332159709532161(Long)
+<==    Columns: id, patient_id, doctor_id, appointment_time, status, description, created_at, updated_at
+<==        Row: 2044332159709532161, 1776241305093405, 1776241305093513, 2026-04-20 10:30:00, PENDING, Regression appointment request, 2026-04-15 16:29:03, 2026-04-15 16:29:03
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6d0e592a]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@374a942a] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@680680672 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: UPDATE registration_record SET patient_id=?, doctor_id=?, appointment_time=?, status=?, description=?, created_at=?, updated_at=? WHERE id=?
+==> Parameters: 1776241305093405(Long), 1776241305093513(Long), 2026-04-20T10:30(LocalDateTime), CONFIRMED(String), Regression appointment request(String), 2026-04-15T16:29:03(LocalDateTime), 2026-04-15T16:29:03(LocalDateTime), 2044332159709532161(Long)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@374a942a]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@68edc602] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@802090983 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@68edc602]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@73e94cc5] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@729822344 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@73e94cc5]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4048ac90] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2038320952 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: INSERT INTO ct_study ( id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 2044332160753913858(Long), ST20260415162903EB73B1(String), 1776241305093405(Long), 1776241305093513(Long), 2026-04-15(LocalDate), Regression study(String), QA Device(String), UPLOADED(String), 2026-04-15T16:29:03.639043(LocalDateTime), 2026-04-15T16:29:03.639043(LocalDateTime)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4048ac90]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@35399fe8] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1165152034 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@35399fe8]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b28b2fd] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@209272025 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b28b2fd]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@18f45f2a] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1096106909 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT(*) AS total FROM ct_study WHERE (patient_id = ?)
+==> Parameters: 1776241305093405(Long)
+<==    Columns: total
+<==        Row: 3
+<==      Total: 1
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE (patient_id = ?) ORDER BY created_at DESC LIMIT ?
+==> Parameters: 1776241305093405(Long), 100(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==        Row: 2044331152095088642, ST202604151625032EDB9D, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:25:03, 2026-04-15 16:25:03
+<==        Row: 2044330763882893313, ST20260415162330710614, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:23:31, 2026-04-15 16:23:31
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@18f45f2a]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6f790e7c] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1325011495 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6f790e7c]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@14f2dbb1] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@870268349 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@14f2dbb1]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2bf61b10] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1628367110 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2bf61b10]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@555ef1bf] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@324384370 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@555ef1bf]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@29594a05] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1314959399 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@29594a05]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4f8eeb06] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@744790416 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4f8eeb06]
+Creating a new SqlSession
+Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@582e71ec]
+JDBC Connection [HikariProxyConnection@646331131 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@582e71ec]
+Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@582e71ec] from current transaction
+==>  Preparing: INSERT INTO ct_file ( id, study_id, file_name, file_type, file_path, file_size, upload_user_id, upload_time, check_status, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 2044332162964312065(Long), 2044332160753913858(Long), 1.3.6.1.4.1.14519.5.2.1.6279.6001.100225287222365663678666836860_45_211_77_0000.nii.gz(String), NII_GZ(String), C:/Users/qianbimo/.codex/worktrees/001d/FinalDesign/storage/ct/1776241305093405/ST20260415162903EB73B1/20260415/8c67ec19890e4bf18fb5447184f2832e_1.3.6.1.4.1.14519.5.2.1.6279.6001.100225287222365663678666836860_45_211_77_0000.nii.gz(String), 1247209(Long), 1776241305014819(Long), 2026-04-15T16:29:04.167070200(LocalDateTime), VALID(String), 2026-04-15T16:29:04.168070(LocalDateTime), 2026-04-15T16:29:04.168070(LocalDateTime)
+<==    Updates: 1
+Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@582e71ec]
+Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@582e71ec]
+Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@582e71ec]
+Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@582e71ec]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@30298591] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2007738755 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@30298591]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4dd6dcd4] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@825216498 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4dd6dcd4]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7d9510bc] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@115233702 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7d9510bc]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@67a12589] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@616910961 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,file_name,file_type,file_path,file_size,slice_count,upload_user_id,upload_time,check_status,remark,created_at,updated_at FROM ct_file WHERE (study_id = ?) ORDER BY created_at DESC
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_id, file_name, file_type, file_path, file_size, slice_count, upload_user_id, upload_time, check_status, remark, created_at, updated_at
+<==        Row: 2044332162964312065, 2044332160753913858, 1.3.6.1.4.1.14519.5.2.1.6279.6001.100225287222365663678666836860_45_211_77_0000.nii.gz, NII_GZ, C:/Users/qianbimo/.codex/worktrees/001d/FinalDesign/storage/ct/1776241305093405/ST20260415162903EB73B1/20260415/8c67ec19890e4bf18fb5447184f2832e_1.3.6.1.4.1.14519.5.2.1.6279.6001.100225287222365663678666836860_45_211_77_0000.nii.gz, 1247209, null, 1776241305014819, 2026-04-15 16:29:04, VALID, null, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@67a12589]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7c77f8a2] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@782636629 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7c77f8a2]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@468fe8f4] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@92187247 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@468fe8f4]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@51e3f7a4] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1754426660 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@51e3f7a4]
+Creating a new SqlSession
+Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2301a1f1]
+JDBC Connection [HikariProxyConnection@378636089 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2301a1f1]
+Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2301a1f1]
+Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2301a1f1]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6e143d77] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@404303750 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6e143d77]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@450cdda4] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@851494088 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@450cdda4]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1b87ec25] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1843446540 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT(*) AS total FROM ct_study WHERE (doctor_id = ?)
+==> Parameters: 1776241305093513(Long)
+<==    Columns: total
+<==        Row: 3
+<==      Total: 1
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE (doctor_id = ?) ORDER BY created_at DESC LIMIT ?
+==> Parameters: 1776241305093513(Long), 100(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==        Row: 2044331152095088642, ST202604151625032EDB9D, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:25:03, 2026-04-15 16:25:03
+<==        Row: 2044330763882893313, ST20260415162330710614, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:23:31, 2026-04-15 16:23:31
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1b87ec25]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@248d342] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1640037605 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@248d342]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@efb5864] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1248675898 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@efb5864]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5da1f346] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2108509264 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5da1f346]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1551ecb7] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1913989707 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1551ecb7]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2ec7317c] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1569312541 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,file_name,file_type,file_path,file_size,slice_count,upload_user_id,upload_time,check_status,remark,created_at,updated_at FROM ct_file WHERE (study_id = ?) ORDER BY created_at DESC
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_id, file_name, file_type, file_path, file_size, slice_count, upload_user_id, upload_time, check_status, remark, created_at, updated_at
+<==        Row: 2044332162964312065, 2044332160753913858, 1.3.6.1.4.1.14519.5.2.1.6279.6001.100225287222365663678666836860_45_211_77_0000.nii.gz, NII_GZ, C:/Users/qianbimo/.codex/worktrees/001d/FinalDesign/storage/ct/1776241305093405/ST20260415162903EB73B1/20260415/8c67ec19890e4bf18fb5447184f2832e_1.3.6.1.4.1.14519.5.2.1.6279.6001.100225287222365663678666836860_45_211_77_0000.nii.gz, 1247209, null, 1776241305014819, 2026-04-15 16:29:04, VALID, null, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2ec7317c]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@309fcde8] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@381101242 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: INSERT INTO ai_task ( id, study_id, task_no, model_version, task_status, request_json, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 2044332163677343745(Long), 2044332160753913858(Long), AI202604151629042BB5F2(String), 3D-ResUNet+Mamba-reserved-v1(String), WAITING(String), {"studyId":2044332160753913858,"filePath":"C:/Users/qianbimo/.codex/worktrees/001d/FinalDesign/storage/ct/1776241305093405/ST20260415162903EB73B1/20260415/8c67ec19890e4bf18fb5447184f2832e_1.3.6.1.4.1.14519.5.2.1.6279.6001.100225287222365663678666836860_45_211_77_0000.nii.gz","patientId":1776241305093405}(String), 2026-04-15T16:29:04.335127400(LocalDateTime), 2026-04-15T16:29:04.335127400(LocalDateTime)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@309fcde8]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5dfe75d0] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@322962186 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: UPDATE ai_task SET study_id=?, task_no=?, model_version=?, task_status=?, request_json=?, started_at=?, created_at=?, updated_at=? WHERE id=?
+==> Parameters: 2044332160753913858(Long), AI202604151629042BB5F2(String), 3D-ResUNet+Mamba-reserved-v1(String), RUNNING(String), {"studyId":2044332160753913858,"filePath":"C:/Users/qianbimo/.codex/worktrees/001d/FinalDesign/storage/ct/1776241305093405/ST20260415162903EB73B1/20260415/8c67ec19890e4bf18fb5447184f2832e_1.3.6.1.4.1.14519.5.2.1.6279.6001.100225287222365663678666836860_45_211_77_0000.nii.gz","patientId":1776241305093405}(String), 2026-04-15T16:29:04.360103200(LocalDateTime), 2026-04-15T16:29:04.335127400(LocalDateTime), 2026-04-15T16:29:04.335127400(LocalDateTime), 2044332163677343745(Long)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5dfe75d0]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6f0378f] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@672043636 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: UPDATE ct_study SET study_no=?, patient_id=?, doctor_id=?, study_date=?, study_desc=?, device_info=?, status=?, created_at=?, updated_at=? WHERE id=?
+==> Parameters: ST20260415162903EB73B1(String), 1776241305093405(Long), 1776241305093513(Long), 2026-04-15(LocalDate), Regression study(String), QA Device(String), ANALYZING(String), 2026-04-15T16:29:04(LocalDateTime), 2026-04-15T16:29:04(LocalDateTime), 2044332160753913858(Long)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6f0378f]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@54d3b34a] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1653070583 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: INSERT INTO nodule_result ( id, study_id, ai_task_id, nodule_no, center_x, center_y, center_z, width, height, depth, volume, diameter_mm, malignancy_prob, risk_level, description, mask_path, bbox_json, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 2044332164725919746(Long), 2044332160753913858(Long), 2044332163677343745(Long), 1(Integer), 53.0(Double), 69.0(Double), 37.0(Double), 11.0(Double), 11.0(Double), 11.0(Double), 385.09(Double), 19.8(Double), 0.695(Double), MEDIUM(String), Auto-generated fallback nodule candidate(String), E:/code/FinalDesign/storage/result/2044332160753913858/2044332160753913858_mask.nii.gz(String), {"x1":48.0,"y1":64.0,"z1":32.0,"x2":58.0,"y2":74.0,"z2":42.0}(String), 2026-04-15T16:29:04.591394900(LocalDateTime), 2026-04-15T16:29:04.591394900(LocalDateTime)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@54d3b34a]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@34dc0117] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1005985195 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: INSERT INTO annotation_result ( id, study_id, ai_task_id, nodule_result_id, view_type, overlay_path, color, visible_flag, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 2044332165044686849(Long), 2044332160753913858(Long), 2044332163677343745(Long), 2044332164725919746(Long), AXIAL(String), E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_axial.png(String), #FF0000(String), 1(Integer), 2026-04-15T16:29:04.663131500(LocalDateTime), 2026-04-15T16:29:04.663131500(LocalDateTime)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@34dc0117]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@96900a] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1410792886 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: INSERT INTO annotation_result ( id, study_id, ai_task_id, nodule_result_id, view_type, overlay_path, color, visible_flag, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 2044332165371842562(Long), 2044332160753913858(Long), 2044332163677343745(Long), 2044332164725919746(Long), CORONAL(String), E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_coronal.png(String), #00FF00(String), 1(Integer), 2026-04-15T16:29:04.738227700(LocalDateTime), 2026-04-15T16:29:04.738227700(LocalDateTime)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@96900a]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a09a980] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@514550283 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: INSERT INTO annotation_result ( id, study_id, ai_task_id, nodule_result_id, view_type, overlay_path, color, visible_flag, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 2044332165568974849(Long), 2044332160753913858(Long), 2044332163677343745(Long), 2044332164725919746(Long), SAGITTAL(String), E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_sagittal.png(String), #00BFFF(String), 1(Integer), 2026-04-15T16:29:04.797763300(LocalDateTime), 2026-04-15T16:29:04.797763300(LocalDateTime)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2a09a980]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@69192ce1] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1211785021 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,patient_id,doctor_id,ai_task_id,report_title,report_content,report_summary,status,version_no,generated_by,audit_time,created_at,updated_at FROM report_record WHERE (study_id = ?) ORDER BY version_no DESC limit 1
+==> Parameters: 2044332160753913858(Long)
+<==      Total: 0
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@69192ce1]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7f015f28] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1608456717 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: INSERT INTO report_record ( id, study_id, patient_id, doctor_id, ai_task_id, report_title, report_content, report_summary, status, version_no, generated_by, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 2044332165896130562(Long), 2044332160753913858(Long), 1776241305093405(Long), 1776241305093513(Long), 2044332163677343745(Long), 胸部CT智能分析报告(String), 检查项目：胸部 CT 智能分析
+结节数量：1
+最大结节直径：19.8 mm
+高风险结节数：0
+最高恶性风险概率：0.70
+AI 风险评估：MEDIUM
+建议：建议进一步随访观察(String), 发现结节1个，整体风险MEDIUM(String), DRAFT(String), 1(Integer), SYSTEM(String), 2026-04-15T16:29:04.869568(LocalDateTime), 2026-04-15T16:29:04.869568(LocalDateTime)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7f015f28]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@8f25643] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2113904746 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: UPDATE ai_task SET study_id=?, task_no=?, model_version=?, task_status=?, request_json=?, response_json=?, started_at=?, finished_at=?, created_at=?, updated_at=? WHERE id=?
+==> Parameters: 2044332160753913858(Long), AI202604151629042BB5F2(String), 3D-ResUNet+Mamba-reserved-v1(String), SUCCESS(String), {"studyId":2044332160753913858,"filePath":"C:/Users/qianbimo/.codex/worktrees/001d/FinalDesign/storage/ct/1776241305093405/ST20260415162903EB73B1/20260415/8c67ec19890e4bf18fb5447184f2832e_1.3.6.1.4.1.14519.5.2.1.6279.6001.100225287222365663678666836860_45_211_77_0000.nii.gz","patientId":1776241305093405}(String), {"taskStatus":"SUCCESS","studyId":2044332160753913858,"segmentationPath":"E:/code/FinalDesign/storage/result/2044332160753913858/2044332160753913858_mask.nii.gz","summary":{"noduleCount":1,"overallRisk":"MEDIUM","diagnosisSuggestion":"建议进一步随访观察"},"nodules":[{"noduleNo":1,"centerX":53.0,"centerY":69.0,"centerZ":37.0,"width":11.0,"height":11.0,"depth":11.0,"volume":385.09,"diameterMm":19.8,"malignancyProb":0.695,"riskLevel":"MEDIUM","description":"Auto-generated fallback nodule candidate","maskPath":"E:/code/FinalDesign/storage/result/2044332160753913858/2044332160753913858_mask.nii.gz","bbox":{"x1":48.0,"y1":64.0,"z1":32.0,"x2":58.0,"y2":74.0,"z2":42.0},"annotations":[{"viewType":"AXIAL","overlayPath":"E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_axial.png","color":"#FF0000"},{"viewType":"CORONAL","overlayPath":"E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_coronal.png","color":"#00FF00"},{"viewType":"SAGITTAL","overlayPath":"E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_sagittal.png","color":"#00BFFF"}]}]}(String), 2026-04-15T16:29:04.360103200(LocalDateTime), 2026-04-15T16:29:04.926593600(LocalDateTime), 2026-04-15T16:29:04.335127400(LocalDateTime), 2026-04-15T16:29:04.335127400(LocalDateTime), 2044332163677343745(Long)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@8f25643]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2c0c6119] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@911637141 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: UPDATE ct_study SET study_no=?, patient_id=?, doctor_id=?, study_date=?, study_desc=?, device_info=?, status=?, created_at=?, updated_at=? WHERE id=?
+==> Parameters: ST20260415162903EB73B1(String), 1776241305093405(Long), 1776241305093513(Long), 2026-04-15(LocalDate), Regression study(String), QA Device(String), FINISHED(String), 2026-04-15T16:29:04(LocalDateTime), 2026-04-15T16:29:04(LocalDateTime), 2044332160753913858(Long)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2c0c6119]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@28b21110] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1076014376 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@28b21110]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2ff4a69a] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@402004197 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,task_no,model_version,task_status,request_json,response_json,started_at,finished_at,error_message,created_at,updated_at FROM ai_task WHERE id=?
+==> Parameters: 2044332163677343745(Long)
+<==    Columns: id, study_id, task_no, model_version, task_status, request_json, response_json, started_at, finished_at, error_message, created_at, updated_at
+<==        Row: 2044332163677343745, 2044332160753913858, AI202604151629042BB5F2, 3D-ResUNet+Mamba-reserved-v1, SUCCESS, <<BLOB>>, <<BLOB>>, 2026-04-15 16:29:04, 2026-04-15 16:29:05, null, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2ff4a69a]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@13c5636e] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@420464634 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@13c5636e]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1764a10] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1721855443 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1764a10]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@aa45c56] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1627828020 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@aa45c56]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@634fecbe] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1268865645 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@634fecbe]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@80e3c95] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@347609910 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@80e3c95]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@36f058e0] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@968602473 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,task_no,model_version,task_status,request_json,response_json,started_at,finished_at,error_message,created_at,updated_at FROM ai_task WHERE (study_id = ?) ORDER BY created_at DESC limit 1
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_id, task_no, model_version, task_status, request_json, response_json, started_at, finished_at, error_message, created_at, updated_at
+<==        Row: 2044332163677343745, 2044332160753913858, AI202604151629042BB5F2, 3D-ResUNet+Mamba-reserved-v1, SUCCESS, <<BLOB>>, <<BLOB>>, 2026-04-15 16:29:04, 2026-04-15 16:29:05, null, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@36f058e0]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@b66d911] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1160493085 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,ai_task_id,nodule_no,center_x,center_y,center_z,width,height,depth,volume,diameter_mm,malignancy_prob,risk_level,description,mask_path,bbox_json,created_at,updated_at FROM nodule_result WHERE (ai_task_id = ?) ORDER BY nodule_no ASC
+==> Parameters: 2044332163677343745(Long)
+<==    Columns: id, study_id, ai_task_id, nodule_no, center_x, center_y, center_z, width, height, depth, volume, diameter_mm, malignancy_prob, risk_level, description, mask_path, bbox_json, created_at, updated_at
+<==        Row: 2044332164725919746, 2044332160753913858, 2044332163677343745, 1, 53.0, 69.0, 37.0, 11.0, 11.0, 11.0, 385.09, 19.8, 0.695, MEDIUM, Auto-generated fallback nodule candidate, E:/code/FinalDesign/storage/result/2044332160753913858/2044332160753913858_mask.nii.gz, <<BLOB>>, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@b66d911]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@9422c4e] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1310428830 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,ai_task_id,nodule_result_id,view_type,overlay_path,contour_json,color,visible_flag,created_at,updated_at FROM annotation_result WHERE (ai_task_id = ?)
+==> Parameters: 2044332163677343745(Long)
+<==    Columns: id, study_id, ai_task_id, nodule_result_id, view_type, overlay_path, contour_json, color, visible_flag, created_at, updated_at
+<==        Row: 2044332165044686849, 2044332160753913858, 2044332163677343745, 2044332164725919746, AXIAL, E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_axial.png, <<BLOB>>, #FF0000, 1, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==        Row: 2044332165371842562, 2044332160753913858, 2044332163677343745, 2044332164725919746, CORONAL, E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_coronal.png, <<BLOB>>, #00FF00, 1, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==        Row: 2044332165568974849, 2044332160753913858, 2044332163677343745, 2044332164725919746, SAGITTAL, E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_sagittal.png, <<BLOB>>, #00BFFF, 1, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@9422c4e]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6937dcb0] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1843269840 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,patient_id,doctor_id,ai_task_id,report_title,report_content,report_summary,status,version_no,generated_by,audit_time,created_at,updated_at FROM report_record WHERE (study_id = ?) ORDER BY version_no DESC limit 1
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_id, patient_id, doctor_id, ai_task_id, report_title, report_content, report_summary, status, version_no, generated_by, audit_time, created_at, updated_at
+<==        Row: 2044332165896130562, 2044332160753913858, 1776241305093405, 1776241305093513, 2044332163677343745, 胸部CT智能分析报告, <<BLOB>>, 发现结节1个，整体风险MEDIUM, DRAFT, 1, SYSTEM, null, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6937dcb0]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6db3cf5c] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1988523873 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6db3cf5c]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1efa73f1] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1841333853 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1efa73f1]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7f8abf14] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@849493743 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7f8abf14]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3c0e22fc] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@713378817 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,file_name,file_type,file_path,file_size,slice_count,upload_user_id,upload_time,check_status,remark,created_at,updated_at FROM ct_file WHERE (study_id = ?) ORDER BY created_at DESC
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_id, file_name, file_type, file_path, file_size, slice_count, upload_user_id, upload_time, check_status, remark, created_at, updated_at
+<==        Row: 2044332162964312065, 2044332160753913858, 1.3.6.1.4.1.14519.5.2.1.6279.6001.100225287222365663678666836860_45_211_77_0000.nii.gz, NII_GZ, C:/Users/qianbimo/.codex/worktrees/001d/FinalDesign/storage/ct/1776241305093405/ST20260415162903EB73B1/20260415/8c67ec19890e4bf18fb5447184f2832e_1.3.6.1.4.1.14519.5.2.1.6279.6001.100225287222365663678666836860_45_211_77_0000.nii.gz, 1247209, null, 1776241305014819, 2026-04-15 16:29:04, VALID, null, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3c0e22fc]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@ed8af87] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1103928705 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,task_no,model_version,task_status,request_json,response_json,started_at,finished_at,error_message,created_at,updated_at FROM ai_task WHERE (study_id = ?) ORDER BY created_at DESC limit 1
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_id, task_no, model_version, task_status, request_json, response_json, started_at, finished_at, error_message, created_at, updated_at
+<==        Row: 2044332163677343745, 2044332160753913858, AI202604151629042BB5F2, 3D-ResUNet+Mamba-reserved-v1, SUCCESS, <<BLOB>>, <<BLOB>>, 2026-04-15 16:29:04, 2026-04-15 16:29:05, null, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@ed8af87]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@44038640] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1539482160 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,ai_task_id,nodule_no,center_x,center_y,center_z,width,height,depth,volume,diameter_mm,malignancy_prob,risk_level,description,mask_path,bbox_json,created_at,updated_at FROM nodule_result WHERE (ai_task_id = ?) ORDER BY nodule_no ASC
+==> Parameters: 2044332163677343745(Long)
+<==    Columns: id, study_id, ai_task_id, nodule_no, center_x, center_y, center_z, width, height, depth, volume, diameter_mm, malignancy_prob, risk_level, description, mask_path, bbox_json, created_at, updated_at
+<==        Row: 2044332164725919746, 2044332160753913858, 2044332163677343745, 1, 53.0, 69.0, 37.0, 11.0, 11.0, 11.0, 385.09, 19.8, 0.695, MEDIUM, Auto-generated fallback nodule candidate, E:/code/FinalDesign/storage/result/2044332160753913858/2044332160753913858_mask.nii.gz, <<BLOB>>, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@44038640]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@31c49798] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2144952498 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,ai_task_id,nodule_result_id,view_type,overlay_path,contour_json,color,visible_flag,created_at,updated_at FROM annotation_result WHERE (ai_task_id = ?)
+==> Parameters: 2044332163677343745(Long)
+<==    Columns: id, study_id, ai_task_id, nodule_result_id, view_type, overlay_path, contour_json, color, visible_flag, created_at, updated_at
+<==        Row: 2044332165044686849, 2044332160753913858, 2044332163677343745, 2044332164725919746, AXIAL, E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_axial.png, <<BLOB>>, #FF0000, 1, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==        Row: 2044332165371842562, 2044332160753913858, 2044332163677343745, 2044332164725919746, CORONAL, E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_coronal.png, <<BLOB>>, #00FF00, 1, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==        Row: 2044332165568974849, 2044332160753913858, 2044332163677343745, 2044332164725919746, SAGITTAL, E:/code/FinalDesign/storage/overlay/2044332160753913858/nodule1_sagittal.png, <<BLOB>>, #00BFFF, 1, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@31c49798]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@619d1e17] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@698303594 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@619d1e17]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@83c2399] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1540590304 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@83c2399]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@12f54ffe] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2067568338 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@12f54ffe]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@129694b6] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1377253460 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,patient_id,doctor_id,ai_task_id,report_title,report_content,report_summary,status,version_no,generated_by,audit_time,created_at,updated_at FROM report_record WHERE (study_id = ?) ORDER BY version_no DESC limit 1
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_id, patient_id, doctor_id, ai_task_id, report_title, report_content, report_summary, status, version_no, generated_by, audit_time, created_at, updated_at
+<==        Row: 2044332165896130562, 2044332160753913858, 1776241305093405, 1776241305093513, 2044332163677343745, 胸部CT智能分析报告, <<BLOB>>, 发现结节1个，整体风险MEDIUM, DRAFT, 1, SYSTEM, null, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@129694b6]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2b81d34a] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1300610381 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2b81d34a]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7c56d2dd] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1508394398 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,patient_id,doctor_id,ai_task_id,report_title,report_content,report_summary,status,version_no,generated_by,audit_time,created_at,updated_at FROM report_record WHERE id=?
+==> Parameters: 2044332165896130562(Long)
+<==    Columns: id, study_id, patient_id, doctor_id, ai_task_id, report_title, report_content, report_summary, status, version_no, generated_by, audit_time, created_at, updated_at
+<==        Row: 2044332165896130562, 2044332160753913858, 1776241305093405, 1776241305093513, 2044332163677343745, 胸部CT智能分析报告, <<BLOB>>, 发现结节1个，整体风险MEDIUM, DRAFT, 1, SYSTEM, null, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7c56d2dd]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@102e48e7] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1512349701 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@102e48e7]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@473bb842] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@632338738 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@473bb842]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@455c38b4] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1606377973 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,patient_id,doctor_id,ai_task_id,report_title,report_content,report_summary,status,version_no,generated_by,audit_time,created_at,updated_at FROM report_record WHERE id=?
+==> Parameters: 2044332165896130562(Long)
+<==    Columns: id, study_id, patient_id, doctor_id, ai_task_id, report_title, report_content, report_summary, status, version_no, generated_by, audit_time, created_at, updated_at
+<==        Row: 2044332165896130562, 2044332160753913858, 1776241305093405, 1776241305093513, 2044332163677343745, 胸部CT智能分析报告, <<BLOB>>, 发现结节1个，整体风险MEDIUM, DRAFT, 1, SYSTEM, null, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@455c38b4]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@593a0129] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2100196146 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@593a0129]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7669e384] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2144569129 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: UPDATE report_record SET study_id=?, patient_id=?, doctor_id=?, ai_task_id=?, report_title=?, report_content=?, report_summary=?, status=?, version_no=?, generated_by=?, created_at=?, updated_at=? WHERE id=?
+==> Parameters: 2044332160753913858(Long), 1776241305093405(Long), 1776241305093513(Long), 2044332163677343745(Long), QA Updated Report(String), Updated content by regression test(String), Updated by regression(String), DRAFT(String), 1(Integer), DOCTOR(String), 2026-04-15T16:29:05(LocalDateTime), 2026-04-15T16:29:05(LocalDateTime), 2044332165896130562(Long)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7669e384]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5ebe9281] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@811432370 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5ebe9281]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@51e34a89] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2070147246 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,patient_id,doctor_id,ai_task_id,report_title,report_content,report_summary,status,version_no,generated_by,audit_time,created_at,updated_at FROM report_record WHERE id=?
+==> Parameters: 2044332165896130562(Long)
+<==    Columns: id, study_id, patient_id, doctor_id, ai_task_id, report_title, report_content, report_summary, status, version_no, generated_by, audit_time, created_at, updated_at
+<==        Row: 2044332165896130562, 2044332160753913858, 1776241305093405, 1776241305093513, 2044332163677343745, QA Updated Report, <<BLOB>>, Updated by regression, DRAFT, 1, DOCTOR, null, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@51e34a89]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@31a46eed] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2052644178 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@31a46eed]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7aa2653b] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1751363460 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7aa2653b]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1fddb021] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1992263004 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,patient_id,doctor_id,ai_task_id,report_title,report_content,report_summary,status,version_no,generated_by,audit_time,created_at,updated_at FROM report_record WHERE id=?
+==> Parameters: 2044332165896130562(Long)
+<==    Columns: id, study_id, patient_id, doctor_id, ai_task_id, report_title, report_content, report_summary, status, version_no, generated_by, audit_time, created_at, updated_at
+<==        Row: 2044332165896130562, 2044332160753913858, 1776241305093405, 1776241305093513, 2044332163677343745, QA Updated Report, <<BLOB>>, Updated by regression, DRAFT, 1, DOCTOR, null, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1fddb021]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4fc41cbc] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1163654525 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4fc41cbc]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@405cbb5] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1808471669 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: UPDATE report_record SET study_id=?, patient_id=?, doctor_id=?, ai_task_id=?, report_title=?, report_content=?, report_summary=?, status=?, version_no=?, generated_by=?, audit_time=?, created_at=?, updated_at=? WHERE id=?
+==> Parameters: 2044332160753913858(Long), 1776241305093405(Long), 1776241305093513(Long), 2044332163677343745(Long), QA Updated Report(String), Updated content by regression test(String), Updated by regression(String), REVIEWED(String), 1(Integer), DOCTOR(String), 2026-04-15T16:29:05.185068700(LocalDateTime), 2026-04-15T16:29:05(LocalDateTime), 2026-04-15T16:29:05(LocalDateTime), 2044332165896130562(Long)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@405cbb5]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@d85b495] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@354560865 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@d85b495]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@883042] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@545856986 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,patient_id,doctor_id,ai_task_id,report_title,report_content,report_summary,status,version_no,generated_by,audit_time,created_at,updated_at FROM report_record WHERE id=?
+==> Parameters: 2044332165896130562(Long)
+<==    Columns: id, study_id, patient_id, doctor_id, ai_task_id, report_title, report_content, report_summary, status, version_no, generated_by, audit_time, created_at, updated_at
+<==        Row: 2044332165896130562, 2044332160753913858, 1776241305093405, 1776241305093513, 2044332163677343745, QA Updated Report, <<BLOB>>, Updated by regression, REVIEWED, 1, DOCTOR, 2026-04-15 16:29:05, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@883042]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2cfd0574] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1148365564 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2cfd0574]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1ee3c8a1] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1525786796 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1ee3c8a1]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2f089cea] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@728919308 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2f089cea]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1b03cce0] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1887956134 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1b03cce0]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@13695f67] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@51924684 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT(*) AS total FROM ct_study WHERE (patient_id = ?)
+==> Parameters: 1776241305093405(Long)
+<==    Columns: total
+<==        Row: 3
+<==      Total: 1
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE (patient_id = ?) ORDER BY created_at DESC LIMIT ?
+==> Parameters: 1776241305093405(Long), 20(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==        Row: 2044331152095088642, ST202604151625032EDB9D, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:25:03, 2026-04-15 16:25:03
+<==        Row: 2044330763882893313, ST20260415162330710614, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:23:31, 2026-04-15 16:23:31
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@13695f67]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@55e7cd4f] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1625931314 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@55e7cd4f]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@778dd4fe] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1139132845 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@778dd4fe]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3a32c27f] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@595712995 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3a32c27f]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@528c2628] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@491225545 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@528c2628]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7d89b5b3] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1309110604 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7d89b5b3]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@71a0c6a5] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1093980431 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@71a0c6a5]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@34ce00f8] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1652528368 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,task_no,model_version,task_status,request_json,response_json,started_at,finished_at,error_message,created_at,updated_at FROM ai_task WHERE (study_id = ?) ORDER BY created_at DESC limit 1
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_id, task_no, model_version, task_status, request_json, response_json, started_at, finished_at, error_message, created_at, updated_at
+<==        Row: 2044332163677343745, 2044332160753913858, AI202604151629042BB5F2, 3D-ResUNet+Mamba-reserved-v1, SUCCESS, <<BLOB>>, <<BLOB>>, 2026-04-15 16:29:04, 2026-04-15 16:29:05, null, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@34ce00f8]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7578cd49] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1621138255 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7578cd49]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4fc5a033] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@735785063 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4fc5a033]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@37eb4119] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1161893771 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@37eb4119]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@683ab2a4] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2144682281 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_id,patient_id,doctor_id,ai_task_id,report_title,report_content,report_summary,status,version_no,generated_by,audit_time,created_at,updated_at FROM report_record WHERE (study_id = ?) ORDER BY version_no DESC limit 1
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_id, patient_id, doctor_id, ai_task_id, report_title, report_content, report_summary, status, version_no, generated_by, audit_time, created_at, updated_at
+<==        Row: 2044332165896130562, 2044332160753913858, 1776241305093405, 1776241305093513, 2044332163677343745, QA Updated Report, <<BLOB>>, Updated by regression, REVIEWED, 1, DOCTOR, 2026-04-15 16:29:05, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@683ab2a4]
+Creating a new SqlSession
+Registering transaction synchronization for SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@61bbbdc5]
+JDBC Connection [HikariProxyConnection@618086622 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_other_0415162905(String)
+<==      Total: 0
+Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@61bbbdc5]
+Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@61bbbdc5] from current transaction
+==>  Preparing: INSERT INTO sys_user ( id, username, password, role, real_name, phone, status, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 2044332167859064833(Long), qa_other_0415162905(String), $2a$10$VOkCvVL2Wz6n5CEDg80v9ug.apB4nxEdC39TvsnRIz/JzNAiY2h9e(String), PATIENT(String), Other Patient(String), 13800000000(String), 1(Integer), 2026-04-15T16:29:05.334881900(LocalDateTime), 2026-04-15T16:29:05.334881900(LocalDateTime)
+<==    Updates: 1
+Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@61bbbdc5]
+Fetched SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@61bbbdc5] from current transaction
+==>  Preparing: INSERT INTO patient_profile ( id, user_id, medical_record_no, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ? )
+==> Parameters: 2044332167859064834(Long), 2044332167859064833(Long), MR20260415162905FF2EEC(String), 2026-04-15T16:29:05.335417800(LocalDateTime), 2026-04-15T16:29:05.335417800(LocalDateTime)
+<==    Updates: 1
+Releasing transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@61bbbdc5]
+Transaction synchronization committing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@61bbbdc5]
+Transaction synchronization deregistering SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@61bbbdc5]
+Transaction synchronization closing SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@61bbbdc5]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@21655107] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1457320747 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_other_0415162905(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 2044332167859064833, qa_other_0415162905, $2a$10$VOkCvVL2Wz6n5CEDg80v9ug.apB4nxEdC39TvsnRIz/JzNAiY2h9e, PATIENT, Other Patient, 13800000000, null, 1, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@21655107]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@f36e669] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@80765921 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE id=?
+==> Parameters: 2044332167859064833(Long)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 2044332167859064833, qa_other_0415162905, $2a$10$VOkCvVL2Wz6n5CEDg80v9ug.apB4nxEdC39TvsnRIz/JzNAiY2h9e, PATIENT, Other Patient, 13800000000, null, 1, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@f36e669]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7b138923] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1569096147 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_other_0415162905(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 2044332167859064833, qa_other_0415162905, $2a$10$VOkCvVL2Wz6n5CEDg80v9ug.apB4nxEdC39TvsnRIz/JzNAiY2h9e, PATIENT, Other Patient, 13800000000, null, 1, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7b138923]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@646c701] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1635458171 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE id=?
+==> Parameters: 2044332160753913858(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@646c701]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@786fba9d] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1218516062 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 2044332167859064833(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 2044332167859064834, 2044332167859064833, null, null, null, null, MR20260415162905FF2EEC, null, <<BLOB>>, <<BLOB>>, <<BLOB>>, null, 2026-04-15 16:29:05, 2026-04-15 16:29:05
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@786fba9d]
+Creating a new SqlSession
+Creating a new SqlSession
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7a714dc4] was not registered for synchronization because synchronization is not active
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2fb21f15] was not registered for synchronization because synchronization is not active
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2492e7fc] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1236960321 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+JDBC Connection [HikariProxyConnection@798260354 wrapping com.mysql.cj.jdbc.ConnectionImpl@78f71514] will not be managed by Spring
+JDBC Connection [HikariProxyConnection@1614953418 wrapping com.mysql.cj.jdbc.ConnectionImpl@228b6af2] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+==> Parameters: qa_doctor(String)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7a714dc4]
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2fb21f15]
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2492e7fc]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@62c0e7a6] was not registered for synchronization because synchronization is not active
+Creating a new SqlSession
+JDBC Connection [HikariProxyConnection@1857873680 wrapping com.mysql.cj.jdbc.ConnectionImpl@78f71514] will not be managed by Spring
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7cfe0088] was not registered for synchronization because synchronization is not active
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE id=?
+JDBC Connection [HikariProxyConnection@202472894 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==> Parameters: 1776241305052636(Long)
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE id=?
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+Creating a new SqlSession
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@776b544d] was not registered for synchronization because synchronization is not active
+<==      Total: 1
+<==      Total: 1
+JDBC Connection [HikariProxyConnection@530484217 wrapping com.mysql.cj.jdbc.ConnectionImpl@228b6af2] will not be managed by Spring
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@62c0e7a6]
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7cfe0088]
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE id=?
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@776b544d]
+Creating a new SqlSession
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@679bb2fc] was not registered for synchronization because synchronization is not active
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6874c0f] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1268163914 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+JDBC Connection [HikariProxyConnection@1116362215 wrapping com.mysql.cj.jdbc.ConnectionImpl@78f71514] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+Creating a new SqlSession
+==> Parameters: qa_doctor(String)
+==> Parameters: qa_doctor(String)
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5ccb9cad] was not registered for synchronization because synchronization is not active
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+JDBC Connection [HikariProxyConnection@155341332 wrapping com.mysql.cj.jdbc.ConnectionImpl@228b6af2] will not be managed by Spring
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+<==      Total: 1
+<==      Total: 1
+==> Parameters: qa_patient(String)
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6874c0f]
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@679bb2fc]
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+Creating a new SqlSession
+Creating a new SqlSession
+<==      Total: 1
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@23a4bd95] was not registered for synchronization because synchronization is not active
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@e7de375] was not registered for synchronization because synchronization is not active
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5ccb9cad]
+JDBC Connection [HikariProxyConnection@536832730 wrapping com.mysql.cj.jdbc.ConnectionImpl@78f71514] will not be managed by Spring
+JDBC Connection [HikariProxyConnection@885767188 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+Creating a new SqlSession
+==> Parameters: 1776241305052636(Long)
+==> Parameters: 1776241305052636(Long)
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3535d11e] was not registered for synchronization because synchronization is not active
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+JDBC Connection [HikariProxyConnection@899354081 wrapping com.mysql.cj.jdbc.ConnectionImpl@228b6af2] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+==> Parameters: 1776241305014819(Long)
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@23a4bd95]
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@e7de375]
+<==      Total: 1
+Creating a new SqlSession
+Creating a new SqlSession
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3535d11e]
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@37346705] was not registered for synchronization because synchronization is not active
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5ab768a] was not registered for synchronization because synchronization is not active
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5dd125a3] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@233730188 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+JDBC Connection [HikariProxyConnection@1438066988 wrapping com.mysql.cj.jdbc.ConnectionImpl@78f71514] will not be managed by Spring
+JDBC Connection [HikariProxyConnection@728652572 wrapping com.mysql.cj.jdbc.ConnectionImpl@228b6af2] will not be managed by Spring
+==>  Preparing: SELECT COUNT(*) AS total FROM ct_study WHERE (doctor_id = ?)
+==>  Preparing: SELECT COUNT(*) AS total FROM registration_record WHERE (doctor_id = ?)
+==>  Preparing: SELECT COUNT(*) AS total FROM ct_study WHERE (patient_id = ?)
+==> Parameters: 1776241305093513(Long)
+==> Parameters: 1776241305093513(Long)
+==> Parameters: 1776241305093405(Long)
+<==    Columns: total
+<==        Row: 3
+<==    Columns: total
+<==        Row: 1
+<==    Columns: total
+<==        Row: 3
+<==      Total: 1
+<==      Total: 1
+<==      Total: 1
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE (doctor_id = ?) ORDER BY created_at DESC LIMIT ?
+==>  Preparing: SELECT id,patient_id,doctor_id,appointment_time,status,description,created_at,updated_at FROM registration_record WHERE (doctor_id = ?) ORDER BY created_at DESC LIMIT ?
+==> Parameters: 1776241305093513(Long), 200(Long)
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE (patient_id = ?) ORDER BY created_at DESC LIMIT ?
+==> Parameters: 1776241305093513(Long), 200(Long)
+==> Parameters: 1776241305093405(Long), 200(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==    Columns: id, patient_id, doctor_id, appointment_time, status, description, created_at, updated_at
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332159709532161, 1776241305093405, 1776241305093513, 2026-04-20 10:30:00, CONFIRMED, Regression appointment request, 2026-04-15 16:29:03, 2026-04-15 16:29:03
+<==        Row: 2044331152095088642, ST202604151625032EDB9D, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:25:03, 2026-04-15 16:25:03
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==      Total: 1
+<==        Row: 2044330763882893313, ST20260415162330710614, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:23:31, 2026-04-15 16:23:31
+<==        Row: 2044331152095088642, ST202604151625032EDB9D, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:25:03, 2026-04-15 16:25:03
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@37346705]
+<==      Total: 3
+<==        Row: 2044330763882893313, ST20260415162330710614, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:23:31, 2026-04-15 16:23:31
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5ab768a]
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5dd125a3]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@29b89b13] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@236280042 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@29b89b13]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@52c4be59] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1061803793 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE id=?
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@52c4be59]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b6eac01] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1047960861 wrapping com.mysql.cj.jdbc.ConnectionImpl@78f71514] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b6eac01]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@16dff1d] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@801985941 wrapping com.mysql.cj.jdbc.ConnectionImpl@78f71514] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE id=?
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@16dff1d]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@160999b6] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@444539327 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@160999b6]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2fe5f372] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1970998033 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2fe5f372]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@188ff1a0] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@896210880 wrapping com.mysql.cj.jdbc.ConnectionImpl@228b6af2] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@188ff1a0]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6378695b] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@77432421 wrapping com.mysql.cj.jdbc.ConnectionImpl@228b6af2] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6378695b]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@13dd697e] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1768088500 wrapping com.mysql.cj.jdbc.ConnectionImpl@78f71514] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@13dd697e]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@44c34caf] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1017994192 wrapping com.mysql.cj.jdbc.ConnectionImpl@78f71514] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@44c34caf]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@155066ee] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@487409585 wrapping com.mysql.cj.jdbc.ConnectionImpl@78f71514] will not be managed by Spring
+==>  Preparing: SELECT COUNT(*) AS total FROM registration_record WHERE (doctor_id = ?)
+==> Parameters: 1776241305093513(Long)
+<==    Columns: total
+<==        Row: 1
+<==      Total: 1
+==>  Preparing: SELECT id,patient_id,doctor_id,appointment_time,status,description,created_at,updated_at FROM registration_record WHERE (doctor_id = ?) ORDER BY created_at DESC LIMIT ?
+==> Parameters: 1776241305093513(Long), 200(Long)
+<==    Columns: id, patient_id, doctor_id, appointment_time, status, description, created_at, updated_at
+<==        Row: 2044332159709532161, 1776241305093405, 1776241305093513, 2026-04-20 10:30:00, CONFIRMED, Regression appointment request, 2026-04-15 16:29:03, 2026-04-15 16:29:03
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@155066ee]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@50480746] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@777807827 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_patient(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305014819, qa_patient, $2b$10$3/UfH0qfCI7M7Rtd471/WucyTpxfMIOPRLx/O1T/xvaXD92XgRS76, PATIENT, QA Patient, 13800000000, qa_patient@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@50480746]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@696d8397] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@608310166 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,gender,age,birthday,id_card,medical_record_no,address,allergy_history,past_history,family_history,remark,created_at,updated_at FROM patient_profile WHERE (user_id = ?)
+==> Parameters: 1776241305014819(Long)
+<==    Columns: id, user_id, gender, age, birthday, id_card, medical_record_no, address, allergy_history, past_history, family_history, remark, created_at, updated_at
+<==        Row: 1776241305093405, 1776241305014819, MALE, 36, null, null, MRN1776241305014819, Shanghai Pudong, <<BLOB>>, <<BLOB>>, <<BLOB>>, Regression test profile update, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@696d8397]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5dd947c9] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1816621310 wrapping com.mysql.cj.jdbc.ConnectionImpl@1226ab9f] will not be managed by Spring
+==>  Preparing: SELECT COUNT(*) AS total FROM ct_study WHERE (patient_id = ?)
+==> Parameters: 1776241305093405(Long)
+<==    Columns: total
+<==        Row: 3
+<==      Total: 1
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE (patient_id = ?) ORDER BY created_at DESC LIMIT ?
+==> Parameters: 1776241305093405(Long), 200(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==        Row: 2044331152095088642, ST202604151625032EDB9D, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:25:03, 2026-04-15 16:25:03
+<==        Row: 2044330763882893313, ST20260415162330710614, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:23:31, 2026-04-15 16:23:31
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5dd947c9]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3bebe5e1] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1652883259 wrapping com.mysql.cj.jdbc.ConnectionImpl@228b6af2] will not be managed by Spring
+==>  Preparing: SELECT id,username,password,role,real_name,phone,email,status,created_at,updated_at FROM sys_user WHERE (username = ?)
+==> Parameters: qa_doctor(String)
+<==    Columns: id, username, password, role, real_name, phone, email, status, created_at, updated_at
+<==        Row: 1776241305052636, qa_doctor, $2b$10$nGLxgULEREgbdR5ZQJv2EuCJeD7D8.HYa2ZUckYSoUto9dIXvn2H6, DOCTOR, QA Doctor, 13800000000, qa_doctor@example.com, 1, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@3bebe5e1]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@70263888] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@335941504 wrapping com.mysql.cj.jdbc.ConnectionImpl@228b6af2] will not be managed by Spring
+==>  Preparing: SELECT id,user_id,department,title,specialty,license_no,introduction,created_at,updated_at FROM doctor_profile WHERE (user_id = ?)
+==> Parameters: 1776241305052636(Long)
+<==    Columns: id, user_id, department, title, specialty, license_no, introduction, created_at, updated_at
+<==        Row: 1776241305093513, 1776241305052636, Respiratory, Chief, Lung nodule, LIC1776241305052636, <<BLOB>>, 2026-04-15 16:21:45, 2026-04-15 16:21:45
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@70263888]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@72ab209] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1649886546 wrapping com.mysql.cj.jdbc.ConnectionImpl@228b6af2] will not be managed by Spring
+==>  Preparing: SELECT COUNT(*) AS total FROM ct_study WHERE (doctor_id = ?)
+==> Parameters: 1776241305093513(Long)
+<==    Columns: total
+<==        Row: 3
+<==      Total: 1
+==>  Preparing: SELECT id,study_no,patient_id,doctor_id,study_date,study_desc,device_info,status,created_at,updated_at FROM ct_study WHERE (doctor_id = ?) ORDER BY created_at DESC LIMIT ?
+==> Parameters: 1776241305093513(Long), 200(Long)
+<==    Columns: id, study_no, patient_id, doctor_id, study_date, study_desc, device_info, status, created_at, updated_at
+<==        Row: 2044332160753913858, ST20260415162903EB73B1, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, FINISHED, 2026-04-15 16:29:04, 2026-04-15 16:29:04
+<==        Row: 2044331152095088642, ST202604151625032EDB9D, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:25:03, 2026-04-15 16:25:03
+<==        Row: 2044330763882893313, ST20260415162330710614, 1776241305093405, 1776241305093513, 2026-04-15, Regression study, QA Device, UPLOADED, 2026-04-15 16:23:31, 2026-04-15 16:23:31
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@72ab209]
