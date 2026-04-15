@@ -10,6 +10,8 @@ import com.finaldesign.lungnodule.mapper.RegistrationRecordMapper;
 import com.finaldesign.lungnodule.service.RegistrationService;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
@@ -43,10 +45,13 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public void updateStatus(Long id, String status) {
+    public void updateStatus(Long id, String status, Long operatorDoctorId) {
         RegistrationRecord record = registrationRecordMapper.selectById(id);
         if (record == null) {
-            throw new BusinessException(404, "挂号记录不存在");
+            throw new BusinessException(404, "Registration record not found");
+        }
+        if (operatorDoctorId != null && !Objects.equals(record.getDoctorId(), operatorDoctorId)) {
+            throw new BusinessException(403, "Access denied");
         }
         record.setStatus(status);
         registrationRecordMapper.updateById(record);

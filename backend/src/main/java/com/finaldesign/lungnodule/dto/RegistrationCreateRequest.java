@@ -7,13 +7,12 @@ import java.time.LocalDateTime;
 
 @Data
 public class RegistrationCreateRequest {
-    @NotNull(message = "患者ID不能为空")
     private Long patientId;
 
-    @NotNull(message = "医生ID不能为空")
+    @NotNull(message = "doctorId is required")
     private Long doctorId;
 
-    @NotNull(message = "预约时间不能为空")
+    @NotNull(message = "appointmentTime is required")
     private LocalDateTime appointmentTime;
 
     private String description;

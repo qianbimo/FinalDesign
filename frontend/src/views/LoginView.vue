@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -16,8 +16,8 @@ const form = reactive({
 })
 
 const rules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+  username: [{ required: true, message: 'Please input username', trigger: 'blur' }],
+  password: [{ required: true, message: 'Please input password', trigger: 'blur' }]
 }
 
 async function onSubmit() {
@@ -26,7 +26,7 @@ async function onSubmit() {
   try {
     const data = await loginApi({ ...form })
     authStore.setSession(data)
-    ElMessage.success('登录成功')
+    ElMessage.success('Login success')
     router.push('/app/workspace')
   } finally {
     loading.value = false
@@ -37,22 +37,22 @@ async function onSubmit() {
 <template>
   <div class="auth-page">
     <el-card class="auth-card" shadow="hover">
-      <h2 class="title">肺结节智能分析平台</h2>
-      <p class="subtitle">登录后继续使用系统</p>
+      <h2 class="title">Lung Nodule Intelligence Platform</h2>
+      <p class="subtitle">Login to continue</p>
 
       <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名" />
+        <el-form-item label="Username" prop="username">
+          <el-input v-model="form.username" placeholder="Input username" />
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" type="password" show-password placeholder="请输入密码" />
+        <el-form-item label="Password" prop="password">
+          <el-input v-model="form.password" type="password" show-password placeholder="Input password" />
         </el-form-item>
-        <el-button type="primary" :loading="loading" class="w-full" @click="onSubmit">登录</el-button>
+        <el-button type="primary" :loading="loading" class="w-full" @click="onSubmit">Login</el-button>
       </el-form>
 
       <div class="footer-link">
-        <span>还没有账号？</span>
-        <el-link type="primary" @click="router.push('/register')">立即注册</el-link>
+        <span>No account yet?</span>
+        <el-link type="primary" @click="router.push('/register')">Register now</el-link>
       </div>
     </el-card>
   </div>

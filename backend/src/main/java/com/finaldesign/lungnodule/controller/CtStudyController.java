@@ -9,6 +9,7 @@ import com.finaldesign.lungnodule.entity.DoctorProfile;
 import com.finaldesign.lungnodule.entity.PatientProfile;
 import com.finaldesign.lungnodule.exception.BusinessException;
 import com.finaldesign.lungnodule.security.CurrentUserUtil;
+import com.finaldesign.lungnodule.security.StudyAccessGuard;
 import com.finaldesign.lungnodule.service.CtStudyService;
 import com.finaldesign.lungnodule.service.DoctorService;
 import com.finaldesign.lungnodule.service.PatientService;
@@ -27,13 +28,16 @@ public class CtStudyController {
     private final CtStudyService ctStudyService;
     private final PatientService patientService;
     private final DoctorService doctorService;
+    private final StudyAccessGuard studyAccessGuard;
 
     public CtStudyController(CtStudyService ctStudyService,
                              PatientService patientService,
-                             DoctorService doctorService) {
+                             DoctorService doctorService,
+                             StudyAccessGuard studyAccessGuard) {
         this.ctStudyService = ctStudyService;
         this.patientService = patientService;
         this.doctorService = doctorService;
+        this.studyAccessGuard = studyAccessGuard;
     }
 
     @PostMapping("/create")
@@ -60,6 +64,15 @@ public class CtStudyController {
                                             @RequestParam(defaultValue = "10") Long size,
                                             @RequestParam(required = false) Long patientId,
                                             @RequestParam(required = false) Long doctorId) {
+        String role = CurrentUserUtil.role();
+        if ("PATIENT".equals(role)) {
+            patientId = studyAccessGuard.currentPatientProfileId();
+            doctorId = null;
+        } else if ("DOCTOR".equals(role)) {
+            doctorId = studyAccessGuard.currentDoctorProfileId();
+            patientId = null;
+        }
+
         IPage<CtStudy> page = ctStudyService.pageList(current, size, patientId, doctorId);
         return Result.success(new PageResult<>(page.getTotal(), page.getCurrent(), page.getSize(), page.getRecords()));
     }
@@ -67,6 +80,8 @@ public class CtStudyController {
     @GetMapping("/{id}")
     @Operation(summary = "查询检查详情")
     public Result<CtStudy> detail(@PathVariable Long id) {
-        return Result.success(ctStudyService.detail(id));
+        CtStudy study = ctStudyService.detail(id);
+        studyAccessGuard.assertCurrentUserCanAccessStudy(study);
+        return Result.success(study);
     }
 }

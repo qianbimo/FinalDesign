@@ -8,7 +8,7 @@ public interface ReportService {
 
     ReportRecord getById(Long reportId);
 
-    void updateReport(Long reportId, ReportUpdateRequest request, Long doctorUserId);
+    void updateReport(Long reportId, ReportUpdateRequest request, Long operatorUserId, String operatorRole);
 
-    void auditReport(Long reportId, Long doctorUserId);
+    void auditReport(Long reportId, Long operatorUserId, String operatorRole);
 }

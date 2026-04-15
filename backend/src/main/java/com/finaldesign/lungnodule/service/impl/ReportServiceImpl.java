@@ -35,19 +35,14 @@ public class ReportServiceImpl implements ReportService {
     public ReportRecord getById(Long reportId) {
         ReportRecord report = reportRecordMapper.selectById(reportId);
         if (report == null) {
-            throw new BusinessException(404, "报告不存在");
+            throw new BusinessException(404, "Report not found");
         }
         return report;
     }
 
     @Override
-    public void updateReport(Long reportId, ReportUpdateRequest request, Long doctorUserId) {
+    public void updateReport(Long reportId, ReportUpdateRequest request, Long operatorUserId, String operatorRole) {
         ReportRecord report = getById(reportId);
-        DoctorProfile doctorProfile = doctorProfileMapper.selectOne(new LambdaQueryWrapper<DoctorProfile>()
-                .eq(DoctorProfile::getUserId, doctorUserId));
-        if (doctorProfile == null) {
-            throw new BusinessException(403, "仅医生可修改报告");
-        }
 
         if (request.getReportTitle() != null) {
             report.setReportTitle(request.getReportTitle());
@@ -58,21 +53,34 @@ public class ReportServiceImpl implements ReportService {
         if (request.getReportSummary() != null) {
             report.setReportSummary(request.getReportSummary());
         }
-        report.setGeneratedBy("DOCTOR");
-        report.setDoctorId(doctorProfile.getId());
+
+        if ("DOCTOR".equals(operatorRole)) {
+            DoctorProfile doctorProfile = doctorProfileMapper.selectOne(new LambdaQueryWrapper<DoctorProfile>()
+                    .eq(DoctorProfile::getUserId, operatorUserId));
+            if (doctorProfile == null) {
+                throw new BusinessException(403, "Only doctors can update report");
+            }
+            report.setGeneratedBy("DOCTOR");
+            report.setDoctorId(doctorProfile.getId());
+        }
+
         reportRecordMapper.updateById(report);
     }
 
     @Override
-    public void auditReport(Long reportId, Long doctorUserId) {
+    public void auditReport(Long reportId, Long operatorUserId, String operatorRole) {
         ReportRecord report = getById(reportId);
-        DoctorProfile doctorProfile = doctorProfileMapper.selectOne(new LambdaQueryWrapper<DoctorProfile>()
-                .eq(DoctorProfile::getUserId, doctorUserId));
-        if (doctorProfile == null) {
-            throw new BusinessException(403, "仅医生可审核报告");
+
+        if ("DOCTOR".equals(operatorRole)) {
+            DoctorProfile doctorProfile = doctorProfileMapper.selectOne(new LambdaQueryWrapper<DoctorProfile>()
+                    .eq(DoctorProfile::getUserId, operatorUserId));
+            if (doctorProfile == null) {
+                throw new BusinessException(403, "Only doctors can audit report");
+            }
+            report.setDoctorId(doctorProfile.getId());
         }
+
         report.setStatus("REVIEWED");
-        report.setDoctorId(doctorProfile.getId());
         report.setAuditTime(LocalDateTime.now());
         reportRecordMapper.updateById(report);
     }

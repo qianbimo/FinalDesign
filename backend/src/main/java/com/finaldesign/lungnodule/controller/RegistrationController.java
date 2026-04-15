@@ -63,7 +63,11 @@ public class RegistrationController {
     @PreAuthorize("hasAnyRole('DOCTOR','ADMIN')")
     @Operation(summary = "修改挂号状态")
     public Result<Void> updateStatus(@PathVariable Long id, @Valid @RequestBody RegistrationStatusUpdateRequest request) {
-        registrationService.updateStatus(id, request.getStatus());
+        Long doctorId = null;
+        if ("DOCTOR".equals(CurrentUserUtil.role())) {
+            doctorId = doctorService.getProfileByUserId(CurrentUserUtil.userId()).getId();
+        }
+        registrationService.updateStatus(id, request.getStatus(), doctorId);
         return Result.success("更新成功", null);
     }
 }

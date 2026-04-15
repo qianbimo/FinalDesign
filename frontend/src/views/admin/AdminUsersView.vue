@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
@@ -24,10 +24,11 @@ const createForm = reactive({
   email: '',
   status: 1
 })
+
 const roleMap = {
-  PATIENT: '患者',
-  DOCTOR: '医生',
-  ADMIN: '管理员'
+  PATIENT: 'Patient',
+  DOCTOR: 'Doctor',
+  ADMIN: 'Admin'
 }
 
 function roleText(role) {
@@ -35,7 +36,7 @@ function roleText(role) {
 }
 
 function statusText(status) {
-  return status === 1 ? '启用' : '禁用'
+  return status === 1 ? 'Enabled' : 'Disabled'
 }
 
 async function loadData() {
@@ -67,13 +68,13 @@ function resetCreateForm() {
 
 async function createUser() {
   if (!createForm.username || !createForm.password || !createForm.realName) {
-    ElMessage.warning('用户名、密码和真实姓名不能为空')
+    ElMessage.warning('Username, password and real name are required')
     return
   }
   createLoading.value = true
   try {
     await createAdminUserApi({ ...createForm })
-    ElMessage.success('用户创建成功')
+    ElMessage.success('User created')
     createDialogVisible.value = false
     resetCreateForm()
     await loadData()
@@ -85,13 +86,13 @@ async function createUser() {
 async function toggleStatus(row) {
   const nextStatus = row.status === 1 ? 0 : 1
   await updateAdminUserStatusApi(row.id, nextStatus)
-  ElMessage.success('状态更新成功')
+  ElMessage.success('Status updated')
   await loadData()
 }
 
 async function resetPassword(row) {
   await resetAdminUserPasswordApi(row.id, '123456')
-  ElMessage.success(`已重置 ${row.username} 的密码`)
+  ElMessage.success(`Password reset to 123456: ${row.username}`)
 }
 
 onMounted(loadData)
@@ -101,52 +102,52 @@ onMounted(loadData)
   <el-card>
     <template #header>
       <div style="display: flex; justify-content: space-between; align-items: center">
-        <span>用户管理</span>
-        <el-button type="primary" @click="createDialogVisible = true">新建用户</el-button>
+        <span>User Management</span>
+        <el-button type="primary" @click="createDialogVisible = true">Create User</el-button>
       </div>
     </template>
 
     <el-form inline>
-      <el-form-item label="角色">
+      <el-form-item label="Role">
         <el-select v-model="filters.role" clearable style="width: 160px">
-          <el-option label="患者" value="PATIENT" />
-          <el-option label="医生" value="DOCTOR" />
-          <el-option label="管理员" value="ADMIN" />
+          <el-option label="Patient" value="PATIENT" />
+          <el-option label="Doctor" value="DOCTOR" />
+          <el-option label="Admin" value="ADMIN" />
         </el-select>
       </el-form-item>
-      <el-form-item label="状态">
+      <el-form-item label="Status">
         <el-select v-model="filters.status" clearable style="width: 140px">
-          <el-option label="启用(1)" :value="1" />
-          <el-option label="禁用(0)" :value="0" />
+          <el-option label="Enabled (1)" :value="1" />
+          <el-option label="Disabled (0)" :value="0" />
         </el-select>
       </el-form-item>
-      <el-form-item label="关键词">
-        <el-input v-model="filters.keyword" placeholder="用户名/姓名/手机号/邮箱" style="width: 260px" />
+      <el-form-item label="Keyword">
+        <el-input v-model="filters.keyword" placeholder="username/realName/phone/email" style="width: 260px" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="() => { pager.current = 1; loadData() }">查询</el-button>
+        <el-button type="primary" @click="() => { pager.current = 1; loadData() }">Search</el-button>
       </el-form-item>
     </el-form>
 
     <el-table :data="tableData" v-loading="loading">
-      <el-table-column prop="id" label="编号" width="120" />
-      <el-table-column prop="username" label="用户名" min-width="140" />
-      <el-table-column prop="realName" label="姓名" min-width="140" />
-      <el-table-column label="角色" width="120">
+      <el-table-column prop="id" label="ID" width="120" />
+      <el-table-column prop="username" label="Username" min-width="140" />
+      <el-table-column prop="realName" label="Real Name" min-width="140" />
+      <el-table-column label="Role" width="120">
         <template #default="scope">{{ roleText(scope.row.role) }}</template>
       </el-table-column>
-      <el-table-column prop="phone" label="手机号" min-width="140" />
-      <el-table-column prop="email" label="邮箱" min-width="180" />
-      <el-table-column label="状态" width="100">
+      <el-table-column prop="phone" label="Phone" min-width="140" />
+      <el-table-column prop="email" label="Email" min-width="180" />
+      <el-table-column label="Status" width="100">
         <template #default="scope">{{ statusText(scope.row.status) }}</template>
       </el-table-column>
-      <el-table-column prop="profileId" label="档案ID" width="120" />
-      <el-table-column label="操作" min-width="220">
+      <el-table-column prop="profileId" label="Profile ID" width="120" />
+      <el-table-column label="Action" min-width="220">
         <template #default="scope">
           <el-button link type="primary" @click="toggleStatus(scope.row)">
-            {{ scope.row.status === 1 ? '禁用' : '启用' }}
+            {{ scope.row.status === 1 ? 'Disable' : 'Enable' }}
           </el-button>
-          <el-button link type="warning" @click="resetPassword(scope.row)">重置密码</el-button>
+          <el-button link type="warning" @click="resetPassword(scope.row)">Reset Password</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -162,30 +163,30 @@ onMounted(loadData)
     />
   </el-card>
 
-  <el-dialog v-model="createDialogVisible" title="新建用户" width="520px">
+  <el-dialog v-model="createDialogVisible" title="Create User" width="520px">
     <el-form label-width="130px">
-      <el-form-item label="用户名"><el-input v-model="createForm.username" /></el-form-item>
-      <el-form-item label="密码"><el-input v-model="createForm.password" type="password" show-password /></el-form-item>
-      <el-form-item label="角色">
+      <el-form-item label="Username"><el-input v-model="createForm.username" /></el-form-item>
+      <el-form-item label="Password"><el-input v-model="createForm.password" type="password" show-password /></el-form-item>
+      <el-form-item label="Role">
         <el-select v-model="createForm.role" style="width: 100%">
-          <el-option label="患者" value="PATIENT" />
-          <el-option label="医生" value="DOCTOR" />
-          <el-option label="管理员" value="ADMIN" />
+          <el-option label="Patient" value="PATIENT" />
+          <el-option label="Doctor" value="DOCTOR" />
+          <el-option label="Admin" value="ADMIN" />
         </el-select>
       </el-form-item>
-      <el-form-item label="真实姓名"><el-input v-model="createForm.realName" /></el-form-item>
-      <el-form-item label="手机号"><el-input v-model="createForm.phone" /></el-form-item>
-      <el-form-item label="邮箱"><el-input v-model="createForm.email" /></el-form-item>
-      <el-form-item label="状态">
+      <el-form-item label="Real Name"><el-input v-model="createForm.realName" /></el-form-item>
+      <el-form-item label="Phone"><el-input v-model="createForm.phone" /></el-form-item>
+      <el-form-item label="Email"><el-input v-model="createForm.email" /></el-form-item>
+      <el-form-item label="Status">
         <el-select v-model="createForm.status" style="width: 100%">
-          <el-option label="启用(1)" :value="1" />
-          <el-option label="禁用(0)" :value="0" />
+          <el-option label="Enabled (1)" :value="1" />
+          <el-option label="Disabled (0)" :value="0" />
         </el-select>
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="createDialogVisible = false">取消</el-button>
-      <el-button type="primary" :loading="createLoading" @click="createUser">创建</el-button>
+      <el-button @click="createDialogVisible = false">Cancel</el-button>
+      <el-button type="primary" :loading="createLoading" @click="createUser">Create</el-button>
     </template>
   </el-dialog>
 </template>

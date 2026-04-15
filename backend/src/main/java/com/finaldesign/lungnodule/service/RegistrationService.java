@@ -9,5 +9,5 @@ public interface RegistrationService {
 
     IPage<RegistrationRecord> list(Long current, Long size, Long doctorId);
 
-    void updateStatus(Long id, String status);
+    void updateStatus(Long id, String status, Long operatorDoctorId);
 }

@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { createRegistrationApi } from '@/api/registration'
@@ -12,7 +12,7 @@ const form = reactive({
 
 async function submit() {
   if (!form.doctorId || !form.appointmentTime) {
-    ElMessage.warning('医生ID和预约时间不能为空')
+    ElMessage.warning('Doctor ID and appointment time are required')
     return
   }
   loading.value = true
@@ -22,7 +22,7 @@ async function submit() {
       appointmentTime: form.appointmentTime,
       description: form.description
     })
-    ElMessage.success(`挂号申请已提交，编号：${data.id}`)
+    ElMessage.success(`Appointment submitted, ID: ${data.id}`)
   } finally {
     loading.value = false
   }
@@ -31,24 +31,24 @@ async function submit() {
 
 <template>
   <el-card>
-    <template #header>挂号申请</template>
-    <el-form label-width="160px">
-      <el-form-item label="医生档案ID">
+    <template #header>Appointment Request</template>
+    <el-form label-width="180px">
+      <el-form-item label="Doctor Profile ID">
         <el-input-number v-model="form.doctorId" :min="1" />
       </el-form-item>
-      <el-form-item label="预约时间">
+      <el-form-item label="Appointment Time">
         <el-date-picker
           v-model="form.appointmentTime"
           type="datetime"
           value-format="YYYY-MM-DDTHH:mm:ss"
-          placeholder="请选择预约时间"
+          placeholder="Select appointment time"
         />
       </el-form-item>
-      <el-form-item label="描述">
+      <el-form-item label="Description">
         <el-input v-model="form.description" type="textarea" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" :loading="loading" @click="submit">提交</el-button>
+        <el-button type="primary" :loading="loading" @click="submit">Submit</el-button>
       </el-form-item>
     </el-form>
   </el-card>

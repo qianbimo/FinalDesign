@@ -4,6 +4,10 @@ export function getReportByStudyApi(studyId) {
   return request({ url: `/api/report/study/${studyId}`, method: 'get' })
 }
 
+export function getReportByIdApi(reportId) {
+  return request({ url: `/api/report/${reportId}`, method: 'get' })
+}
+
 export function updateReportApi(reportId, payload) {
   return request({ url: `/api/report/${reportId}`, method: 'put', data: payload })
 }

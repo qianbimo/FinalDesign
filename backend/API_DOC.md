@@ -170,6 +170,7 @@ Header：`Authorization: Bearer {token}`
 
 ## 7）报告接口
 
+- GET `/api/report/{id}`
 - GET `/api/report/study/{studyId}`
 - PUT `/api/report/{reportId}`
 - POST `/api/report/{reportId}/audit`

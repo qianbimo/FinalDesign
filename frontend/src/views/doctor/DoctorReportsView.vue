@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getDoctorStudiesApi } from '@/api/doctor'
@@ -11,16 +11,16 @@ const studies = ref([])
 const selectedStudyId = ref(null)
 const report = ref(null)
 const studyStatusMap = {
-  UPLOADED: '已上传',
-  PREPROCESSING: '预处理中',
-  ANALYZING: '分析中',
-  FINISHED: '已完成',
-  FAILED: '失败'
+  UPLOADED: 'Uploaded',
+  PREPROCESSING: 'Preprocessing',
+  ANALYZING: 'Analyzing',
+  FINISHED: 'Finished',
+  FAILED: 'Failed'
 }
 const reportStatusMap = {
-  DRAFT: '草稿',
-  REVIEWED: '已审核',
-  FINAL: '最终版'
+  DRAFT: 'Draft',
+  REVIEWED: 'Reviewed',
+  FINAL: 'Final'
 }
 
 function studyStatusText(status) {
@@ -41,6 +41,8 @@ async function loadReport() {
   loading.value = true
   try {
     report.value = await getReportByStudyApi(selectedStudyId.value)
+  } catch (error) {
+    report.value = null
   } finally {
     loading.value = false
   }
@@ -55,7 +57,7 @@ async function saveReport() {
       reportContent: report.value.reportContent,
       reportSummary: report.value.reportSummary
     })
-    ElMessage.success('报告已更新')
+    ElMessage.success('Report updated')
     await loadReport()
   } finally {
     saveLoading.value = false
@@ -67,7 +69,7 @@ async function auditReport() {
   auditLoading.value = true
   try {
     await auditReportApi(report.value.id)
-    ElMessage.success('报告已审核')
+    ElMessage.success('Report reviewed')
     await loadReport()
   } finally {
     auditLoading.value = false
@@ -79,11 +81,11 @@ onMounted(loadStudies)
 
 <template>
   <el-card>
-    <template #header>报告中心</template>
+    <template #header>Report Center</template>
 
     <el-form inline>
-      <el-form-item label="检查记录">
-        <el-select v-model="selectedStudyId" placeholder="请选择检查记录" style="width: 320px" @change="loadReport">
+      <el-form-item label="Study">
+        <el-select v-model="selectedStudyId" placeholder="Select a study" style="width: 320px" @change="loadReport">
           <el-option
             v-for="s in studies"
             :key="s.id"
@@ -93,25 +95,25 @@ onMounted(loadStudies)
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button @click="loadReport">加载</el-button>
+        <el-button @click="loadReport">Load</el-button>
       </el-form-item>
     </el-form>
 
     <div v-if="report" v-loading="loading">
       <el-form label-width="140px">
-        <el-form-item label="标题"><el-input v-model="report.reportTitle" /></el-form-item>
-        <el-form-item label="摘要"><el-input v-model="report.reportSummary" type="textarea" :rows="2" /></el-form-item>
-        <el-form-item label="内容"><el-input v-model="report.reportContent" type="textarea" :rows="8" /></el-form-item>
-        <el-form-item label="状态">
+        <el-form-item label="Title"><el-input v-model="report.reportTitle" /></el-form-item>
+        <el-form-item label="Summary"><el-input v-model="report.reportSummary" type="textarea" :rows="2" /></el-form-item>
+        <el-form-item label="Content"><el-input v-model="report.reportContent" type="textarea" :rows="8" /></el-form-item>
+        <el-form-item label="Status">
           <el-tag>{{ reportStatusText(report.status) }}</el-tag>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :loading="saveLoading" @click="saveReport">保存</el-button>
-          <el-button type="success" :loading="auditLoading" @click="auditReport">审核</el-button>
+          <el-button type="primary" :loading="saveLoading" @click="saveReport">Save</el-button>
+          <el-button type="success" :loading="auditLoading" @click="auditReport">Review</el-button>
         </el-form-item>
       </el-form>
     </div>
 
-    <el-empty v-else description="请选择检查记录后加载报告" />
+    <el-empty v-else description="Select a study and load report" />
   </el-card>
 </template>

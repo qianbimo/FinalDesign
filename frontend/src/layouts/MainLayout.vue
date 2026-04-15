@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth'
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+
 const roleLabelMap = {
   PATIENT: '患者',
   DOCTOR: '医生',
@@ -52,7 +53,7 @@ function logout() {
 <template>
   <el-container class="layout-root">
     <el-aside width="230px" class="layout-aside">
-      <div class="brand">肺结节系统</div>
+      <div class="brand">肺结节智能分析系统</div>
       <el-menu :default-active="activePath" @select="onSelect">
         <el-menu-item v-for="item in menus" :key="item.path" :index="item.path">{{ item.title }}</el-menu-item>
       </el-menu>
