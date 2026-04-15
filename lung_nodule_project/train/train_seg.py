@@ -1,7 +1,6 @@
-"""
-分割训练脚本（LUNA16 -> 3D Res-UNet）。
-运行产物统一写入：
-workspace/runs/<train_seg_时间戳>/
+﻿"""
+Segmentation training script (LUNA16 -> 3D Res-UNet).
+All outputs are saved under workspace/runs/<train_seg_timestamp>/
 """
 
 from __future__ import annotations
@@ -10,6 +9,7 @@ import argparse
 import os
 import sys
 import time
+from pathlib import Path
 from typing import Dict, Tuple
 
 import numpy as np
@@ -25,7 +25,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from datasets.dataset_seg import SegmentationDataset
+from datasets.dataset_seg import SegmentationPatchDataset, build_patch_index_from_list
 from models.resunet3d import ResUNet3D
 from train.utils import (
     append_csv,
@@ -43,7 +43,7 @@ from train.utils import (
 
 
 class DiceBCELoss(nn.Module):
-    """Dice + BCE 组合损失。"""
+    """Dice + BCE combined loss."""
 
     def __init__(self, dice_weight: float, bce_weight: float, bce_pos_weight: float):
         super().__init__()
@@ -89,67 +89,35 @@ def _build_scheduler(optimizer, train_cfg: Dict, epochs: int):
     return CosineAnnealingLR(optimizer, T_max=max(1, epochs))
 
 
-def _crop_with_padding(x: torch.Tensor, z1: int, y1: int, x1: int, dz: int, dy: int, dx: int) -> torch.Tensor:
-    """从 [B,C,D,H,W] 裁剪 patch，越界补 0。"""
-    b, c, d, h, w = x.shape
-    out = x.new_zeros((b, c, dz, dy, dx))
-    z2, y2, x2 = z1 + dz, y1 + dy, x1 + dx
-    sz1, sy1, sx1 = max(0, z1), max(0, y1), max(0, x1)
-    sz2, sy2, sx2 = min(d, z2), min(h, y2), min(w, x2)
-    dz1, dy1, dx1 = sz1 - z1, sy1 - y1, sx1 - x1
-    dz2, dy2, dx2 = dz1 + (sz2 - sz1), dy1 + (sy2 - sy1), dx1 + (sx2 - sx1)
-    if sz1 < sz2 and sy1 < sy2 and sx1 < sx2:
-        out[:, :, dz1:dz2, dy1:dy2, dx1:dx2] = x[:, :, sz1:sz2, sy1:sy2, sx1:sx2]
-    return out
+def _safe_float_tag(v: float) -> str:
+    return str(v).replace(".", "p")
 
 
-def _sample_patch(
-    image: torch.Tensor,
-    mask: torch.Tensor,
-    patch_zyx: Tuple[int, int, int],
-    force_positive_prob: float = 0.7,
-) -> Tuple[torch.Tensor, torch.Tensor]:
-    """随机采样 patch，优先采样正样本附近。"""
-    _, _, d, h, w = image.shape
-    pd, ph, pw = patch_zyx
-    pos = (mask > 0.5).nonzero(as_tuple=False)
-    use_pos = pos.numel() > 0 and np.random.rand() < force_positive_prob
-    if use_pos:
-        idx = pos[np.random.randint(0, pos.shape[0])]
-        z1, y1, x1 = int(idx[2]) - pd // 2, int(idx[3]) - ph // 2, int(idx[4]) - pw // 2
-    else:
-        z1 = np.random.randint(0, max(1, d - pd + 1)) if d >= pd else (d - pd) // 2
-        y1 = np.random.randint(0, max(1, h - ph + 1)) if h >= ph else (h - ph) // 2
-        x1 = np.random.randint(0, max(1, w - pw + 1)) if w >= pw else (w - pw) // 2
-    return (
-        _crop_with_padding(image, z1, y1, x1, pd, ph, pw),
-        _crop_with_padding(mask, z1, y1, x1, pd, ph, pw),
+def _resolve_patch_index_paths(config: Dict) -> Tuple[str, str, str]:
+    data_cfg = config["data"]
+    train_cfg = config.get("train", {})
+
+    patch_size = tuple(train_cfg.get("patch_size_zyx", [96, 96, 32]))
+    stride = tuple(train_cfg.get("patch_stride_zyx", [48, 48, 16]))
+    neg_pos_ratio = float(train_cfg.get("neg_pos_ratio", 1.0))
+    max_neg_per_case = int(train_cfg.get("max_neg_per_case", 64))
+
+    index_dir = train_cfg.get("patch_index_dir", os.path.join(data_cfg["processed_root"], "patch_index"))
+    Path(index_dir).mkdir(parents=True, exist_ok=True)
+
+    default_name = (
+        f"p{patch_size[0]}x{patch_size[1]}x{patch_size[2]}_"
+        f"s{stride[0]}x{stride[1]}x{stride[2]}_"
+        f"npr{_safe_float_tag(neg_pos_ratio)}_mn{max_neg_per_case}"
     )
-
-
-def _collate_pad_3d(batch):
-    """
-    ??? collate??????? [C,D,H,W] ??? batch ??????????
-    ?????? batch_size ???????? collate ??????????????
-    """
-    images, masks = zip(*batch)
-    b = len(images)
-    c = int(images[0].shape[0])
-    max_d = max(int(x.shape[1]) for x in images)
-    max_h = max(int(x.shape[2]) for x in images)
-    max_w = max(int(x.shape[3]) for x in images)
-
-    img_out = images[0].new_zeros((b, c, max_d, max_h, max_w))
-    msk_out = masks[0].new_zeros((b, c, max_d, max_h, max_w))
-    for i, (img, msk) in enumerate(zip(images, masks)):
-        d, h, w = int(img.shape[1]), int(img.shape[2]), int(img.shape[3])
-        img_out[i, :, :d, :h, :w] = img
-        msk_out[i, :, :d, :h, :w] = msk
-    return img_out, msk_out
+    train_index = train_cfg.get("train_patch_index", os.path.join(index_dir, f"train_{default_name}.txt"))
+    val_index = train_cfg.get("val_patch_index", os.path.join(index_dir, f"val_{default_name}.txt"))
+    return index_dir, train_index, val_index
 
 
 def train_seg(config: Dict, override_epochs: int = -1, batch_size_override: int = -1) -> None:
-    set_seed(int(config.get("seed", 42)))
+    seed = int(config.get("seed", 42))
+    set_seed(seed)
     device = _pick_device(str(config.get("device", "auto")).lower())
 
     data_cfg = config["data"]
@@ -160,13 +128,18 @@ def train_seg(config: Dict, override_epochs: int = -1, batch_size_override: int 
     train_list = data_cfg["train_list"]
     val_list = data_cfg["val_list"]
     if not os.path.exists(train_list) or not os.path.exists(val_list):
-        raise FileNotFoundError("未找到 train/val 列表，请先运行 datasets/preprocess_luna16.py")
+        raise FileNotFoundError("Missing train/val list, run datasets/preprocess_luna16.py first.")
 
     epochs = int(train_cfg["epochs"]) if override_epochs <= 0 else int(override_epochs)
     batch_size = int(train_cfg["batch_size"]) if batch_size_override <= 0 else int(batch_size_override)
-    num_workers = int(train_cfg["num_workers"])
+    num_workers = int(train_cfg.get("num_workers", 0))
+    pin_memory = bool(train_cfg.get("pin_memory", False))
     amp = bool(train_cfg.get("amp", True)) and device.type == "cuda"
-    patch_zyx = tuple(config.get("infer", {}).get("patch_size_zyx", [96, 96, 96]))
+
+    patch_zyx = tuple(train_cfg.get("patch_size_zyx", [96, 96, 32]))
+    stride_zyx = tuple(train_cfg.get("patch_stride_zyx", [48, 48, 16]))
+    neg_pos_ratio = float(train_cfg.get("neg_pos_ratio", 1.0))
+    max_neg_per_case = int(train_cfg.get("max_neg_per_case", 64))
 
     run_info = prepare_run_dirs("train_seg", config, argv=sys.argv)
     run_dir = run_info["run_dir"]
@@ -183,23 +156,66 @@ def train_seg(config: Dict, override_epochs: int = -1, batch_size_override: int 
     init_csv(csv_path, fields)
     append_log_line(log_path, f"[{now_str()}] Start seg training, device={device}, epochs={epochs}, run_dir={run_dir}")
 
-    train_ds = SegmentationDataset(train_list, augment=True)
-    val_ds = SegmentationDataset(val_list, augment=False)
+    # Try to reuse prebuilt patch index cache
+    index_dir, train_patch_index, val_patch_index = _resolve_patch_index_paths(config)
+    append_log_line(log_path, f"[{now_str()}] patch_index_dir={index_dir}")
+
+    if not os.path.exists(train_patch_index):
+        append_log_line(log_path, f"[{now_str()}] train patch index missing, building once...")
+        build_patch_index_from_list(
+            list_path=train_list,
+            index_path=train_patch_index,
+            patch_size_zyx=patch_zyx,
+            stride_zyx=stride_zyx,
+            neg_pos_ratio=neg_pos_ratio,
+            max_neg_per_case=max_neg_per_case,
+            seed=seed,
+            overwrite=True,
+            desc="Build train patch index (on-demand)",
+        )
+    if not os.path.exists(val_patch_index):
+        append_log_line(log_path, f"[{now_str()}] val patch index missing, building once...")
+        build_patch_index_from_list(
+            list_path=val_list,
+            index_path=val_patch_index,
+            patch_size_zyx=patch_zyx,
+            stride_zyx=stride_zyx,
+            neg_pos_ratio=1.0,
+            max_neg_per_case=max_neg_per_case,
+            seed=seed + 1,
+            overwrite=True,
+            desc="Build val patch index (on-demand)",
+        )
+
+    train_ds = SegmentationPatchDataset(index_path=train_patch_index, patch_size_zyx=patch_zyx, augment=True, seed=seed)
+    val_ds = SegmentationPatchDataset(index_path=val_patch_index, patch_size_zyx=patch_zyx, augment=False, seed=seed + 1)
+
+    append_log_line(
+        log_path,
+        f"[{now_str()}] Using index cache: train={train_patch_index}, val={val_patch_index}; "
+        f"train_samples={len(train_ds)} (pos={train_ds.num_pos}, neg={train_ds.num_neg}), "
+        f"val_samples={len(val_ds)} (pos={val_ds.num_pos}, neg={val_ds.num_neg})",
+    )
+    print(
+        f"[Seg] IndexCache train={len(train_ds)} (pos={train_ds.num_pos}, neg={train_ds.num_neg}), "
+        f"val={len(val_ds)} (pos={val_ds.num_pos}, neg={val_ds.num_neg})"
+    )
+
     train_loader = DataLoader(
         train_ds,
         batch_size=batch_size,
         shuffle=True,
         num_workers=num_workers,
-        pin_memory=True,
-        collate_fn=_collate_pad_3d,
+        pin_memory=pin_memory,
+        drop_last=False,
     )
     val_loader = DataLoader(
         val_ds,
-        batch_size=1,
+        batch_size=max(1, min(batch_size, 4)),
         shuffle=False,
         num_workers=num_workers,
-        pin_memory=True,
-        collate_fn=_collate_pad_3d,
+        pin_memory=pin_memory,
+        drop_last=False,
     )
 
     model = ResUNet3D(
@@ -227,7 +243,6 @@ def train_seg(config: Dict, override_epochs: int = -1, batch_size_override: int 
         for image, mask in tqdm(train_loader, desc=f"[Seg][Epoch {epoch}/{epochs}] Train", leave=False):
             image = image.to(device, non_blocking=True)
             mask = mask.to(device, non_blocking=True)
-            image, mask = _sample_patch(image, mask, patch_zyx=patch_zyx, force_positive_prob=0.7)
 
             optimizer.zero_grad(set_to_none=True)
             with torch.cuda.amp.autocast(enabled=amp):
@@ -247,7 +262,6 @@ def train_seg(config: Dict, override_epochs: int = -1, batch_size_override: int 
             for image, mask in tqdm(val_loader, desc=f"[Seg][Epoch {epoch}/{epochs}] Val", leave=False):
                 image = image.to(device, non_blocking=True)
                 mask = mask.to(device, non_blocking=True)
-                image, mask = _sample_patch(image, mask, patch_zyx=patch_zyx, force_positive_prob=1.0)
                 logits = model(image)
                 loss = criterion(logits, mask)
                 val_losses.append(float(loss.item()))
@@ -316,15 +330,16 @@ def train_seg(config: Dict, override_epochs: int = -1, batch_size_override: int 
         title="Segmentation IoU Curve",
         ylabel="IoU",
     )
+
     append_log_line(log_path, f"[{now_str()}] Finished seg training, best_dice={best_dice:.6f}, run_dir={run_dir}")
-    print(f"分割训练完成，best_dice={best_dice:.4f}")
+    print(f"Seg training done, best_dice={best_dice:.4f}")
     print(f"Run outputs: {run_dir}")
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train Segmentation (Res-UNet3D)")
-    parser.add_argument("--config", type=str, default="configs/seg_config.yaml", help="分割配置文件")
-    parser.add_argument("--epochs", type=int, default=-1, help="覆盖配置中的 epoch")
+    parser.add_argument("--config", type=str, default="configs/seg_config.yaml", help="seg config")
+    parser.add_argument("--epochs", type=int, default=-1, help="override epoch")
     parser.add_argument("--batch-size", type=int, default=-1, help="override batch size")
     return parser.parse_args()
 

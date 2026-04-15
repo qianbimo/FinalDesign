@@ -34,7 +34,11 @@ public class AiInferenceClientImpl implements AiInferenceClient {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<AiPredictRequest> entity = new HttpEntity<>(request, headers);
-            return restTemplate.postForObject(url, entity, AiPredictResponse.class);
+            AiPredictResponse response = restTemplate.postForObject(url, entity, AiPredictResponse.class);
+            if (response == null) {
+                throw new BusinessException("AI response is empty");
+            }
+            return response;
         } catch (Exception e) {
             throw new BusinessException("调用AI推理服务失败: " + e.getMessage());
         }
@@ -80,13 +84,15 @@ public class AiInferenceClientImpl implements AiInferenceClient {
         axial.setViewType("AXIAL");
         axial.setOverlayPath("overlay/" + request.getStudyId() + "/nodule1_axial.png");
         axial.setColor("#FF0000");
+
         AiPredictResponse.Annotation coronal = new AiPredictResponse.Annotation();
         coronal.setViewType("CORONAL");
         coronal.setOverlayPath("overlay/" + request.getStudyId() + "/nodule1_coronal.png");
         coronal.setColor("#00FF00");
-        nodule.setAnnotations(List.of(axial, coronal));
 
+        nodule.setAnnotations(List.of(axial, coronal));
         response.setNodules(List.of(nodule));
         return response;
     }
 }
+
