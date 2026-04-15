@@ -29,15 +29,17 @@ public class ReportGenerateServiceImpl implements ReportGenerateService {
         long highRiskCount = nodules.stream().filter(n -> "HIGH".equalsIgnoreCase(n.getRiskLevel())).count();
 
         String aiRisk = response.getSummary() != null ? response.getSummary().getOverallRisk() : "UNKNOWN";
-        String suggestion = response.getSummary() != null ? response.getSummary().getDiagnosisSuggestion() : "建议结合临床进一步评估";
+        String suggestion = response.getSummary() != null && response.getSummary().getDiagnosisSuggestion() != null
+                ? response.getSummary().getDiagnosisSuggestion()
+                : "Recommend clinical correlation and periodic follow-up.";
 
-        String content = "检查项目：胸部 CT 智能分析\n"
-                + "结节数量：" + noduleCount + "\n"
-                + "最大结节直径：" + String.format("%.1f", maxDiameter) + " mm\n"
-                + "高风险结节数：" + highRiskCount + "\n"
-                + "最高恶性风险概率：" + String.format("%.2f", maxProb) + "\n"
-                + "AI 风险评估：" + aiRisk + "\n"
-                + "建议：" + suggestion;
+        String content = "Exam: Chest CT Intelligence Analysis\n"
+                + "Nodule count: " + noduleCount + "\n"
+                + "Max nodule diameter: " + String.format("%.1f", maxDiameter) + " mm\n"
+                + "High-risk nodule count: " + highRiskCount + "\n"
+                + "Highest malignancy probability: " + String.format("%.2f", maxProb) + "\n"
+                + "AI risk assessment: " + aiRisk + "\n"
+                + "Suggestion: " + suggestion;
 
         Integer latestVersion = 0;
         ReportRecord latest = reportRecordMapper.selectOne(new LambdaQueryWrapper<ReportRecord>()
@@ -53,9 +55,9 @@ public class ReportGenerateServiceImpl implements ReportGenerateService {
         report.setPatientId(study.getPatientId());
         report.setDoctorId(study.getDoctorId());
         report.setAiTaskId(aiTask.getId());
-        report.setReportTitle("胸部CT智能分析报告");
+        report.setReportTitle("Chest CT Intelligence Analysis Report");
         report.setReportContent(content);
-        report.setReportSummary("发现结节" + noduleCount + "个，整体风险" + aiRisk);
+        report.setReportSummary("Detected " + noduleCount + " nodules, overall risk " + aiRisk);
         report.setStatus("DRAFT");
         report.setVersionNo(latestVersion + 1);
         report.setGeneratedBy("SYSTEM");
