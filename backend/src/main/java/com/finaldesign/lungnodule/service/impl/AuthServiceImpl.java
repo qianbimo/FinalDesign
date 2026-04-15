@@ -1,11 +1,13 @@
 package com.finaldesign.lungnodule.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.finaldesign.lungnodule.entity.DoctorProfile;
 import com.finaldesign.lungnodule.dto.LoginRequest;
 import com.finaldesign.lungnodule.dto.RegisterRequest;
 import com.finaldesign.lungnodule.entity.PatientProfile;
 import com.finaldesign.lungnodule.entity.SysUser;
 import com.finaldesign.lungnodule.exception.BusinessException;
+import com.finaldesign.lungnodule.mapper.DoctorProfileMapper;
 import com.finaldesign.lungnodule.mapper.PatientProfileMapper;
 import com.finaldesign.lungnodule.mapper.SysUserMapper;
 import com.finaldesign.lungnodule.security.JwtTokenProvider;
@@ -25,17 +27,20 @@ public class AuthServiceImpl implements AuthService {
 
     private final SysUserMapper sysUserMapper;
     private final PatientProfileMapper patientProfileMapper;
+    private final DoctorProfileMapper doctorProfileMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
     public AuthServiceImpl(SysUserMapper sysUserMapper,
                            PatientProfileMapper patientProfileMapper,
+                           DoctorProfileMapper doctorProfileMapper,
                            PasswordEncoder passwordEncoder,
                            AuthenticationManager authenticationManager,
                            JwtTokenProvider jwtTokenProvider) {
         this.sysUserMapper = sysUserMapper;
         this.patientProfileMapper = patientProfileMapper;
+        this.doctorProfileMapper = doctorProfileMapper;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -44,8 +49,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long register(RegisterRequest request) {
-        if (!"PATIENT".equals(request.getRole())) {
-            throw new BusinessException(400, "Only PATIENT can register via public signup");
+        if (!"PATIENT".equals(request.getRole()) && !"DOCTOR".equals(request.getRole())) {
+            throw new BusinessException(400, "Only PATIENT or DOCTOR can register");
         }
 
         SysUser existed = sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>()
@@ -64,10 +69,16 @@ public class AuthServiceImpl implements AuthService {
         user.setStatus(1);
         sysUserMapper.insert(user);
 
-        PatientProfile patientProfile = new PatientProfile();
-        patientProfile.setUserId(user.getId());
-        patientProfile.setMedicalRecordNo(NoGenerator.medicalRecordNo());
-        patientProfileMapper.insert(patientProfile);
+        if ("PATIENT".equals(request.getRole())) {
+            PatientProfile patientProfile = new PatientProfile();
+            patientProfile.setUserId(user.getId());
+            patientProfile.setMedicalRecordNo(NoGenerator.medicalRecordNo());
+            patientProfileMapper.insert(patientProfile);
+        } else if ("DOCTOR".equals(request.getRole())) {
+            DoctorProfile doctorProfile = new DoctorProfile();
+            doctorProfile.setUserId(user.getId());
+            doctorProfileMapper.insert(doctorProfile);
+        }
 
         return user.getId();
     }
