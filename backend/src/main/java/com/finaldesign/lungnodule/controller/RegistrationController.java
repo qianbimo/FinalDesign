@@ -12,11 +12,13 @@ import com.finaldesign.lungnodule.security.CurrentUserUtil;
 import com.finaldesign.lungnodule.service.DoctorService;
 import com.finaldesign.lungnodule.service.PatientService;
 import com.finaldesign.lungnodule.service.RegistrationService;
+import com.finaldesign.lungnodule.vo.RegistrationDoctorOptionVO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,6 +35,13 @@ public class RegistrationController {
         this.registrationService = registrationService;
         this.patientService = patientService;
         this.doctorService = doctorService;
+    }
+
+    @GetMapping("/doctors")
+    @PreAuthorize("hasAnyRole('PATIENT','ADMIN')")
+    @Operation(summary = "患者挂号可选医生列表")
+    public Result<List<RegistrationDoctorOptionVO>> doctors() {
+        return Result.success(registrationService.listAvailableDoctors());
     }
 
     @PostMapping

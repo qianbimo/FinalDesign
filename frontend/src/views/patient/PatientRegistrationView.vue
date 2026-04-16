@@ -1,18 +1,40 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { createRegistrationApi } from '@/api/registration'
+import { createRegistrationApi, getRegistrationDoctorsApi } from '@/api/registration'
 
 const loading = ref(false)
+const doctorsLoading = ref(false)
+const doctorOptions = ref([])
 const form = reactive({
-  doctorId: null,
+  doctorId: '',
   appointmentTime: '',
   description: ''
 })
 
+function doctorLabel(doctor) {
+  const name = doctor.realName || '未命名医生'
+  const title = doctor.title || '未填写职称'
+  const department = doctor.department || '未填写科室'
+  return `${name}｜${title}｜${department}`
+}
+
+async function loadDoctors() {
+  doctorsLoading.value = true
+  try {
+    const data = await getRegistrationDoctorsApi()
+    doctorOptions.value = data || []
+    if (!form.doctorId && doctorOptions.value.length > 0) {
+      form.doctorId = doctorOptions.value[0].doctorId
+    }
+  } finally {
+    doctorsLoading.value = false
+  }
+}
+
 async function submit() {
   if (!form.doctorId || !form.appointmentTime) {
-    ElMessage.warning('医生档案编号 和预约时间不能为空')
+    ElMessage.warning('请选择医生并填写预约时间')
     return
   }
   loading.value = true
@@ -27,14 +49,30 @@ async function submit() {
     loading.value = false
   }
 }
+
+onMounted(loadDoctors)
 </script>
 
 <template>
   <el-card>
     <template #header>挂号申请</template>
     <el-form label-width="180px">
-      <el-form-item label="医生档案编号">
-        <el-input-number v-model="form.doctorId" :min="1" />
+      <el-form-item label="选择医生">
+        <el-select
+          v-model="form.doctorId"
+          filterable
+          clearable
+          :loading="doctorsLoading"
+          placeholder="请选择医生（姓名｜职称｜科室）"
+          style="width: 420px"
+        >
+          <el-option
+            v-for="doctor in doctorOptions"
+            :key="doctor.doctorId"
+            :label="doctorLabel(doctor)"
+            :value="doctor.doctorId"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="预约时间">
         <el-date-picker

@@ -33,6 +33,17 @@ if not errorlevel 1 (
   echo [WARN] Port 5173 is already in use. Frontend may already be running.
 )
 
+netstat -ano | findstr ":8000" | findstr "LISTENING" >nul
+if not errorlevel 1 (
+  echo [WARN] Port 8000 is already in use. AI service may already be running.
+)
+
+if not exist "%ROOT_DIR%start-ai.bat" (
+  echo [ERROR] start-ai.bat not found.
+  pause
+  exit /b 1
+)
+
 if not exist "%ROOT_DIR%start-backend.bat" (
   echo [ERROR] start-backend.bat not found.
   pause
@@ -45,6 +56,9 @@ if not exist "%ROOT_DIR%start-frontend.bat" (
   exit /b 1
 )
 
+echo [INFO] Starting AI service...
+start "Lung AI" /D "%ROOT_DIR%" cmd /k call "%ROOT_DIR%start-ai.bat"
+
 echo [INFO] Starting backend...
 start "Lung Backend" /D "%ROOT_DIR%" cmd /k call "%ROOT_DIR%start-backend.bat"
 
@@ -54,8 +68,10 @@ start "Lung Frontend" /D "%ROOT_DIR%" cmd /k call "%ROOT_DIR%start-frontend.bat"
 echo [OK] Startup commands sent.
 echo      Backend window:  Lung Backend
 echo      Frontend window: Lung Frontend
+echo      AI window:       Lung AI
 echo.
 echo Default URLs:
+echo   AI Service:   http://localhost:8000
 echo   Backend API:  http://localhost:8080
 echo   Frontend UI:  http://localhost:5173
 

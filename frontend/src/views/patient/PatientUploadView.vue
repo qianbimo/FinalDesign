@@ -4,15 +4,18 @@ import { ElMessage } from 'element-plus'
 import { getPatientStudiesApi } from '@/api/patient'
 import { uploadCtFileApi } from '@/api/upload'
 import { createStudyApi } from '@/api/study'
+import { getRegistrationDoctorsApi } from '@/api/registration'
 
 const studies = ref([])
+const doctorOptions = ref([])
 const selectedStudyId = ref(null)
 const file = ref(null)
 const loading = ref(false)
 const createLoading = ref(false)
+const doctorsLoading = ref(false)
 const uploadResult = ref(null)
 const createForm = reactive({
-  doctorId: null,
+  doctorId: '',
   studyDate: '',
   studyDesc: '',
   deviceInfo: ''
@@ -30,6 +33,26 @@ function studyStatusText(status) {
   return studyStatusMap[status] || '未知状态'
 }
 
+function doctorLabel(doctor) {
+  const name = doctor.realName || '未命名医生'
+  const title = doctor.title || '未填写职称'
+  const department = doctor.department || '未填写科室'
+  return `${name}｜${title}｜${department}`
+}
+
+async function loadDoctors() {
+  doctorsLoading.value = true
+  try {
+    const data = await getRegistrationDoctorsApi()
+    doctorOptions.value = data || []
+    if (!createForm.doctorId && doctorOptions.value.length > 0) {
+      createForm.doctorId = doctorOptions.value[0].doctorId
+    }
+  } finally {
+    doctorsLoading.value = false
+  }
+}
+
 async function loadStudies() {
   const data = await getPatientStudiesApi({ current: 1, size: 100 })
   studies.value = data.records || []
@@ -40,7 +63,7 @@ async function loadStudies() {
 
 async function createStudy() {
   if (!createForm.doctorId) {
-    ElMessage.warning('医生档案编号 不能为空')
+    ElMessage.warning('请选择医生')
     return
   }
   createLoading.value = true
@@ -89,15 +112,31 @@ async function submitUpload() {
   }
 }
 
-onMounted(loadStudies)
+onMounted(async () => {
+  await Promise.all([loadDoctors(), loadStudies()])
+})
 </script>
 
 <template>
   <el-card style="margin-bottom: 16px">
     <template #header>创建检查记录</template>
     <el-form label-width="160px">
-      <el-form-item label="医生档案编号">
-        <el-input-number v-model="createForm.doctorId" :min="1" />
+      <el-form-item label="选择医生">
+        <el-select
+          v-model="createForm.doctorId"
+          filterable
+          clearable
+          :loading="doctorsLoading"
+          placeholder="请选择医生（姓名｜职称｜科室）"
+          style="width: 420px"
+        >
+          <el-option
+            v-for="doctor in doctorOptions"
+            :key="doctor.doctorId"
+            :label="doctorLabel(doctor)"
+            :value="doctor.doctorId"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="检查日期">
         <el-date-picker v-model="createForm.studyDate" type="date" value-format="YYYY-MM-DD" />

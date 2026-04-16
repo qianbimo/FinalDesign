@@ -15,6 +15,8 @@ import com.finaldesign.lungnodule.utils.JsonUtils;
 import com.finaldesign.lungnodule.vo.AnnotationStudyVO;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 @Service
@@ -47,6 +49,8 @@ public class AnnotationServiceImpl implements AnnotationService {
         if (aiTask == null) {
             return AnnotationStudyVO.builder()
                     .studyId(studyId)
+                    .originalPreviewPath(null)
+                    .annotatedPreviewPath(null)
                     .ctFiles(ctFiles)
                     .nodules(List.of())
                     .annotations(List.of())
@@ -58,16 +62,60 @@ public class AnnotationServiceImpl implements AnnotationService {
         List<AnnotationResult> annotations = annotationResultMapper.selectList(new LambdaQueryWrapper<AnnotationResult>()
                 .eq(AnnotationResult::getAiTaskId, aiTask.getId()));
         String segmentationPath = null;
+        String originalPreviewPath = null;
+        String annotatedPreviewPath = null;
         if (aiTask.getResponseJson() != null) {
             AiPredictResponse response = JsonUtils.fromJson(aiTask.getResponseJson(), AiPredictResponse.class);
             segmentationPath = response.getSegmentationPath();
+            String overlayPath = firstOverlayPath(response);
+            originalPreviewPath = findPeerFigurePath(overlayPath, "pipeline_ct_slice.png");
+            annotatedPreviewPath = findPeerFigurePath(overlayPath, "pipeline_annotated.png");
         }
         return AnnotationStudyVO.builder()
                 .studyId(studyId)
                 .segmentationPath(segmentationPath)
+                .originalPreviewPath(originalPreviewPath)
+                .annotatedPreviewPath(annotatedPreviewPath)
                 .ctFiles(ctFiles)
                 .nodules(nodules)
                 .annotations(annotations)
                 .build();
+    }
+
+    private String firstOverlayPath(AiPredictResponse response) {
+        if (response == null || response.getNodules() == null) {
+            return null;
+        }
+        for (AiPredictResponse.Nodule nodule : response.getNodules()) {
+            if (nodule == null || nodule.getAnnotations() == null) {
+                continue;
+            }
+            for (AiPredictResponse.Annotation annotation : nodule.getAnnotations()) {
+                if (annotation != null && annotation.getOverlayPath() != null && !annotation.getOverlayPath().isBlank()) {
+                    return annotation.getOverlayPath().trim();
+                }
+            }
+        }
+        return null;
+    }
+
+    private String findPeerFigurePath(String overlayPath, String targetFilename) {
+        if (overlayPath == null || overlayPath.isBlank()) {
+            return null;
+        }
+        try {
+            Path overlay = Path.of(overlayPath);
+            Path parent = overlay.getParent();
+            if (parent == null) {
+                return null;
+            }
+            Path target = parent.resolve(targetFilename);
+            if (!Files.exists(target)) {
+                return null;
+            }
+            return target.toString().replace("\\", "/");
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

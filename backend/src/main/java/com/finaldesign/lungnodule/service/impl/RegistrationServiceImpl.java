@@ -4,25 +4,82 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.finaldesign.lungnodule.dto.RegistrationCreateRequest;
+import com.finaldesign.lungnodule.entity.DoctorProfile;
 import com.finaldesign.lungnodule.entity.RegistrationRecord;
+import com.finaldesign.lungnodule.entity.SysUser;
 import com.finaldesign.lungnodule.exception.BusinessException;
+import com.finaldesign.lungnodule.mapper.DoctorProfileMapper;
 import com.finaldesign.lungnodule.mapper.RegistrationRecordMapper;
+import com.finaldesign.lungnodule.mapper.SysUserMapper;
 import com.finaldesign.lungnodule.service.RegistrationService;
+import com.finaldesign.lungnodule.vo.RegistrationDoctorOptionVO;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
     private final RegistrationRecordMapper registrationRecordMapper;
+    private final DoctorProfileMapper doctorProfileMapper;
+    private final SysUserMapper sysUserMapper;
 
-    public RegistrationServiceImpl(RegistrationRecordMapper registrationRecordMapper) {
+    public RegistrationServiceImpl(RegistrationRecordMapper registrationRecordMapper,
+                                   DoctorProfileMapper doctorProfileMapper,
+                                   SysUserMapper sysUserMapper) {
         this.registrationRecordMapper = registrationRecordMapper;
+        this.doctorProfileMapper = doctorProfileMapper;
+        this.sysUserMapper = sysUserMapper;
+    }
+
+    @Override
+    public List<RegistrationDoctorOptionVO> listAvailableDoctors() {
+        List<DoctorProfile> doctorProfiles = doctorProfileMapper.selectList(new LambdaQueryWrapper<DoctorProfile>()
+                .orderByDesc(DoctorProfile::getCreatedAt));
+        if (doctorProfiles.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> userIds = doctorProfiles.stream().map(DoctorProfile::getUserId).distinct().toList();
+        List<SysUser> users = sysUserMapper.selectList(new LambdaQueryWrapper<SysUser>()
+                .in(SysUser::getId, userIds)
+                .eq(SysUser::getRole, "DOCTOR")
+                .eq(SysUser::getStatus, 1));
+        Map<Long, SysUser> userMap = new HashMap<>();
+        for (SysUser user : users) {
+            userMap.put(user.getId(), user);
+        }
+
+        return doctorProfiles.stream()
+                .filter(profile -> userMap.containsKey(profile.getUserId()))
+                .map(profile -> {
+                    SysUser user = userMap.get(profile.getUserId());
+                    RegistrationDoctorOptionVO vo = new RegistrationDoctorOptionVO();
+                    vo.setDoctorId(profile.getId());
+                    vo.setUserId(user.getId());
+                    vo.setRealName(user.getRealName());
+                    vo.setDepartment(profile.getDepartment());
+                    vo.setTitle(profile.getTitle());
+                    vo.setSpecialty(profile.getSpecialty());
+                    return vo;
+                })
+                .toList();
     }
 
     @Override
     public Long create(RegistrationCreateRequest request) {
+        DoctorProfile doctorProfile = doctorProfileMapper.selectById(request.getDoctorId());
+        if (doctorProfile == null) {
+            throw new BusinessException(400, "Doctor profile not found");
+        }
+        SysUser doctorUser = sysUserMapper.selectById(doctorProfile.getUserId());
+        if (doctorUser == null || doctorUser.getStatus() == null || doctorUser.getStatus() != 1) {
+            throw new BusinessException(400, "Doctor profile not found");
+        }
+
         RegistrationRecord record = new RegistrationRecord();
         record.setPatientId(request.getPatientId());
         record.setDoctorId(request.getDoctorId());

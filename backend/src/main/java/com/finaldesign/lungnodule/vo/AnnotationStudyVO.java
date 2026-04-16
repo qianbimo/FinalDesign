@@ -13,6 +13,8 @@ import java.util.List;
 public class AnnotationStudyVO {
     private Long studyId;
     private String segmentationPath;
+    private String originalPreviewPath;
+    private String annotatedPreviewPath;
     private List<CtFile> ctFiles;
     private List<NoduleResult> nodules;
     private List<AnnotationResult> annotations;

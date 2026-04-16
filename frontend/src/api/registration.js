@@ -1,5 +1,9 @@
 import request from '@/utils/request'
 
+export function getRegistrationDoctorsApi() {
+  return request({ url: '/api/registration/doctors', method: 'get' })
+}
+
 export function createRegistrationApi(payload) {
   return request({ url: '/api/registration', method: 'post', data: payload })
 }

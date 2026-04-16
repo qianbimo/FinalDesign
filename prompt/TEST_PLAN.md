@@ -188,3 +188,93 @@
 - 关键字过滤：关键字 `Ch` 返回 `1` 条且命中标题/摘要
 - 越权验证：患者访问管理员报告接口返回 `code=403`
 - 详情验证样本：`reportId=2044337164625649666`，`GET /api/report/{reportId}` 返回成功
+
+## 15. CT影像前端图像接收专项测试
+
+### 15.1 测试目标与基线
+
+- 目标：验证“CT 上传完成后”，前端（患者端/医生端）能够接收到并展示原始图像与标注图像。
+- 图像基线（以当前网络可生成内容为准）：
+  - 原始图像预览：`result/{studyId}/original_preview.png`
+  - 标注叠加图：`overlay/{studyId}/nodule1_axial.png`、`overlay/{studyId}/nodule1_coronal.png`
+- 涉及页面：
+  - 患者端：`/app/patient/studies/{studyId}`
+  - 医生端：`/app/doctor/studies/{patientId}/{studyId}`
+  - 医生标注页：`/app/doctor/annotations`
+
+### 15.2 前置条件
+
+- [x] `T15-PRE-01` 后端启动成功，`http://localhost:8080` 可访问
+- [x] `T15-PRE-02` 前端启动成功，`http://localhost:5173` 可访问
+- [x] `T15-PRE-03` 患者账号可用（如：`qa_patient`）
+- [x] `T15-PRE-04` 医生账号可用（如：`qa_doctor`）
+- [x] `T15-PRE-05` 至少存在一条已上传 CT 的检查记录（`studyId` 可追踪）
+
+### 15.3 接口链路测试（上传→推理→标注）
+
+- [x] `T15-01` 患者创建检查记录成功：`POST /api/study/create` 返回 `studyId`
+- [x] `T15-02` 患者上传 CT 成功：`POST /api/upload/ct` 返回 `fileId/studyId/filePath`
+- [x] `T15-03` 医生启动智能分析成功：`POST /api/ai-task/start/{studyId}` 返回 `taskId`
+- [x] `T15-04` AI 任务状态成功：`GET /api/ai-task/{taskId}` 中 `taskStatus=SUCCESS`
+- [x] `T15-05` 检查状态完成：`GET /api/study/{studyId}` 中 `status=FINISHED`
+- [x] `T15-06` 检查结果聚合返回包含标注：`GET /api/ai-task/study/{studyId}/result` 中 `annotations` 数组非空
+- [x] `T15-07` 标注接口返回图像路径：`GET /api/annotation/study/{studyId}` 中 `segmentationPath`、`annotations[].overlayPath` 有值
+
+### 15.4 文件可访问性测试（静态资源映射）
+
+- [x] `T15-08` 原始预览图 URL 可访问（HTTP 200，`Content-Type` 含 `image/`）
+- [x] `T15-09` 轴位标注图 URL 可访问（HTTP 200，`Content-Type` 含 `image/`）
+- [x] `T15-10` 冠状位标注图 URL 可访问（HTTP 200，`Content-Type` 含 `image/`）
+- [x] `T15-11` 本地落盘路径存在且文件大小 > 0
+- [x] `T15-12` 接口返回路径可被前端转换为 `/files/...` 访问路径（路径转换规则生效）
+
+### 15.5 前端接收与渲染测试（患者端）
+
+- [x] `T15-13` 患者检查详情页发起请求：`/api/ct-file/study/{studyId}`、`/api/annotation/study/{studyId}`
+- [x] `T15-14` 患者页“原图预览”组件加载成功（无报错占位）
+- [x] `T15-15` 患者页“标注叠加图”至少展示 1 张图片
+- [x] `T15-16` 点击缩略图可打开预览大图（Element Plus 预览弹层）
+- [x] `T15-17` 刷新页面后仍能重新拉取并展示图像（非一次性缓存）
+
+### 15.6 前端接收与渲染测试（医生端）
+
+- [x] `T15-18` 医生检查详情页发起请求：`/api/ct-file/study/{studyId}`、`/api/annotation/study/{studyId}`
+- [x] `T15-19` 医生页“原图预览”组件加载成功（无报错占位）
+- [x] `T15-20` 医生页“标注叠加图”至少展示 1 张图片
+- [x] `T15-21` 医生标注查看页输入 `studyId` 后可显示标注图缩略图
+- [x] `T15-22` 医生端与患者端显示的同一标注图 URL 一致（同 studyId）
+
+### 15.7 异常与降级测试
+
+- [x] `T15-23` 当 overlay 文件缺失时，前端显示“标注图加载失败”而非白屏
+- [x] `T15-24` 当原图预览缺失时，前端显示“暂无可用原图预览”提示
+- [x] `T15-25` 当 `annotations=[]` 时，页面显示“暂无标注叠加图”
+
+### 15.8 权限与安全测试
+
+- [ ] `T15-26` 患者只能查看自己的 `studyId` 图像，越权访问返回 403
+- [x] `T15-27` 医生只能查看自己病例的 `studyId` 图像，越权访问返回 403
+- [x] `T15-28` 未登录访问受保护图像数据接口返回 401
+
+### 15.9 验收标准
+
+- [x] `T15-ACC-01` 全链路从上传到图像渲染可闭环完成
+- [x] `T15-ACC-02` 患者端与医生端均可稳定展示原图与标注图
+- [ ] `T15-ACC-03` 任一关键项失败时可通过日志与返回体快速定位（接口、文件、权限三层可区分）
+
+### 15.10 本轮实测记录（2026-04-16）
+
+- 样本链路：
+  - `studyId=2044728685736779778`
+  - `taskId=2044728686454005761`
+  - 原始图：`http://localhost:8080/files/result/2044728685736779778/original_preview.png`
+  - 轴位标注：`http://localhost:8080/files/overlay/2044728685736779778/nodule1_axial.png`
+  - 冠状位标注：`http://localhost:8080/files/overlay/2044728685736779778/nodule1_coronal.png`
+- 文件映射：
+  - 本地存储基路径：`C:/Users/qianbimo/.codex/worktrees/001d/FinalDesign/storage`
+- 权限样本：
+  - 其他患者：`t15_patient_184444`
+  - 其他医生：`t15_doctor_184444`
+- 失败项说明：
+  - `T15-26` 未通过：实测“其他患者访问该 `studyId`”返回 `code=404`（检查记录不存在），与预期 `403` 不一致。
+  - 因 `T15-26` 未通过，`T15-ACC-03` 判定未通过。

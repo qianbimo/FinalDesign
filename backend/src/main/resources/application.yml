@@ -40,7 +40,7 @@ jwt:
   expire-hours: 24
 
 storage:
-  base-path: ${STORAGE_BASE_PATH:C:/Users/qianbimo/.codex/worktrees/001d/FinalDesign/storage}
+  base-path: ${STORAGE_BASE_PATH:E:/code/FinalDesign/storage}
   access-prefix: /files
   max-size-mb: 1024
   allowed-extensions:
@@ -52,4 +52,4 @@ ai:
   base-url: http://localhost:8000
   predict-path: /api/inference/predict
   timeout-seconds: 30
-  mock-enabled: true
+  mock-enabled: false

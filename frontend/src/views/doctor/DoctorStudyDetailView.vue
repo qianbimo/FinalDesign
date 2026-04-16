@@ -53,6 +53,8 @@ function viewTypeText(viewType) {
 const annotationImages = computed(() => annotationData.value?.annotations || [])
 
 const originalPreviewUrl = computed(() => {
+  const aiPreviewPath = annotationData.value?.originalPreviewPath
+  if (aiPreviewPath) return toFileUrl(aiPreviewPath)
   const imageFile = files.value.find((item) => isImageFileType(item.fileType) || isImagePath(item.filePath))
   if (imageFile) return toFileUrl(imageFile.filePath)
   return toFileUrl(`result/${studyId}/original_preview.png`)
