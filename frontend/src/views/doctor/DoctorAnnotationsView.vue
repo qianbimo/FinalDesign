@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { getAnnotationByStudyApi } from '@/api/annotation'
+import { toFileUrl } from '@/utils/fileUrl'
 
 const loading = ref(false)
 const studyId = ref(null)
@@ -79,6 +80,20 @@ async function query() {
         </el-table-column>
         <el-table-column prop="overlayPath" label="叠加图路径" min-width="320" />
         <el-table-column prop="color" label="颜色" width="120" />
+        <el-table-column label="预览" width="220">
+          <template #default="scope">
+            <el-image
+              :src="toFileUrl(scope.row.overlayPath)"
+              :preview-src-list="[toFileUrl(scope.row.overlayPath)]"
+              fit="cover"
+              style="width: 160px; height: 90px"
+            >
+              <template #error>
+                <div style="font-size: 12px; color: #909399">图片加载失败</div>
+              </template>
+            </el-image>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
 

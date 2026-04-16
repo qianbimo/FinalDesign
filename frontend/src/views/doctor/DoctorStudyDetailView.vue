@@ -1,10 +1,12 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getDoctorPatientStudyDetailApi } from '@/api/doctor'
 import { getCtFilesByStudyApi } from '@/api/study'
 import { getAiResultByStudyApi, startAiTaskApi } from '@/api/aiTask'
+import { getAnnotationByStudyApi } from '@/api/annotation'
+import { isImageFileType, isImagePath, toFileUrl } from '@/utils/fileUrl'
 
 const route = useRoute()
 const studyId = route.params.studyId
@@ -15,6 +17,7 @@ const aiLoading = ref(false)
 const study = ref(null)
 const files = ref([])
 const aiResult = ref(null)
+const annotationData = ref(null)
 const studyStatusMap = {
   UPLOADED: '已上传',
   PREPROCESSING: '预处理中',
@@ -28,6 +31,12 @@ const taskStatusMap = {
   SUCCESS: '成功',
   FAILED: '失败'
 }
+const viewTypeMap = {
+  AXIAL: '轴位',
+  CORONAL: '冠状位',
+  SAGITTAL: '矢状位',
+  THREE_D: '三维'
+}
 
 function studyStatusText(status) {
   return studyStatusMap[status] || '未知状态'
@@ -35,6 +44,22 @@ function studyStatusText(status) {
 
 function taskStatusText(status) {
   return taskStatusMap[status] || '未知状态'
+}
+
+function viewTypeText(viewType) {
+  return viewTypeMap[viewType] || '未知视图'
+}
+
+const annotationImages = computed(() => annotationData.value?.annotations || [])
+
+const originalPreviewUrl = computed(() => {
+  const imageFile = files.value.find((item) => isImageFileType(item.fileType) || isImagePath(item.filePath))
+  if (imageFile) return toFileUrl(imageFile.filePath)
+  return toFileUrl(`result/${studyId}/original_preview.png`)
+})
+
+function filePreviewUrl(file) {
+  return toFileUrl(file.filePath)
 }
 
 async function loadData() {
@@ -46,6 +71,11 @@ async function loadData() {
       aiResult.value = await getAiResultByStudyApi(studyId)
     } catch (error) {
       aiResult.value = null
+    }
+    try {
+      annotationData.value = await getAnnotationByStudyApi(studyId)
+    } catch (error) {
+      annotationData.value = null
     }
   } finally {
     loading.value = false
@@ -90,7 +120,60 @@ onMounted(loadData)
         <el-table-column prop="fileName" label="文件名" min-width="200" />
         <el-table-column prop="fileType" label="类型" width="120" />
         <el-table-column prop="fileSize" label="大小" width="140" />
+        <el-table-column label="预览" width="220">
+          <template #default="scope">
+            <el-image
+              v-if="isImageFileType(scope.row.fileType) || isImagePath(scope.row.filePath)"
+              :src="filePreviewUrl(scope.row)"
+              :preview-src-list="[filePreviewUrl(scope.row)]"
+              fit="cover"
+              style="width: 160px; height: 90px"
+            >
+              <template #error>
+                <div style="font-size: 12px; color: #909399">图片加载失败</div>
+              </template>
+            </el-image>
+            <span v-else style="color: #909399">体数据文件，暂不直接预览</span>
+          </template>
+        </el-table-column>
       </el-table>
+    </el-card>
+
+    <el-card style="margin-bottom: 16px">
+      <template #header>原图预览</template>
+      <el-image
+        :src="originalPreviewUrl"
+        :preview-src-list="[originalPreviewUrl]"
+        fit="contain"
+        style="width: 100%; max-width: 640px; height: 360px; background: #f5f7fa"
+      >
+        <template #error>
+          <el-empty description="暂无可用原图预览（若上传 NII/DCM，可由后续切片服务提供）" />
+        </template>
+      </el-image>
+    </el-card>
+
+    <el-card style="margin-bottom: 16px">
+      <template #header>标注叠加图</template>
+      <el-empty v-if="annotationImages.length === 0" description="暂无标注叠加图" />
+      <el-row v-else :gutter="16">
+        <el-col v-for="item in annotationImages" :key="item.id" :xs="24" :sm="12" :lg="8" style="margin-bottom: 16px">
+          <el-card shadow="hover">
+            <div style="font-weight: 600; margin-bottom: 8px">{{ viewTypeText(item.viewType) }}</div>
+            <el-image
+              :src="toFileUrl(item.overlayPath)"
+              :preview-src-list="[toFileUrl(item.overlayPath)]"
+              fit="cover"
+              style="width: 100%; height: 180px; background: #f5f7fa"
+            >
+              <template #error>
+                <div style="padding-top: 70px; text-align: center; color: #909399">标注图加载失败</div>
+              </template>
+            </el-image>
+            <div style="margin-top: 8px; color: #606266; font-size: 12px">{{ item.overlayPath }}</div>
+          </el-card>
+        </el-col>
+      </el-row>
     </el-card>
 
     <el-card>
