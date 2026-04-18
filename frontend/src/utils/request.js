@@ -1,4 +1,4 @@
-import axios from 'axios'
+﻿import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
 const request = axios.create({
@@ -16,13 +16,18 @@ const errorMessageMap = {
   'Only PATIENT can register via public signup': '公开注册仅允许患者角色',
   'patientId is required': '缺少患者编号参数',
   'doctorId is required': '医生编号不能为空',
+  'registrationId is required': '请先选择挂号单',
   'appointmentTime is required': '预约时间不能为空',
   'Study not found': '检查记录不存在',
   'Patient profile not found': '患者档案不存在',
   'Doctor profile not found': '医生档案不存在',
   'AI task not found': '智能分析任务不存在',
   'No AI task found for this study': '该检查暂无智能分析任务',
-  'Please upload CT file first': '请先上传影像文件',
+  'Please upload CT file first': '请先上传CT影像文件',
+  'Registration is cancelled': '挂号单已取消，无法创建检查',
+  'Registration is finished': '挂号单已完成，不能重复创建检查',
+  'Study already created for this registration': '该挂号单已创建检查记录',
+  'Study must be created from registration first': '请先基于挂号单创建检查记录',
   'File size exceeds limit': '文件大小超出限制',
   'Report not found': '报告不存在',
   'Registration record not found': '挂号记录不存在'

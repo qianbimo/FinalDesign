@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/upload")
-@PreAuthorize("hasAnyRole('PATIENT','DOCTOR','ADMIN')")
+@PreAuthorize("hasAnyRole('DOCTOR','ADMIN')")
 public class UploadController {
 
     private final UploadService uploadService;
@@ -24,10 +24,11 @@ public class UploadController {
     }
 
     @PostMapping("/ct")
-    @Operation(summary = "上传 CT 文件")
+    @Operation(summary = "Upload CT file")
     public Result<CtUploadResponseVO> uploadCt(@RequestParam("studyId") Long studyId,
                                                @RequestPart("file") MultipartFile file) {
-        studyAccessGuard.assertCurrentUserCanAccessStudy(studyId);
+        studyAccessGuard.assertCurrentUserCanManageStudy(studyId);
         return Result.success(uploadService.uploadCtFile(studyId, file, CurrentUserUtil.userId()));
     }
 }
+

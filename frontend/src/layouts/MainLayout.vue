@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -18,14 +18,14 @@ const menuMap = {
     { title: '工作台', path: '/app/workspace' },
     { title: '个人资料', path: '/app/patient/profile' },
     { title: '检查记录', path: '/app/patient/studies' },
-    { title: '挂号申请', path: '/app/patient/registration' },
-    { title: '影像上传', path: '/app/patient/upload' }
+    { title: '挂号申请', path: '/app/patient/registration' }
   ],
   DOCTOR: [
     { title: '工作台', path: '/app/workspace' },
     { title: '医生资料', path: '/app/doctor/profile' },
     { title: '患者列表', path: '/app/doctor/patients' },
     { title: '病例列表', path: '/app/doctor/studies' },
+    { title: 'CT上传', path: '/app/doctor/upload' },
     { title: '报告中心', path: '/app/doctor/reports' },
     { title: '标注查看', path: '/app/doctor/annotations' }
   ],

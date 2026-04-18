@@ -1,17 +1,17 @@
-package com.finaldesign.lungnodule.dto;
+package com.finaldesign.lungnodule.vo;
 
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
-public class StudyCreateRequest {
-    private Long registrationId;
-
+public class DoctorStudyVO {
+    private Long id;
+    private String studyNo;
     private Long patientId;
-
+    private String patientName;
     private Long doctorId;
     private LocalDate studyDate;
     private String studyDesc;
-    private String deviceInfo;
+    private String status;
 }

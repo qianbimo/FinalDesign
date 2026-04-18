@@ -29,17 +29,18 @@ public class ReportGenerateServiceImpl implements ReportGenerateService {
         long highRiskCount = nodules.stream().filter(n -> "HIGH".equalsIgnoreCase(n.getRiskLevel())).count();
 
         String aiRisk = response.getSummary() != null ? response.getSummary().getOverallRisk() : "UNKNOWN";
+        String aiRiskZh = toRiskZh(aiRisk);
         String suggestion = response.getSummary() != null && response.getSummary().getDiagnosisSuggestion() != null
                 ? response.getSummary().getDiagnosisSuggestion()
-                : "Recommend clinical correlation and periodic follow-up.";
+                : "建议结合临床进一步检查，并定期随访。";
 
-        String content = "Exam: Chest CT Intelligence Analysis\n"
-                + "Nodule count: " + noduleCount + "\n"
-                + "Max nodule diameter: " + String.format("%.1f", maxDiameter) + " mm\n"
-                + "High-risk nodule count: " + highRiskCount + "\n"
-                + "Highest malignancy probability: " + String.format("%.2f", maxProb) + "\n"
-                + "AI risk assessment: " + aiRisk + "\n"
-                + "Suggestion: " + suggestion;
+        String content = "检查项目：胸部CT智能分析\n"
+                + "结节数量：" + noduleCount + "\n"
+                + "最大结节直径：" + String.format("%.1f", maxDiameter) + " mm\n"
+                + "高风险结节数量：" + highRiskCount + "\n"
+                + "最高恶性概率：" + String.format("%.2f", maxProb) + "\n"
+                + "AI风险评估：" + aiRiskZh + "\n"
+                + "建议：" + suggestion;
 
         Integer latestVersion = 0;
         ReportRecord latest = reportRecordMapper.selectOne(new LambdaQueryWrapper<ReportRecord>()
@@ -55,13 +56,32 @@ public class ReportGenerateServiceImpl implements ReportGenerateService {
         report.setPatientId(study.getPatientId());
         report.setDoctorId(study.getDoctorId());
         report.setAiTaskId(aiTask.getId());
-        report.setReportTitle("Chest CT Intelligence Analysis Report");
+        report.setReportTitle("胸部CT智能分析报告");
         report.setReportContent(content);
-        report.setReportSummary("Detected " + noduleCount + " nodules, overall risk " + aiRisk);
+        report.setReportSummary("检出结节" + noduleCount + "个，整体风险：" + aiRiskZh);
         report.setStatus("DRAFT");
         report.setVersionNo(latestVersion + 1);
         report.setGeneratedBy("SYSTEM");
         reportRecordMapper.insert(report);
         return report;
+    }
+
+    private String toRiskZh(String risk) {
+        if (risk == null) {
+            return "未知";
+        }
+        if ("HIGH".equalsIgnoreCase(risk)) {
+            return "高风险";
+        }
+        if ("MEDIUM".equalsIgnoreCase(risk)) {
+            return "中风险";
+        }
+        if ("LOW".equalsIgnoreCase(risk)) {
+            return "低风险";
+        }
+        if ("UNKNOWN".equalsIgnoreCase(risk)) {
+            return "未知";
+        }
+        return risk;
     }
 }

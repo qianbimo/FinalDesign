@@ -5,6 +5,7 @@ import { getDoctorPatientsApi } from '@/api/doctor'
 const loading = ref(false)
 const tableData = ref([])
 const pager = reactive({ current: 1, size: 10, total: 0 })
+
 const genderMap = {
   MALE: '男',
   FEMALE: '女'
@@ -31,15 +32,18 @@ onMounted(loadData)
 <template>
   <el-card>
     <template #header>患者列表</template>
+
     <el-table :data="tableData" v-loading="loading">
       <el-table-column prop="id" label="患者编号" width="120" />
+      <el-table-column prop="patientName" label="患者姓名" width="140" />
       <el-table-column prop="medicalRecordNo" label="病历号" min-width="180" />
-      <el-table-column label="性别" width="120">
+      <el-table-column label="性别" width="100">
         <template #default="scope">{{ genderText(scope.row.gender) }}</template>
       </el-table-column>
-      <el-table-column prop="age" label="年龄" width="100" />
+      <el-table-column prop="age" label="年龄" width="90" />
       <el-table-column prop="address" label="地址" min-width="220" />
     </el-table>
+
     <el-pagination
       style="margin-top: 16px"
       background

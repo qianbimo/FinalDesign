@@ -10,7 +10,9 @@ const loading = ref(false)
 const aiLoadingId = ref(null)
 const tableData = ref([])
 const pager = reactive({ current: 1, size: 10, total: 0 })
+
 const studyStatusMap = {
+  WAIT_UPLOAD: '待上传CT',
   UPLOADED: '已上传',
   PREPROCESSING: '预处理中',
   ANALYZING: '分析中',
@@ -20,6 +22,24 @@ const studyStatusMap = {
 
 function studyStatusText(status) {
   return studyStatusMap[status] || '未知状态'
+}
+
+function studyStatusTagType(status) {
+  switch (status) {
+    case 'WAIT_UPLOAD':
+      return 'info'
+    case 'UPLOADED':
+      return 'warning'
+    case 'PREPROCESSING':
+    case 'ANALYZING':
+      return 'warning'
+    case 'FINISHED':
+      return 'success'
+    case 'FAILED':
+      return 'danger'
+    default:
+      return 'info'
+  }
 }
 
 async function loadData() {
@@ -38,6 +58,11 @@ function toDetail(row) {
 }
 
 async function startAi(row) {
+  if (row.status === 'WAIT_UPLOAD') {
+    ElMessage.warning('该检查尚未上传CT文件，无法启动智能分析')
+    return
+  }
+
   aiLoadingId.value = row.id
   try {
     const data = await startAiTaskApi(row.id)
@@ -54,13 +79,16 @@ onMounted(loadData)
 <template>
   <el-card>
     <template #header>病例列表</template>
+
     <el-table :data="tableData" v-loading="loading">
-      <el-table-column prop="id" label="检查编号" width="120" />
-      <el-table-column prop="studyNo" label="检查编号" min-width="180" />
+      <el-table-column prop="patientName" label="患者姓名" width="140" />
       <el-table-column prop="patientId" label="患者编号" width="120" />
+      <el-table-column prop="studyNo" label="检查编号" min-width="180" />
       <el-table-column prop="studyDate" label="检查日期" width="130" />
       <el-table-column label="状态" width="140">
-        <template #default="scope">{{ studyStatusText(scope.row.status) }}</template>
+        <template #default="scope">
+          <el-tag :type="studyStatusTagType(scope.row.status)">{{ studyStatusText(scope.row.status) }}</el-tag>
+        </template>
       </el-table-column>
       <el-table-column label="操作" min-width="240">
         <template #default="scope">

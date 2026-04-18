@@ -5,7 +5,7 @@ import com.finaldesign.lungnodule.dto.StudyCreateRequest;
 import com.finaldesign.lungnodule.entity.CtStudy;
 
 public interface CtStudyService {
-    Long create(StudyCreateRequest request);
+    Long create(StudyCreateRequest request, Long operatorDoctorId, boolean adminMode);
 
     IPage<CtStudy> pageList(Long current, Long size, Long patientId, Long doctorId);
 

@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+﻿import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const routes = [
@@ -54,12 +54,6 @@ const routes = [
         meta: { title: '挂号申请', roles: ['PATIENT'], menu: true }
       },
       {
-        path: 'patient/upload',
-        name: 'PatientUpload',
-        component: () => import('@/views/patient/PatientUploadView.vue'),
-        meta: { title: '影像上传', roles: ['PATIENT'], menu: true }
-      },
-      {
         path: 'doctor/profile',
         name: 'DoctorProfile',
         component: () => import('@/views/doctor/DoctorProfileView.vue'),
@@ -76,6 +70,12 @@ const routes = [
         name: 'DoctorStudies',
         component: () => import('@/views/doctor/DoctorStudiesView.vue'),
         meta: { title: '病例列表', roles: ['DOCTOR'], menu: true }
+      },
+      {
+        path: 'doctor/upload',
+        name: 'DoctorUpload',
+        component: () => import('@/views/doctor/DoctorUploadView.vue'),
+        meta: { title: 'CT上传', roles: ['DOCTOR'], menu: true }
       },
       {
         path: 'doctor/studies/:patientId/:studyId',

@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPatientAiResultApi, getPatientReportApi, getPatientStudyDetailApi } from '@/api/patient'
@@ -15,24 +15,29 @@ const aiTask = ref(null)
 const report = ref(null)
 const ctFiles = ref([])
 const annotationData = ref(null)
+
 const studyStatusMap = {
+  WAIT_UPLOAD: '待上传CT',
   UPLOADED: '已上传',
   PREPROCESSING: '预处理中',
   ANALYZING: '分析中',
   FINISHED: '已完成',
   FAILED: '失败'
 }
+
 const taskStatusMap = {
   WAITING: '等待中',
   RUNNING: '运行中',
   SUCCESS: '成功',
   FAILED: '失败'
 }
+
 const reportStatusMap = {
   DRAFT: '草稿',
   REVIEWED: '已审核',
   FINAL: '最终版'
 }
+
 const viewTypeMap = {
   AXIAL: '轴位',
   CORONAL: '冠状位',
@@ -61,8 +66,10 @@ const annotationImages = computed(() => annotationData.value?.annotations || [])
 const originalPreviewUrl = computed(() => {
   const aiPreviewPath = annotationData.value?.originalPreviewPath
   if (aiPreviewPath) return toFileUrl(aiPreviewPath)
+
   const imageFile = ctFiles.value.find((item) => isImageFileType(item.fileType) || isImagePath(item.filePath))
   if (imageFile) return toFileUrl(imageFile.filePath)
+
   return toFileUrl(`result/${studyId}/original_preview.png`)
 })
 
@@ -74,21 +81,25 @@ async function loadData() {
   loading.value = true
   try {
     study.value = await getPatientStudyDetailApi(studyId)
+
     try {
       ctFiles.value = await getCtFilesByStudyApi(studyId)
     } catch (error) {
       ctFiles.value = []
     }
+
     try {
       aiTask.value = await getPatientAiResultApi(studyId)
     } catch (error) {
       aiTask.value = null
     }
+
     try {
       annotationData.value = await getAnnotationByStudyApi(studyId)
     } catch (error) {
       annotationData.value = null
     }
+
     try {
       report.value = await getPatientReportApi(studyId)
     } catch (error) {
@@ -109,7 +120,7 @@ onMounted(loadData)
       <el-descriptions :column="2" border>
         <el-descriptions-item label="编号">{{ study?.id }}</el-descriptions-item>
         <el-descriptions-item label="检查编号">{{ study?.studyNo }}</el-descriptions-item>
-        <el-descriptions-item label="检查日期">{{ study?.studyDate }}</el-descriptions-item>
+        <el-descriptions-item label="检查日期">{{ study?.studyDate || '-' }}</el-descriptions-item>
         <el-descriptions-item label="状态">{{ studyStatusText(study?.status) }}</el-descriptions-item>
         <el-descriptions-item label="设备信息">{{ study?.deviceInfo || '-' }}</el-descriptions-item>
         <el-descriptions-item label="检查描述">{{ study?.studyDesc || '-' }}</el-descriptions-item>
@@ -150,7 +161,7 @@ onMounted(loadData)
         style="width: 100%; max-width: 640px; height: 360px; background: #f5f7fa"
       >
         <template #error>
-          <el-empty description="暂无可用原图预览（若上传 NII/DCM，可由后续切片服务提供）" />
+          <el-empty description="暂无可用原图预览" />
         </template>
       </el-image>
     </el-card>
@@ -184,7 +195,7 @@ onMounted(loadData)
       <el-descriptions v-else :column="2" border>
         <el-descriptions-item label="任务编号">{{ aiTask?.id }}</el-descriptions-item>
         <el-descriptions-item label="任务状态">{{ taskStatusText(aiTask?.taskStatus) }}</el-descriptions-item>
-        <el-descriptions-item label="模型版本">{{ aiTask?.modelVersion }}</el-descriptions-item>
+        <el-descriptions-item label="模型版本">{{ aiTask?.modelVersion || '-' }}</el-descriptions-item>
         <el-descriptions-item label="完成时间">{{ aiTask?.finishedAt || '-' }}</el-descriptions-item>
       </el-descriptions>
     </el-card>

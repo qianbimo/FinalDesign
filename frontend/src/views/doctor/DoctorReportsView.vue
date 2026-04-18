@@ -11,6 +11,7 @@ const studies = ref([])
 const selectedStudyId = ref(null)
 const report = ref(null)
 const studyStatusMap = {
+  WAIT_UPLOAD: '待上传CT',
   UPLOADED: '已上传',
   PREPROCESSING: '预处理中',
   ANALYZING: '分析中',
@@ -117,3 +118,4 @@ onMounted(loadStudies)
     <el-empty v-else description="请先选择检查记录并加载报告" />
   </el-card>
 </template>
+

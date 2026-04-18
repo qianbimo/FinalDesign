@@ -81,6 +81,11 @@ public class UploadServiceImpl implements UploadService {
         ctFile.setCheckStatus("VALID");
         ctFileMapper.insert(ctFile);
 
+        if (!"UPLOADED".equalsIgnoreCase(study.getStatus())) {
+            study.setStatus("UPLOADED");
+            ctStudyMapper.updateById(study);
+        }
+
         String accessUrl = storageProperties.getAccessPrefix() + "/" + relativePath.replace("\\", "/");
         return CtUploadResponseVO.builder()
                 .fileId(ctFile.getId())

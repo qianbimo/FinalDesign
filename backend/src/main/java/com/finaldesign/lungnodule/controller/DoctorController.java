@@ -5,10 +5,11 @@ import com.finaldesign.lungnodule.common.PageResult;
 import com.finaldesign.lungnodule.common.Result;
 import com.finaldesign.lungnodule.entity.CtStudy;
 import com.finaldesign.lungnodule.entity.DoctorProfile;
-import com.finaldesign.lungnodule.entity.PatientProfile;
 import com.finaldesign.lungnodule.security.CurrentUserUtil;
 import com.finaldesign.lungnodule.security.StudyAccessGuard;
 import com.finaldesign.lungnodule.service.DoctorService;
+import com.finaldesign.lungnodule.vo.DoctorPatientVO;
+import com.finaldesign.lungnodule.vo.DoctorStudyVO;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -34,17 +35,17 @@ public class DoctorController {
 
     @GetMapping("/patients")
     @Operation(summary = "查询患者列表")
-    public Result<PageResult<PatientProfile>> patients(@RequestParam(defaultValue = "1") Long current,
+    public Result<PageResult<DoctorPatientVO>> patients(@RequestParam(defaultValue = "1") Long current,
                                                        @RequestParam(defaultValue = "10") Long size) {
-        IPage<PatientProfile> page = doctorService.pagePatients(current, size);
+        IPage<DoctorPatientVO> page = doctorService.pagePatients(current, size);
         return Result.success(new PageResult<>(page.getTotal(), page.getCurrent(), page.getSize(), page.getRecords()));
     }
 
     @GetMapping("/studies")
     @Operation(summary = "查询医生分析过的病例")
-    public Result<PageResult<CtStudy>> studies(@RequestParam(defaultValue = "1") Long current,
+    public Result<PageResult<DoctorStudyVO>> studies(@RequestParam(defaultValue = "1") Long current,
                                                @RequestParam(defaultValue = "10") Long size) {
-        IPage<CtStudy> page = doctorService.pageDoctorStudies(CurrentUserUtil.userId(), current, size);
+        IPage<DoctorStudyVO> page = doctorService.pageDoctorStudies(CurrentUserUtil.userId(), current, size);
         return Result.success(new PageResult<>(page.getTotal(), page.getCurrent(), page.getSize(), page.getRecords()));
     }
 

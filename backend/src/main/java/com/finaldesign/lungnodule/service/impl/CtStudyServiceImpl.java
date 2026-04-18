@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.finaldesign.lungnodule.dto.StudyCreateRequest;
 import com.finaldesign.lungnodule.entity.CtStudy;
+import com.finaldesign.lungnodule.entity.RegistrationRecord;
 import com.finaldesign.lungnodule.exception.BusinessException;
 import com.finaldesign.lungnodule.mapper.CtStudyMapper;
+import com.finaldesign.lungnodule.mapper.RegistrationRecordMapper;
 import com.finaldesign.lungnodule.service.CtStudyService;
 import com.finaldesign.lungnodule.utils.NoGenerator;
 import org.springframework.stereotype.Service;
@@ -17,21 +19,52 @@ import java.time.LocalDate;
 public class CtStudyServiceImpl implements CtStudyService {
 
     private final CtStudyMapper ctStudyMapper;
+    private final RegistrationRecordMapper registrationRecordMapper;
 
-    public CtStudyServiceImpl(CtStudyMapper ctStudyMapper) {
+    public CtStudyServiceImpl(CtStudyMapper ctStudyMapper,
+                              RegistrationRecordMapper registrationRecordMapper) {
         this.ctStudyMapper = ctStudyMapper;
+        this.registrationRecordMapper = registrationRecordMapper;
     }
 
     @Override
-    public Long create(StudyCreateRequest request) {
+    public Long create(StudyCreateRequest request, Long operatorDoctorId, boolean adminMode) {
+        if (request.getRegistrationId() == null) {
+            throw new BusinessException(400, "registrationId is required");
+        }
+        RegistrationRecord registration = registrationRecordMapper.selectById(request.getRegistrationId());
+        if (registration == null) {
+            throw new BusinessException(404, "Registration record not found");
+        }
+        if ("CANCELLED".equalsIgnoreCase(registration.getStatus())) {
+            throw new BusinessException(400, "Registration is cancelled");
+        }
+        if ("FINISHED".equalsIgnoreCase(registration.getStatus())) {
+            throw new BusinessException(400, "Registration is finished");
+        }
+        if (!adminMode) {
+            if (operatorDoctorId == null) {
+                throw new BusinessException(403, "Access denied");
+            }
+            if (!operatorDoctorId.equals(registration.getDoctorId())) {
+                throw new BusinessException(403, "Access denied");
+            }
+        }
+        if ("PENDING".equalsIgnoreCase(registration.getStatus())) {
+            registration.setStatus("CONFIRMED");
+            registrationRecordMapper.updateById(registration);
+        }
+        Long patientId = registration.getPatientId();
+        Long doctorId = registration.getDoctorId();
+
         CtStudy study = new CtStudy();
         study.setStudyNo(NoGenerator.studyNo());
-        study.setPatientId(request.getPatientId());
-        study.setDoctorId(request.getDoctorId());
+        study.setPatientId(patientId);
+        study.setDoctorId(doctorId);
         study.setStudyDate(request.getStudyDate() == null ? LocalDate.now() : request.getStudyDate());
         study.setStudyDesc(request.getStudyDesc());
         study.setDeviceInfo(request.getDeviceInfo());
-        study.setStatus("UPLOADED");
+        study.setStatus("WAIT_UPLOAD");
         ctStudyMapper.insert(study);
         return study.getId();
     }

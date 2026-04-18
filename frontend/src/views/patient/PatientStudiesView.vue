@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getPatientStudiesApi } from '@/api/patient'
@@ -7,7 +7,9 @@ const router = useRouter()
 const loading = ref(false)
 const tableData = ref([])
 const pager = reactive({ current: 1, size: 10, total: 0 })
+
 const studyStatusMap = {
+  WAIT_UPLOAD: '待上传CT',
   UPLOADED: '已上传',
   PREPROCESSING: '预处理中',
   ANALYZING: '分析中',
@@ -54,6 +56,7 @@ onMounted(loadData)
         </template>
       </el-table-column>
     </el-table>
+
     <el-pagination
       style="margin-top: 16px"
       background

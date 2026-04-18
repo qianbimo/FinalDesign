@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { createRegistrationApi, getRegistrationDoctorsApi } from '@/api/registration'
@@ -6,6 +6,7 @@ import { createRegistrationApi, getRegistrationDoctorsApi } from '@/api/registra
 const loading = ref(false)
 const doctorsLoading = ref(false)
 const doctorOptions = ref([])
+
 const form = reactive({
   doctorId: '',
   appointmentTime: '',
@@ -37,6 +38,7 @@ async function submit() {
     ElMessage.warning('请选择医生并填写预约时间')
     return
   }
+
   loading.value = true
   try {
     const data = await createRegistrationApi({
@@ -44,7 +46,7 @@ async function submit() {
       appointmentTime: form.appointmentTime,
       description: form.description
     })
-    ElMessage.success(`挂号申请已提交，记录 编号：${data.id}`)
+    ElMessage.success(`挂号申请已提交，挂号单编号：${data.id}`)
   } finally {
     loading.value = false
   }
@@ -56,6 +58,15 @@ onMounted(loadDoctors)
 <template>
   <el-card>
     <template #header>挂号申请</template>
+
+    <el-alert
+      title="患者只需完成挂号申请，后续由医生确认并上传CT影像。"
+      type="info"
+      :closable="false"
+      show-icon
+      style="margin-bottom: 16px"
+    />
+
     <el-form label-width="180px">
       <el-form-item label="选择医生">
         <el-select
@@ -64,7 +75,7 @@ onMounted(loadDoctors)
           clearable
           :loading="doctorsLoading"
           placeholder="请选择医生（姓名｜职称｜科室）"
-          style="width: 420px"
+          style="width: 480px"
         >
           <el-option
             v-for="doctor in doctorOptions"
@@ -74,6 +85,7 @@ onMounted(loadDoctors)
           />
         </el-select>
       </el-form-item>
+
       <el-form-item label="预约时间">
         <el-date-picker
           v-model="form.appointmentTime"
@@ -82,11 +94,13 @@ onMounted(loadDoctors)
           placeholder="请选择预约时间"
         />
       </el-form-item>
+
       <el-form-item label="病情描述">
         <el-input v-model="form.description" type="textarea" />
       </el-form-item>
+
       <el-form-item>
-        <el-button type="primary" :loading="loading" @click="submit">提交申请</el-button>
+        <el-button type="primary" :loading="loading" @click="submit">提交挂号申请</el-button>
       </el-form-item>
     </el-form>
   </el-card>
