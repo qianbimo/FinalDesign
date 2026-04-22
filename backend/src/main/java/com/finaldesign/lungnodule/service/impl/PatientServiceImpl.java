@@ -14,8 +14,10 @@ import com.finaldesign.lungnodule.mapper.CtStudyMapper;
 import com.finaldesign.lungnodule.mapper.PatientProfileMapper;
 import com.finaldesign.lungnodule.mapper.ReportRecordMapper;
 import com.finaldesign.lungnodule.service.PatientService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.Period;
 
 @Service
 public class PatientServiceImpl implements PatientService {
@@ -48,7 +50,12 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public void updateProfile(Long userId, PatientProfileUpdateRequest request) {
         PatientProfile profile = getProfileByUserId(userId);
-        BeanUtils.copyProperties(request, profile);
+        profile.setGender(request.getGender());
+        profile.setBirthday(request.getBirthday());
+        profile.setAge(resolveAgeByBirthday(request.getBirthday()));
+        profile.setIdCard(request.getIdCard());
+        profile.setAddress(request.getAddress());
+        profile.setRemark(request.getRemark());
         patientProfileMapper.updateById(profile);
     }
 
@@ -87,5 +94,18 @@ public class PatientServiceImpl implements PatientService {
                 .eq(ReportRecord::getStudyId, studyId)
                 .orderByDesc(ReportRecord::getVersionNo)
                 .last("limit 1"));
+    }
+
+    private Integer resolveAgeByBirthday(LocalDate birthday) {
+        if (birthday == null) {
+            return null;
+        }
+
+        LocalDate today = LocalDate.now();
+        if (birthday.isAfter(today)) {
+            throw new BusinessException(400, "出生日期不能晚于当前日期");
+        }
+
+        return Period.between(birthday, today).getYears();
     }
 }
