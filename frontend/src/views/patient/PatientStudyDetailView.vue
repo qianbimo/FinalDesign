@@ -38,13 +38,6 @@ const reportStatusMap = {
   FINAL: '最终版'
 }
 
-const viewTypeMap = {
-  AXIAL: '轴位',
-  CORONAL: '冠状位',
-  SAGITTAL: '矢状位',
-  THREE_D: '三维'
-}
-
 function studyStatusText(status) {
   return studyStatusMap[status] || '未知状态'
 }
@@ -57,12 +50,6 @@ function reportStatusText(status) {
   return reportStatusMap[status] || '未知状态'
 }
 
-function viewTypeText(viewType) {
-  return viewTypeMap[viewType] || '未知视图'
-}
-
-const annotationImages = computed(() => annotationData.value?.annotations || [])
-
 const originalPreviewUrl = computed(() => {
   const aiPreviewPath = annotationData.value?.originalPreviewPath
   if (aiPreviewPath) return toFileUrl(aiPreviewPath)
@@ -71,6 +58,16 @@ const originalPreviewUrl = computed(() => {
   if (imageFile) return toFileUrl(imageFile.filePath)
 
   return toFileUrl(`result/${studyId}/original_preview.png`)
+})
+
+const annotatedPreviewUrl = computed(() => {
+  const path = annotationData.value?.annotatedPreviewPath || `result/${studyId}/pipeline_annotated.png`
+  return toFileUrl(path)
+})
+
+const overlayPreviewUrl = computed(() => {
+  const path = annotationData.value?.overlayPreviewPath || `result/${studyId}/pipeline_overlay.png`
+  return toFileUrl(path)
 })
 
 function filePreviewUrl(file) {
@@ -167,23 +164,39 @@ onMounted(loadData)
     </el-card>
 
     <el-card style="margin-bottom: 16px">
-      <template #header>标注叠加图</template>
-      <el-empty v-if="annotationImages.length === 0" description="暂无标注叠加图" />
-      <el-row v-else :gutter="16">
-        <el-col v-for="item in annotationImages" :key="item.id" :xs="24" :sm="12" :lg="8" style="margin-bottom: 16px">
+      <template #header>标注与叠加图</template>
+      <el-row :gutter="16">
+        <el-col :xs="24" :md="12">
           <el-card shadow="hover">
-            <div style="font-weight: 600; margin-bottom: 8px">{{ viewTypeText(item.viewType) }}</div>
+            <div style="font-weight: 600; margin-bottom: 8px">标注图</div>
             <el-image
-              :src="toFileUrl(item.overlayPath)"
-              :preview-src-list="[toFileUrl(item.overlayPath)]"
+              :src="annotatedPreviewUrl"
+              :preview-src-list="[annotatedPreviewUrl]"
               fit="cover"
-              style="width: 100%; height: 180px; background: #f5f7fa"
+              style="width: 100%; height: 220px; background: #f5f7fa"
             >
               <template #error>
-                <div style="padding-top: 70px; text-align: center; color: #909399">标注图加载失败</div>
+                <div style="padding-top: 90px; text-align: center; color: #909399">标注图加载失败（pipeline_annotated.png）</div>
               </template>
             </el-image>
-            <div style="margin-top: 8px; color: #606266; font-size: 12px">{{ item.overlayPath }}</div>
+            <div style="margin-top: 8px; color: #606266; font-size: 12px">pipeline_annotated.png</div>
+          </el-card>
+        </el-col>
+
+        <el-col :xs="24" :md="12">
+          <el-card shadow="hover">
+            <div style="font-weight: 600; margin-bottom: 8px">叠加图</div>
+            <el-image
+              :src="overlayPreviewUrl"
+              :preview-src-list="[overlayPreviewUrl]"
+              fit="cover"
+              style="width: 100%; height: 220px; background: #f5f7fa"
+            >
+              <template #error>
+                <div style="padding-top: 90px; text-align: center; color: #909399">叠加图加载失败（pipeline_overlay.png）</div>
+              </template>
+            </el-image>
+            <div style="margin-top: 8px; color: #606266; font-size: 12px">pipeline_overlay.png</div>
           </el-card>
         </el-col>
       </el-row>

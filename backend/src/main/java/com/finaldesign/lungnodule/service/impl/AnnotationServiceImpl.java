@@ -51,6 +51,7 @@ public class AnnotationServiceImpl implements AnnotationService {
                     .studyId(studyId)
                     .originalPreviewPath(null)
                     .annotatedPreviewPath(null)
+                    .overlayPreviewPath(null)
                     .ctFiles(ctFiles)
                     .nodules(List.of())
                     .annotations(List.of())
@@ -64,18 +65,21 @@ public class AnnotationServiceImpl implements AnnotationService {
         String segmentationPath = null;
         String originalPreviewPath = null;
         String annotatedPreviewPath = null;
+        String overlayPreviewPath = null;
         if (aiTask.getResponseJson() != null) {
             AiPredictResponse response = JsonUtils.fromJson(aiTask.getResponseJson(), AiPredictResponse.class);
             segmentationPath = response.getSegmentationPath();
             String overlayPath = firstOverlayPath(response);
             originalPreviewPath = findPeerFigurePath(overlayPath, "pipeline_ct_slice.png");
             annotatedPreviewPath = findPeerFigurePath(overlayPath, "pipeline_annotated.png");
+            overlayPreviewPath = findPeerFigurePath(overlayPath, "pipeline_overlay.png");
         }
         return AnnotationStudyVO.builder()
                 .studyId(studyId)
                 .segmentationPath(segmentationPath)
                 .originalPreviewPath(originalPreviewPath)
                 .annotatedPreviewPath(annotatedPreviewPath)
+                .overlayPreviewPath(overlayPreviewPath)
                 .ctFiles(ctFiles)
                 .nodules(nodules)
                 .annotations(annotations)

@@ -15,6 +15,7 @@ public class AnnotationStudyVO {
     private String segmentationPath;
     private String originalPreviewPath;
     private String annotatedPreviewPath;
+    private String overlayPreviewPath;
     private List<CtFile> ctFiles;
     private List<NoduleResult> nodules;
     private List<AnnotationResult> annotations;

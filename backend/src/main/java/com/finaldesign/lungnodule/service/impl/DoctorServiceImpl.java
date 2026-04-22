@@ -19,6 +19,8 @@ import com.finaldesign.lungnodule.vo.DoctorStudyVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,11 +73,16 @@ public class DoctorServiceImpl implements DoctorService {
         List<DoctorPatientVO> records = profilePage.getRecords().stream()
                 .map(profile -> {
                     DoctorPatientVO vo = new DoctorPatientVO();
+                    Integer resolvedAge = resolveAgeByBirthday(profile.getBirthday(), profile.getAge());
+                    if (resolvedAge != null && !resolvedAge.equals(profile.getAge())) {
+                        profile.setAge(resolvedAge);
+                        patientProfileMapper.updateById(profile);
+                    }
                     vo.setId(profile.getId());
                     vo.setUserId(profile.getUserId());
                     vo.setPatientName(patientNameMap.get(profile.getUserId()));
                     vo.setGender(profile.getGender());
-                    vo.setAge(profile.getAge());
+                    vo.setAge(resolvedAge);
                     vo.setMedicalRecordNo(profile.getMedicalRecordNo());
                     vo.setAddress(profile.getAddress());
                     return vo;
@@ -146,5 +153,15 @@ public class DoctorServiceImpl implements DoctorService {
             userNameMap.put(user.getId(), user.getRealName());
         }
         return userNameMap;
+    }
+
+    private Integer resolveAgeByBirthday(LocalDate birthday, Integer fallbackAge) {
+        if (birthday == null) {
+            return fallbackAge;
+        }
+        if (birthday.isAfter(LocalDate.now())) {
+            return fallbackAge;
+        }
+        return Period.between(birthday, LocalDate.now()).getYears();
     }
 }
