@@ -78,8 +78,8 @@ class ResUNet3D(nn.Module):
         c = int(base_channels)
         self.enc1 = ResidualBlock3D(in_channels, c)
         self.enc2 = ResidualBlock3D(c, c * 2)  #此处添加了一个残差块，增加了模型的表达能力，同时保持了较低的参数量和计算复杂度。
-        self.enc3 = ResidualBlock3D(c * 2, c * 4)
-        self.enc4 = ResidualBlock3D(c * 4, c * 8)
+        self.enc3 = DownBlock(c * 2, c * 4)
+        self.enc4 = DownBlock(c * 4, c * 8)
         self.bottom = DownBlock(c * 8, c * 16)
 
         self.dec4 = UpBlock(c * 16, c * 8)
