@@ -15,6 +15,32 @@ function genderText(gender) {
   return genderMap[gender] || '未知'
 }
 
+function resolveAge(row) {
+  if (Number.isInteger(row?.age)) {
+    return `${row.age}`
+  }
+
+  if (!row?.birthday) {
+    return '-'
+  }
+
+  const birth = new Date(`${row.birthday}T00:00:00`)
+  if (Number.isNaN(birth.getTime())) {
+    return '-'
+  }
+
+  const now = new Date()
+  let age = now.getFullYear() - birth.getFullYear()
+  const monthDiff = now.getMonth() - birth.getMonth()
+  const dayDiff = now.getDate() - birth.getDate()
+
+  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+    age -= 1
+  }
+
+  return age < 0 ? '-' : `${age}`
+}
+
 async function loadData() {
   loading.value = true
   try {
@@ -40,7 +66,9 @@ onMounted(loadData)
       <el-table-column label="性别" width="100">
         <template #default="scope">{{ genderText(scope.row.gender) }}</template>
       </el-table-column>
-      <el-table-column prop="age" label="年龄" width="90" />
+      <el-table-column label="年龄" width="90">
+        <template #default="scope">{{ resolveAge(scope.row) }}</template>
+      </el-table-column>
       <el-table-column prop="address" label="地址" min-width="220" />
     </el-table>
 

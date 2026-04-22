@@ -83,6 +83,7 @@ public class DoctorServiceImpl implements DoctorService {
                     vo.setPatientName(patientNameMap.get(profile.getUserId()));
                     vo.setGender(profile.getGender());
                     vo.setAge(resolvedAge);
+                    vo.setBirthday(profile.getBirthday());
                     vo.setMedicalRecordNo(profile.getMedicalRecordNo());
                     vo.setAddress(profile.getAddress());
                     return vo;

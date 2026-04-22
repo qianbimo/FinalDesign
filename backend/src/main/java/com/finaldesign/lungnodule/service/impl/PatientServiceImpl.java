@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Objects;
 
 @Service
 public class PatientServiceImpl implements PatientService {
@@ -43,6 +44,12 @@ public class PatientServiceImpl implements PatientService {
                 .eq(PatientProfile::getUserId, userId));
         if (profile == null) {
             throw new BusinessException(404, "患者档案不存在");
+        }
+
+        Integer resolvedAge = resolveAgeByBirthday(profile.getBirthday(), profile.getAge());
+        if (!Objects.equals(resolvedAge, profile.getAge())) {
+            profile.setAge(resolvedAge);
+            patientProfileMapper.updateById(profile);
         }
         return profile;
     }
@@ -104,6 +111,19 @@ public class PatientServiceImpl implements PatientService {
         LocalDate today = LocalDate.now();
         if (birthday.isAfter(today)) {
             throw new BusinessException(400, "出生日期不能晚于当前日期");
+        }
+
+        return Period.between(birthday, today).getYears();
+    }
+
+    private Integer resolveAgeByBirthday(LocalDate birthday, Integer fallbackAge) {
+        if (birthday == null) {
+            return fallbackAge;
+        }
+
+        LocalDate today = LocalDate.now();
+        if (birthday.isAfter(today)) {
+            return fallbackAge;
         }
 
         return Period.between(birthday, today).getYears();
