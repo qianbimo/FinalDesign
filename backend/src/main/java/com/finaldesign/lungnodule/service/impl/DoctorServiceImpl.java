@@ -3,6 +3,7 @@ package com.finaldesign.lungnodule.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.finaldesign.lungnodule.dto.DoctorProfileUpdateRequest;
 import com.finaldesign.lungnodule.entity.CtStudy;
 import com.finaldesign.lungnodule.entity.DoctorProfile;
 import com.finaldesign.lungnodule.entity.PatientProfile;
@@ -15,6 +16,7 @@ import com.finaldesign.lungnodule.mapper.SysUserMapper;
 import com.finaldesign.lungnodule.service.DoctorService;
 import com.finaldesign.lungnodule.vo.DoctorPatientVO;
 import com.finaldesign.lungnodule.vo.DoctorStudyVO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -47,6 +49,13 @@ public class DoctorServiceImpl implements DoctorService {
             throw new BusinessException(404, "医生档案不存在");
         }
         return profile;
+    }
+
+    @Override
+    public void updateProfile(Long userId, DoctorProfileUpdateRequest request) {
+        DoctorProfile profile = getProfileByUserId(userId);
+        BeanUtils.copyProperties(request, profile);
+        doctorProfileMapper.updateById(profile);
     }
 
     @Override

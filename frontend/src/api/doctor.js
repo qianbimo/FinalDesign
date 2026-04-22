@@ -4,6 +4,10 @@ export function getDoctorProfileApi() {
   return request({ url: '/api/doctor/profile', method: 'get' })
 }
 
+export function updateDoctorProfileApi(data) {
+  return request({ url: '/api/doctor/profile', method: 'put', data })
+}
+
 export function getDoctorPatientsApi(params) {
   return request({ url: '/api/doctor/patients', method: 'get', params })
 }

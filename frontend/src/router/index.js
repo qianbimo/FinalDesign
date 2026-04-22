@@ -69,31 +69,19 @@ const routes = [
         path: 'doctor/studies',
         name: 'DoctorStudies',
         component: () => import('@/views/doctor/DoctorStudiesView.vue'),
-        meta: { title: '病例列表', roles: ['DOCTOR'], menu: true }
+        meta: { title: '报告中心', roles: ['DOCTOR'], menu: true }
       },
       {
         path: 'doctor/upload',
         name: 'DoctorUpload',
         component: () => import('@/views/doctor/DoctorUploadView.vue'),
-        meta: { title: 'CT上传', roles: ['DOCTOR'], menu: true }
+        meta: { title: '挂号处理', roles: ['DOCTOR'], menu: true }
       },
       {
         path: 'doctor/studies/:patientId/:studyId',
         name: 'DoctorStudyDetail',
         component: () => import('@/views/doctor/DoctorStudyDetailView.vue'),
         meta: { title: '病例详情', roles: ['DOCTOR'] }
-      },
-      {
-        path: 'doctor/reports',
-        name: 'DoctorReports',
-        component: () => import('@/views/doctor/DoctorReportsView.vue'),
-        meta: { title: '报告中心', roles: ['DOCTOR'], menu: true }
-      },
-      {
-        path: 'doctor/annotations',
-        name: 'DoctorAnnotations',
-        component: () => import('@/views/doctor/DoctorAnnotationsView.vue'),
-        meta: { title: '标注查看', roles: ['DOCTOR'], menu: true }
       },
       {
         path: 'admin/dashboard',
