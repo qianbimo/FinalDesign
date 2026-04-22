@@ -19,14 +19,13 @@ onMounted(loadData)
 
 <template>
   <el-card v-loading="loading">
-    <template #header>åŒ»ç”Ÿèµ„æ–™</template>
+    <template #header>Ò½Éú×ÊÁÏ</template>
     <el-descriptions :column="2" border>
-      <el-descriptions-item label="ç¼–å·">{{ profile?.id }}</el-descriptions-item>
-      <el-descriptions-item label="ç§‘å®¤">{{ profile?.department }}</el-descriptions-item>
-      <el-descriptions-item label="èŒç§°">{{ profile?.title }}</el-descriptions-item>
-      <el-descriptions-item label="ä¸“ä¸šæ–¹å‘">{{ profile?.specialty }}</el-descriptions-item>
-      <el-descriptions-item label="æ‰§ä¸šè¯å·">{{ profile?.licenseNo }}</el-descriptions-item>
-      <el-descriptions-item label="ä¸ªäººç®€ä»‹">{{ profile?.introduction }}</el-descriptions-item>
+      <el-descriptions-item label="±àºÅ">{{ profile?.id }}</el-descriptions-item>
+      <el-descriptions-item label="¿ÆÊÒ">{{ profile?.department }}</el-descriptions-item>
+      <el-descriptions-item label="Ö°³Æ">{{ profile?.title }}</el-descriptions-item>
+      <el-descriptions-item label="Ö´ÒµÖ¤ºÅ">{{ profile?.licenseNo }}</el-descriptions-item>
+      <el-descriptions-item label="¸öÈË¼ò½é">{{ profile?.introduction }}</el-descriptions-item>
     </el-descriptions>
   </el-card>
 </template>

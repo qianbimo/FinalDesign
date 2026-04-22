@@ -12,9 +12,6 @@ const form = reactive({
   idCard: '',
   medicalRecordNo: '',
   address: '',
-  allergyHistory: '',
-  pastHistory: '',
-  familyHistory: '',
   remark: ''
 })
 
@@ -67,9 +64,6 @@ onMounted(loadProfile)
       <el-form-item label="身份证号"><el-input v-model="form.idCard" /></el-form-item>
       <el-form-item label="病历号"><el-input v-model="form.medicalRecordNo" /></el-form-item>
       <el-form-item label="地址"><el-input v-model="form.address" /></el-form-item>
-      <el-form-item label="过敏史"><el-input v-model="form.allergyHistory" type="textarea" /></el-form-item>
-      <el-form-item label="既往史"><el-input v-model="form.pastHistory" type="textarea" /></el-form-item>
-      <el-form-item label="家族史"><el-input v-model="form.familyHistory" type="textarea" /></el-form-item>
       <el-form-item label="备注"><el-input v-model="form.remark" type="textarea" /></el-form-item>
     </el-form>
   </el-card>

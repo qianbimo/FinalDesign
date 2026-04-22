@@ -63,7 +63,6 @@ public class RegistrationServiceImpl implements RegistrationService {
                     vo.setRealName(user.getRealName());
                     vo.setDepartment(profile.getDepartment());
                     vo.setTitle(profile.getTitle());
-                    vo.setSpecialty(profile.getSpecialty());
                     return vo;
                 })
                 .toList();

@@ -20,8 +20,5 @@ public class PatientProfile extends BaseEntity {
     private String idCard;
     private String medicalRecordNo;
     private String address;
-    private String allergyHistory;
-    private String pastHistory;
-    private String familyHistory;
     private String remark;
 }

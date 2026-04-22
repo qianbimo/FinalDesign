@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS ai_task;
 DROP TABLE IF EXISTS ct_file;
 DROP TABLE IF EXISTS ct_study;
 DROP TABLE IF EXISTS registration_record;
+DROP TABLE IF EXISTS admin;
 DROP TABLE IF EXISTS doctor_profile;
 DROP TABLE IF EXISTS patient_profile;
 DROP TABLE IF EXISTS sys_user;
@@ -30,6 +31,16 @@ CREATE TABLE sys_user (
     UNIQUE KEY uk_sys_user_username (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统用户表';
 
+CREATE TABLE admin (
+    id BIGINT NOT NULL COMMENT '主键ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID(sys_user.id)',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_admin_user_id (user_id),
+    CONSTRAINT fk_admin_user FOREIGN KEY (user_id) REFERENCES sys_user(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员表';
+
 CREATE TABLE patient_profile (
     id BIGINT NOT NULL COMMENT '主键ID',
     user_id BIGINT NOT NULL COMMENT '用户ID',
@@ -39,9 +50,6 @@ CREATE TABLE patient_profile (
     id_card VARCHAR(32) NULL COMMENT '身份证号',
     medical_record_no VARCHAR(64) NULL COMMENT '病历号',
     address VARCHAR(255) NULL COMMENT '地址',
-    allergy_history TEXT NULL COMMENT '过敏史',
-    past_history TEXT NULL COMMENT '既往史',
-    family_history TEXT NULL COMMENT '家族史',
     remark VARCHAR(500) NULL COMMENT '备注',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -56,7 +64,6 @@ CREATE TABLE doctor_profile (
     user_id BIGINT NOT NULL COMMENT '用户ID',
     department VARCHAR(100) NULL COMMENT '科室',
     title VARCHAR(100) NULL COMMENT '职称',
-    specialty VARCHAR(255) NULL COMMENT '擅长领域',
     license_no VARCHAR(100) NULL COMMENT '执业证号',
     introduction TEXT NULL COMMENT '个人简介',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
