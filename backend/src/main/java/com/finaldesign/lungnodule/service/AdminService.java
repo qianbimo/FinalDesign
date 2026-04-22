@@ -17,5 +17,7 @@ public interface AdminService {
 
     void resetPassword(Long userId, String newPassword);
 
+    void deleteUser(Long currentUserId, Long userId);
+
     AdminDashboardVO dashboard();
 }

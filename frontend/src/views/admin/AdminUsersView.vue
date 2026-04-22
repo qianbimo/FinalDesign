@@ -1,8 +1,9 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   createAdminUserApi,
+  deleteAdminUserApi,
   getAdminUsersApi,
   resetAdminUserPasswordApi,
   updateAdminUserStatusApi
@@ -95,6 +96,26 @@ async function resetPassword(row) {
   ElMessage.success(`已重置密码为 123456：${row.username}`)
 }
 
+async function deleteUser(row) {
+  await ElMessageBox.confirm(
+    `确认删除用户 ${row.username} 吗？该操作不可恢复。`,
+    '删除确认',
+    {
+      type: 'warning',
+      confirmButtonText: '删除',
+      cancelButtonText: '取消'
+    }
+  )
+
+  await deleteAdminUserApi(row.id)
+  ElMessage.success('用户已删除')
+
+  if (tableData.value.length === 1 && pager.current > 1) {
+    pager.current -= 1
+  }
+  await loadData()
+}
+
 onMounted(loadData)
 </script>
 
@@ -147,6 +168,7 @@ onMounted(loadData)
             {{ scope.row.status === 1 ? '禁用' : '启用' }}
           </el-button>
           <el-button link type="warning" @click="resetPassword(scope.row)">重置密码</el-button>
+          <el-button link type="danger" @click="deleteUser(scope.row)">删除用户</el-button>
         </template>
       </el-table-column>
     </el-table>

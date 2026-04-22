@@ -24,6 +24,13 @@ export function resetAdminUserPasswordApi(id, newPassword) {
   })
 }
 
+export function deleteAdminUserApi(id) {
+  return request({
+    url: `/api/admin/users/${id}`,
+    method: 'delete'
+  })
+}
+
 export function getAdminDashboardApi() {
   return request({ url: '/api/admin/dashboard', method: 'get' })
 }

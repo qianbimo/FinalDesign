@@ -30,7 +30,10 @@ const errorMessageMap = {
   'Study must be created from registration first': '请先基于挂号单创建检查记录',
   'File size exceeds limit': '文件大小超出限制',
   'Report not found': '报告不存在',
-  'Registration record not found': '挂号记录不存在'
+  'Registration record not found': '挂号记录不存在',
+  'Cannot delete current user': '不能删除当前登录账号',
+  'Cannot delete last admin': '不能删除最后一个管理员账号',
+  'User has related records and cannot be deleted': '该用户已有业务关联数据，暂不允许删除'
 }
 
 function toReadableMessage(message, fallback) {

@@ -6,6 +6,7 @@ import com.finaldesign.lungnodule.common.Result;
 import com.finaldesign.lungnodule.dto.AdminResetPasswordRequest;
 import com.finaldesign.lungnodule.dto.AdminUserCreateRequest;
 import com.finaldesign.lungnodule.dto.AdminUserStatusUpdateRequest;
+import com.finaldesign.lungnodule.security.CurrentUserUtil;
 import com.finaldesign.lungnodule.service.AdminService;
 import com.finaldesign.lungnodule.vo.AdminDashboardVO;
 import com.finaldesign.lungnodule.vo.AdminReportVO;
@@ -13,6 +14,7 @@ import com.finaldesign.lungnodule.vo.AdminUserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -77,6 +79,13 @@ public class AdminController {
                                       @RequestBody(required = false) AdminResetPasswordRequest request) {
         adminService.resetPassword(userId, request == null ? null : request.getNewPassword());
         return Result.success("Password reset", null);
+    }
+
+    @DeleteMapping("/users/{id}")
+    @Operation(summary = "Admin delete user")
+    public Result<Void> deleteUser(@PathVariable("id") Long userId) {
+        adminService.deleteUser(CurrentUserUtil.userId(), userId);
+        return Result.success("Deleted", null);
     }
 
     @GetMapping("/dashboard")

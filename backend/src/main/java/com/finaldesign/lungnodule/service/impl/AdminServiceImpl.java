@@ -9,6 +9,7 @@ import com.finaldesign.lungnodule.entity.AiTask;
 import com.finaldesign.lungnodule.entity.CtStudy;
 import com.finaldesign.lungnodule.entity.DoctorProfile;
 import com.finaldesign.lungnodule.entity.PatientProfile;
+import com.finaldesign.lungnodule.entity.RegistrationRecord;
 import com.finaldesign.lungnodule.entity.ReportRecord;
 import com.finaldesign.lungnodule.entity.SysUser;
 import com.finaldesign.lungnodule.exception.BusinessException;
@@ -17,6 +18,7 @@ import com.finaldesign.lungnodule.mapper.AdminMapper;
 import com.finaldesign.lungnodule.mapper.CtStudyMapper;
 import com.finaldesign.lungnodule.mapper.DoctorProfileMapper;
 import com.finaldesign.lungnodule.mapper.PatientProfileMapper;
+import com.finaldesign.lungnodule.mapper.RegistrationRecordMapper;
 import com.finaldesign.lungnodule.mapper.ReportRecordMapper;
 import com.finaldesign.lungnodule.mapper.SysUserMapper;
 import com.finaldesign.lungnodule.service.AdminService;
@@ -41,6 +43,7 @@ public class AdminServiceImpl implements AdminService {
     private final PatientProfileMapper patientProfileMapper;
     private final DoctorProfileMapper doctorProfileMapper;
     private final AdminMapper adminMapper;
+    private final RegistrationRecordMapper registrationRecordMapper;
     private final CtStudyMapper ctStudyMapper;
     private final AiTaskMapper aiTaskMapper;
     private final ReportRecordMapper reportRecordMapper;
@@ -50,6 +53,7 @@ public class AdminServiceImpl implements AdminService {
                             PatientProfileMapper patientProfileMapper,
                             DoctorProfileMapper doctorProfileMapper,
                             AdminMapper adminMapper,
+                            RegistrationRecordMapper registrationRecordMapper,
                             CtStudyMapper ctStudyMapper,
                             AiTaskMapper aiTaskMapper,
                             ReportRecordMapper reportRecordMapper,
@@ -58,6 +62,7 @@ public class AdminServiceImpl implements AdminService {
         this.patientProfileMapper = patientProfileMapper;
         this.doctorProfileMapper = doctorProfileMapper;
         this.adminMapper = adminMapper;
+        this.registrationRecordMapper = registrationRecordMapper;
         this.ctStudyMapper = ctStudyMapper;
         this.aiTaskMapper = aiTaskMapper;
         this.reportRecordMapper = reportRecordMapper;
@@ -288,6 +293,31 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteUser(Long currentUserId, Long userId) {
+        SysUser user = sysUserMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException(404, "User not found");
+        }
+        if (currentUserId != null && currentUserId.equals(userId)) {
+            throw new BusinessException(400, "Cannot delete current user");
+        }
+
+        String role = user.getRole();
+        if ("PATIENT".equals(role)) {
+            deletePatientUser(userId);
+        } else if ("DOCTOR".equals(role)) {
+            deleteDoctorUser(userId);
+        } else if ("ADMIN".equals(role)) {
+            deleteAdminUser(userId);
+        } else {
+            throw new BusinessException(400, "Invalid role");
+        }
+
+        sysUserMapper.deleteById(userId);
+    }
+
+    @Override
     public AdminDashboardVO dashboard() {
         AdminDashboardVO vo = new AdminDashboardVO();
         vo.setTotalUsers(sysUserMapper.selectCount(new LambdaQueryWrapper<SysUser>()));
@@ -299,5 +329,59 @@ public class AdminServiceImpl implements AdminService {
         vo.setTotalAiTasks(aiTaskMapper.selectCount(new LambdaQueryWrapper<AiTask>()));
         vo.setTotalReports(reportRecordMapper.selectCount(new LambdaQueryWrapper<ReportRecord>()));
         return vo;
+    }
+
+    private void deletePatientUser(Long userId) {
+        PatientProfile profile = patientProfileMapper.selectOne(new LambdaQueryWrapper<PatientProfile>()
+                .eq(PatientProfile::getUserId, userId));
+        if (profile == null) {
+            return;
+        }
+
+        Long registrationCount = registrationRecordMapper.selectCount(new LambdaQueryWrapper<RegistrationRecord>()
+                .eq(RegistrationRecord::getPatientId, profile.getId()));
+        Long studyCount = ctStudyMapper.selectCount(new LambdaQueryWrapper<CtStudy>()
+                .eq(CtStudy::getPatientId, profile.getId()));
+        Long reportCount = reportRecordMapper.selectCount(new LambdaQueryWrapper<ReportRecord>()
+                .eq(ReportRecord::getPatientId, profile.getId()));
+        if (registrationCount > 0 || studyCount > 0 || reportCount > 0) {
+            throw new BusinessException(400, "User has related records and cannot be deleted");
+        }
+
+        patientProfileMapper.deleteById(profile.getId());
+    }
+
+    private void deleteDoctorUser(Long userId) {
+        DoctorProfile profile = doctorProfileMapper.selectOne(new LambdaQueryWrapper<DoctorProfile>()
+                .eq(DoctorProfile::getUserId, userId));
+        if (profile == null) {
+            return;
+        }
+
+        Long registrationCount = registrationRecordMapper.selectCount(new LambdaQueryWrapper<RegistrationRecord>()
+                .eq(RegistrationRecord::getDoctorId, profile.getId()));
+        Long studyCount = ctStudyMapper.selectCount(new LambdaQueryWrapper<CtStudy>()
+                .eq(CtStudy::getDoctorId, profile.getId()));
+        Long reportCount = reportRecordMapper.selectCount(new LambdaQueryWrapper<ReportRecord>()
+                .eq(ReportRecord::getDoctorId, profile.getId()));
+        if (registrationCount > 0 || studyCount > 0 || reportCount > 0) {
+            throw new BusinessException(400, "User has related records and cannot be deleted");
+        }
+
+        doctorProfileMapper.deleteById(profile.getId());
+    }
+
+    private void deleteAdminUser(Long userId) {
+        Long adminCount = sysUserMapper.selectCount(new LambdaQueryWrapper<SysUser>()
+                .eq(SysUser::getRole, "ADMIN"));
+        if (adminCount <= 1) {
+            throw new BusinessException(400, "Cannot delete last admin");
+        }
+
+        Admin admin = adminMapper.selectOne(new LambdaQueryWrapper<Admin>()
+                .eq(Admin::getUserId, userId));
+        if (admin != null) {
+            adminMapper.deleteById(admin.getId());
+        }
     }
 }
