@@ -1,7 +1,8 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { getRegistrationListApi } from '@/api/registration'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -58,11 +59,69 @@ const roleViews = {
   }
 }
 
+const isDoctor = computed(() => authStore.role === 'DOCTOR')
 const currentView = computed(() => roleViews[authStore.role] || roleViews.PATIENT)
+const pendingRegistrationCount = ref(0)
+const pendingCountLoading = ref(false)
+const pendingCountLoadError = ref(false)
+
+const pendingRegistrationCountText = computed(() => {
+  if (pendingCountLoading.value) return '...'
+  return String(pendingRegistrationCount.value)
+})
+
+const pendingRegistrationStatusText = computed(() => {
+  if (!isDoctor.value) return ''
+  if (pendingCountLoading.value) return '正在统计未处理挂号'
+  if (pendingCountLoadError.value) return '统计失败，请稍后重试'
+  if (pendingRegistrationCount.value === 0) return '当前没有待处理挂号'
+  return '请优先处理待确认挂号'
+})
+
+async function loadDoctorPendingRegistrationCount() {
+  if (!isDoctor.value) return
+
+  pendingCountLoading.value = true
+  pendingCountLoadError.value = false
+
+  try {
+    const size = 200
+    let current = 1
+    let count = 0
+    let scannedPages = 0
+
+    while (scannedPages < 1000) {
+      const data = await getRegistrationListApi({ current, size })
+      const records = data?.records || []
+      const total = Number(data?.total || records.length)
+
+      records.forEach((item) => {
+        if (item?.status === 'PENDING') {
+          count += 1
+        }
+      })
+
+      scannedPages += 1
+      if (records.length === 0 || current * size >= total) break
+      current += 1
+    }
+
+    pendingRegistrationCount.value = count
+  } catch (error) {
+    pendingCountLoadError.value = true
+    pendingRegistrationCount.value = 0
+  } finally {
+    pendingCountLoading.value = false
+  }
+}
 
 function to(path) {
   router.push(path)
 }
+
+onMounted(() => {
+  loadDoctorPendingRegistrationCount()
+})
 </script>
 
 <template>
@@ -78,6 +137,23 @@ function to(path) {
         <div class="stat-card__label">{{ item.label }}</div>
         <div class="stat-card__value">{{ item.value }}</div>
         <div class="stat-card__note">{{ item.note }}</div>
+      </article>
+    </section>
+
+    <section v-if="isDoctor" class="doctor-pending-panel">
+      <article
+        class="doctor-pending-card"
+        :class="{ 'is-loading': pendingCountLoading, 'has-error': pendingCountLoadError }"
+      >
+        <div class="doctor-pending-card__icon">待</div>
+        <div class="doctor-pending-card__body">
+          <div class="doctor-pending-card__label">未处理挂号</div>
+          <div class="doctor-pending-card__value">{{ pendingRegistrationCountText }}</div>
+          <div class="doctor-pending-card__hint">{{ pendingRegistrationStatusText }}</div>
+        </div>
+        <button class="doctor-pending-card__action" type="button" @click="loadDoctorPendingRegistrationCount">
+          刷新
+        </button>
       </article>
     </section>
 
@@ -109,3 +185,108 @@ function to(path) {
     </section>
   </div>
 </template>
+
+<style scoped>
+.doctor-pending-panel {
+  margin-bottom: 16px;
+}
+
+.doctor-pending-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-radius: 14px;
+  padding: 16px 18px;
+  border: 1px solid #dbeafe;
+  background: linear-gradient(120deg, #eff6ff 0%, #f8fafc 100%);
+  box-shadow: 0 8px 18px rgba(30, 64, 175, 0.08);
+}
+
+.doctor-pending-card__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2563eb;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.doctor-pending-card__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.doctor-pending-card__label {
+  font-size: 13px;
+  color: #2563eb;
+  margin-bottom: 4px;
+}
+
+.doctor-pending-card__value {
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.doctor-pending-card__hint {
+  font-size: 13px;
+  color: #475569;
+}
+
+.doctor-pending-card__action {
+  border: 0;
+  border-radius: 10px;
+  padding: 8px 14px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.doctor-pending-card__action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.24);
+  background: #1d4ed8;
+}
+
+.doctor-pending-card.is-loading .doctor-pending-card__value {
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.doctor-pending-card.has-error {
+  border-color: #fecaca;
+  background: linear-gradient(120deg, #fff1f2 0%, #fff7ed 100%);
+}
+
+.doctor-pending-card.has-error .doctor-pending-card__icon {
+  background: #dc2626;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (max-width: 768px) {
+  .doctor-pending-card {
+    flex-wrap: wrap;
+  }
+
+  .doctor-pending-card__action {
+    width: 100%;
+  }
+}
+</style>

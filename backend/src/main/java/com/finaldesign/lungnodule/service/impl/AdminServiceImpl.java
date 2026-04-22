@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -328,7 +329,29 @@ public class AdminServiceImpl implements AdminService {
         vo.setTotalStudies(ctStudyMapper.selectCount(new LambdaQueryWrapper<CtStudy>()));
         vo.setTotalAiTasks(aiTaskMapper.selectCount(new LambdaQueryWrapper<AiTask>()));
         vo.setTotalReports(reportRecordMapper.selectCount(new LambdaQueryWrapper<ReportRecord>()));
+        vo.setStudyStatusStats(queryStudyStatusStats());
+        vo.setReportStatusStats(queryReportStatusStats());
         return vo;
+    }
+
+    private Map<String, Long> queryStudyStatusStats() {
+        List<CtStudy> studies = ctStudyMapper.selectList(new LambdaQueryWrapper<CtStudy>()
+                .select(CtStudy::getStatus));
+        return studies.stream()
+                .collect(Collectors.groupingBy(
+                        item -> StringUtils.defaultIfBlank(item.getStatus(), "UNKNOWN"),
+                        LinkedHashMap::new,
+                        Collectors.counting()));
+    }
+
+    private Map<String, Long> queryReportStatusStats() {
+        List<ReportRecord> reports = reportRecordMapper.selectList(new LambdaQueryWrapper<ReportRecord>()
+                .select(ReportRecord::getStatus));
+        return reports.stream()
+                .collect(Collectors.groupingBy(
+                        item -> StringUtils.defaultIfBlank(item.getStatus(), "UNKNOWN"),
+                        LinkedHashMap::new,
+                        Collectors.counting()));
     }
 
     private void deletePatientUser(Long userId) {

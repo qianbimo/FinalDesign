@@ -162,12 +162,16 @@ onMounted(loadData)
       <el-table-column label="状态" width="100">
         <template #default="scope">{{ statusText(scope.row.status) }}</template>
       </el-table-column>
-      <el-table-column label="操作" min-width="220">
+      <el-table-column label="操作" min-width="260">
         <template #default="scope">
-          <el-button link type="primary" @click="toggleStatus(scope.row)">
+          <el-button
+            link
+            :type="scope.row.status === 1 ? 'warning' : 'success'"
+            @click="toggleStatus(scope.row)"
+          >
             {{ scope.row.status === 1 ? '禁用' : '启用' }}
           </el-button>
-          <el-button link type="warning" @click="resetPassword(scope.row)">重置密码</el-button>
+          <el-button link type="primary" @click="resetPassword(scope.row)">重置密码</el-button>
           <el-button link type="danger" @click="deleteUser(scope.row)">删除用户</el-button>
         </template>
       </el-table-column>
