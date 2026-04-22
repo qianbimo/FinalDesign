@@ -9,5 +9,4 @@ public class RegistrationDoctorOptionVO {
     private String realName;
     private String department;
     private String title;
-    private String specialty;
 }

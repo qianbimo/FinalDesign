@@ -3,6 +3,7 @@ package com.finaldesign.lungnodule.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.finaldesign.lungnodule.entity.Admin;
 import com.finaldesign.lungnodule.dto.AdminUserCreateRequest;
 import com.finaldesign.lungnodule.entity.AiTask;
 import com.finaldesign.lungnodule.entity.CtStudy;
@@ -12,6 +13,7 @@ import com.finaldesign.lungnodule.entity.ReportRecord;
 import com.finaldesign.lungnodule.entity.SysUser;
 import com.finaldesign.lungnodule.exception.BusinessException;
 import com.finaldesign.lungnodule.mapper.AiTaskMapper;
+import com.finaldesign.lungnodule.mapper.AdminMapper;
 import com.finaldesign.lungnodule.mapper.CtStudyMapper;
 import com.finaldesign.lungnodule.mapper.DoctorProfileMapper;
 import com.finaldesign.lungnodule.mapper.PatientProfileMapper;
@@ -38,6 +40,7 @@ public class AdminServiceImpl implements AdminService {
     private final SysUserMapper sysUserMapper;
     private final PatientProfileMapper patientProfileMapper;
     private final DoctorProfileMapper doctorProfileMapper;
+    private final AdminMapper adminMapper;
     private final CtStudyMapper ctStudyMapper;
     private final AiTaskMapper aiTaskMapper;
     private final ReportRecordMapper reportRecordMapper;
@@ -46,6 +49,7 @@ public class AdminServiceImpl implements AdminService {
     public AdminServiceImpl(SysUserMapper sysUserMapper,
                             PatientProfileMapper patientProfileMapper,
                             DoctorProfileMapper doctorProfileMapper,
+                            AdminMapper adminMapper,
                             CtStudyMapper ctStudyMapper,
                             AiTaskMapper aiTaskMapper,
                             ReportRecordMapper reportRecordMapper,
@@ -53,6 +57,7 @@ public class AdminServiceImpl implements AdminService {
         this.sysUserMapper = sysUserMapper;
         this.patientProfileMapper = patientProfileMapper;
         this.doctorProfileMapper = doctorProfileMapper;
+        this.adminMapper = adminMapper;
         this.ctStudyMapper = ctStudyMapper;
         this.aiTaskMapper = aiTaskMapper;
         this.reportRecordMapper = reportRecordMapper;
@@ -83,6 +88,7 @@ public class AdminServiceImpl implements AdminService {
 
         Map<Long, Long> patientProfileMap = new HashMap<>();
         Map<Long, Long> doctorProfileMap = new HashMap<>();
+        Map<Long, Long> adminProfileMap = new HashMap<>();
 
         if (!userIds.isEmpty()) {
             List<PatientProfile> patients = patientProfileMapper.selectList(new LambdaQueryWrapper<PatientProfile>()
@@ -94,6 +100,11 @@ public class AdminServiceImpl implements AdminService {
                     .in(DoctorProfile::getUserId, userIds));
             doctorProfileMap.putAll(doctors.stream()
                     .collect(Collectors.toMap(DoctorProfile::getUserId, DoctorProfile::getId)));
+
+            List<Admin> admins = adminMapper.selectList(new LambdaQueryWrapper<Admin>()
+                    .in(Admin::getUserId, userIds));
+            adminProfileMap.putAll(admins.stream()
+                    .collect(Collectors.toMap(Admin::getUserId, Admin::getId)));
         }
 
         List<AdminUserVO> vos = userPage.getRecords().stream().map(user -> {
@@ -110,6 +121,8 @@ public class AdminServiceImpl implements AdminService {
                 vo.setProfileId(patientProfileMap.get(user.getId()));
             } else if ("DOCTOR".equals(user.getRole())) {
                 vo.setProfileId(doctorProfileMap.get(user.getId()));
+            } else if ("ADMIN".equals(user.getRole())) {
+                vo.setProfileId(adminProfileMap.get(user.getId()));
             }
             return vo;
         }).toList();
@@ -242,6 +255,10 @@ public class AdminServiceImpl implements AdminService {
             DoctorProfile profile = new DoctorProfile();
             profile.setUserId(user.getId());
             doctorProfileMapper.insert(profile);
+        } else if ("ADMIN".equals(request.getRole())) {
+            Admin admin = new Admin();
+            admin.setUserId(user.getId());
+            adminMapper.insert(admin);
         }
         return user.getId();
     }

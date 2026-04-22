@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -83,79 +83,229 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="auth-page">
-    <el-card class="auth-card" shadow="hover">
-      <h2 class="title">患者注册</h2>
-      <p class="subtitle">公开注册仅支持患者角色</p>
+  <div class="register-shell">
+    <section class="register-info">
+      <div class="register-info__card">
+        <span class="register-chip">患者注册入口</span>
+        <h1>先建立患者账号，再开始你的挂号和检查流程</h1>
+        <p>
+          公开注册仅面向患者。医生与管理员账号建议由平台管理员统一维护，这样角色权限和业务边界会更清晰。
+        </p>
 
-      <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" type="password" show-password placeholder="请输入密码" />
-        </el-form-item>
-        <el-form-item label="确认密码" prop="confirmPassword">
-          <el-input
-            v-model="form.confirmPassword"
-            type="password"
-            show-password
-            placeholder="请再次输入密码"
-          />
-        </el-form-item>
-        <el-form-item label="真实姓名" prop="realName">
-          <el-input v-model="form.realName" placeholder="请输入真实姓名" />
-        </el-form-item>
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="form.phone" placeholder="选填" />
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="选填" />
-        </el-form-item>
-        <el-button type="primary" :loading="loading" class="w-full" @click="onSubmit">注册</el-button>
-      </el-form>
-
-      <div class="footer-link">
-        <span>已有账号？</span>
-        <el-link type="primary" @click="router.push('/login')">返回登录</el-link>
+        <div class="register-steps">
+          <article>
+            <strong>01</strong>
+            <span>创建账号并填写姓名、联系方式等基础信息</span>
+          </article>
+          <article>
+            <strong>02</strong>
+            <span>进入患者端提交挂号申请，选择医生和预约时间</span>
+          </article>
+          <article>
+            <strong>03</strong>
+            <span>在检查记录中持续查看 AI 结果和最终报告</span>
+          </article>
+        </div>
       </div>
-    </el-card>
+    </section>
+
+    <section class="register-form-wrap">
+      <div class="register-card">
+        <div class="register-card__head">
+          <h2>创建患者账号</h2>
+          <p>完成注册后即可进入患者角色页面</p>
+        </div>
+
+        <el-form ref="formRef" :model="form" :rules="rules" label-position="top">
+          <div class="register-grid">
+            <el-form-item label="用户名" prop="username">
+              <el-input v-model="form.username" placeholder="请输入用户名" />
+            </el-form-item>
+            <el-form-item label="真实姓名" prop="realName">
+              <el-input v-model="form.realName" placeholder="请输入真实姓名" />
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+              <el-input v-model="form.password" type="password" show-password placeholder="请输入密码" />
+            </el-form-item>
+            <el-form-item label="确认密码" prop="confirmPassword">
+              <el-input
+                v-model="form.confirmPassword"
+                type="password"
+                show-password
+                placeholder="请再次输入密码"
+              />
+            </el-form-item>
+            <el-form-item label="手机号" prop="phone">
+              <el-input v-model="form.phone" placeholder="选填" />
+            </el-form-item>
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="form.email" placeholder="选填" />
+            </el-form-item>
+          </div>
+
+          <el-button type="primary" class="register-submit" :loading="loading" @click="onSubmit">完成注册</el-button>
+        </el-form>
+
+        <div class="register-card__foot">
+          <span>已有账号？</span>
+          <el-link type="primary" @click="router.push('/login')">返回登录</el-link>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
-.auth-page {
+.register-shell {
   min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background:
+    radial-gradient(circle at 10% 18%, rgba(123, 221, 188, 0.2), transparent 24%),
+    radial-gradient(circle at 84% 22%, rgba(103, 170, 255, 0.16), transparent 22%),
+    linear-gradient(145deg, #f7fcfb 0%, #eef5ff 56%, #fffaf0 100%);
+}
+
+.register-info,
+.register-form-wrap {
+  padding: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
 }
 
-.auth-card {
-  width: 460px;
-  border-radius: 14px;
+.register-info__card {
+  max-width: 620px;
 }
 
-.title {
+.register-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  color: #12584a;
+  background: rgba(200, 241, 229, 0.92);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.register-info__card h1 {
+  margin: 20px 0 14px;
+  font-size: 46px;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+
+.register-info__card p {
   margin: 0;
-  font-size: 24px;
+  color: #61718f;
+  line-height: 1.9;
 }
 
-.subtitle {
-  margin: 8px 0 20px;
-  color: #6b7280;
+.register-steps {
+  margin-top: 28px;
+  display: grid;
+  gap: 14px;
 }
 
-.w-full {
+.register-steps article {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 18px 36px rgba(21, 34, 62, 0.08);
+}
+
+.register-steps strong {
+  width: 72px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  color: #17475f;
+  background: linear-gradient(135deg, #ffd79d, #cdefff 72%);
+  font-size: 18px;
+  letter-spacing: 0.08em;
+}
+
+.register-steps span {
+  line-height: 1.75;
+  color: #36445d;
+}
+
+.register-card {
+  width: min(620px, 100%);
+  padding: 28px;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 28px 60px rgba(20, 31, 57, 0.14);
+}
+
+.register-card__head h2 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.register-card__head p {
+  margin: 10px 0 20px;
+  color: #61718f;
+}
+
+.register-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+
+.register-submit {
   width: 100%;
+  height: 48px;
+  margin-top: 8px;
 }
 
-.footer-link {
+.register-card__foot {
   margin-top: 16px;
   display: flex;
   justify-content: center;
   gap: 8px;
-  color: #6b7280;
+  color: #61718f;
+}
+
+@media (max-width: 980px) {
+  .register-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .register-info__card h1 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 700px) {
+  .register-info,
+  .register-form-wrap {
+    padding: 18px;
+  }
+
+  .register-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .register-info__card h1 {
+    font-size: 30px;
+  }
+
+  .register-card {
+    padding: 22px;
+  }
 }
 </style>

@@ -59,7 +59,7 @@ function toDetail(row) {
 
 async function startAi(row) {
   if (row.status === 'WAIT_UPLOAD') {
-    ElMessage.warning('该检查尚未上传CT文件，无法启动智能分析')
+    ElMessage.warning('该检查尚未上传 CT 文件，暂时无法启动智能分析')
     return
   }
 
@@ -77,37 +77,56 @@ onMounted(loadData)
 </script>
 
 <template>
-  <el-card>
-    <template #header>病例列表</template>
+  <div class="page-shell">
+    <section class="page-hero hero-doctor">
+      <span class="page-hero__eyebrow">报告中心</span>
+      <h1 class="page-hero__title">集中查看病例状态，并进入报告与分析详情</h1>
+      <p class="page-hero__desc">
+        这里整合了医生当前负责的检查记录。你可以查看患者、检查编号、状态，并继续启动智能分析或进入详情页处理报告。
+      </p>
+    </section>
 
-    <el-table :data="tableData" v-loading="loading">
-      <el-table-column prop="patientName" label="患者姓名" width="140" />
-      <el-table-column prop="patientId" label="患者编号" width="120" />
-      <el-table-column prop="studyNo" label="检查编号" min-width="180" />
-      <el-table-column prop="studyDate" label="检查日期" width="130" />
-      <el-table-column label="状态" width="140">
-        <template #default="scope">
-          <el-tag :type="studyStatusTagType(scope.row.status)">{{ studyStatusText(scope.row.status) }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" min-width="240">
-        <template #default="scope">
-          <el-button link type="primary" @click="toDetail(scope.row)">详情</el-button>
-          <el-button link type="success" :loading="aiLoadingId === scope.row.id" @click="startAi(scope.row)">
-            启动智能分析
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-card class="fd-panel-card">
+      <template #header>
+        <div class="section-head" style="margin-bottom: 0">
+          <div>
+            <h2 class="section-title">报告中心列表</h2>
+            <p class="section-subtitle">病例列表已并入报告中心，后续报告编辑和审核都从详情页进入。</p>
+          </div>
+        </div>
+      </template>
 
-    <el-pagination
-      style="margin-top: 16px"
-      background
-      layout="total, prev, pager, next"
-      :total="pager.total"
-      :current-page="pager.current"
-      :page-size="pager.size"
-      @current-change="(p) => { pager.current = p; loadData() }"
-    />
-  </el-card>
+      <el-table :data="tableData" v-loading="loading">
+        <el-table-column prop="patientName" label="患者姓名" width="140" />
+        <el-table-column prop="patientId" label="患者编号" width="120" />
+        <el-table-column prop="studyNo" label="检查编号" min-width="180" />
+        <el-table-column prop="studyDate" label="检查日期" width="130" />
+        <el-table-column label="当前状态" width="140">
+          <template #default="scope">
+            <el-tag :type="studyStatusTagType(scope.row.status)">
+              {{ studyStatusText(scope.row.status) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" min-width="240">
+          <template #default="scope">
+            <el-button link type="primary" @click="toDetail(scope.row)">查看详情</el-button>
+            <el-button link type="success" :loading="aiLoadingId === scope.row.id" @click="startAi(scope.row)">
+              启动智能分析
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-pagination
+        style="margin-top: 16px"
+        background
+        layout="total, prev, pager, next"
+        :total="pager.total"
+        :current-page="pager.current"
+        :page-size="pager.size"
+        @current-change="(p) => { pager.current = p; loadData() }"
+      />
+    </el-card>
+  </div>
 </template>
