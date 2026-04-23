@@ -14,7 +14,8 @@ const studyStatusMap = {
   PREPROCESSING: '预处理中',
   ANALYZING: '分析中',
   FINISHED: '已完成',
-  FAILED: '失败'
+  FAILED: '失败',
+  CANCELLED: '已取消挂号'
 }
 
 function studyStatusText(status) {
@@ -24,7 +25,7 @@ function studyStatusText(status) {
 async function loadData() {
   loading.value = true
   try {
-    const data = await getPatientStudiesApi({ current: pager.current, size: pager.size })
+    const data = await getPatientStudiesApi({ current: pager.current, size: pager.size, includeCancelled: true })
     tableData.value = data.records || []
     pager.total = data.total || 0
   } finally {
@@ -33,6 +34,7 @@ async function loadData() {
 }
 
 function toDetail(id) {
+  if (!id || id < 0) return
   router.push(`/app/patient/studies/${id}`)
 }
 
@@ -52,7 +54,14 @@ onMounted(loadData)
       <el-table-column prop="studyDesc" label="检查描述" min-width="200" />
       <el-table-column label="操作" width="120">
         <template #default="scope">
-          <el-button type="primary" link @click="toDetail(scope.row.id)">详情</el-button>
+          <el-button
+            type="primary"
+            link
+            :disabled="scope.row.status === 'CANCELLED' || scope.row.id < 0"
+            @click="toDetail(scope.row.id)"
+          >
+            详情
+          </el-button>
         </template>
       </el-table-column>
     </el-table>

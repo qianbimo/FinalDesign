@@ -16,6 +16,7 @@ import com.finaldesign.lungnodule.mapper.SysUserMapper;
 import com.finaldesign.lungnodule.service.DoctorService;
 import com.finaldesign.lungnodule.vo.DoctorPatientVO;
 import com.finaldesign.lungnodule.vo.DoctorStudyVO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class DoctorServiceImpl implements DoctorService {
@@ -127,12 +130,28 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public IPage<DoctorStudyVO> pageDoctorStudies(Long doctorUserId, Long current, Long size) {
+    public IPage<DoctorStudyVO> pageDoctorStudies(Long doctorUserId, Long current, Long size, String patientName, String status) {
         DoctorProfile doctorProfile = getProfileByUserId(doctorUserId);
-        Page<CtStudy> page = new Page<>(current, size);
-        IPage<CtStudy> studyPage = ctStudyMapper.selectPage(page, new LambdaQueryWrapper<CtStudy>()
+        LambdaQueryWrapper<CtStudy> queryWrapper = new LambdaQueryWrapper<CtStudy>()
                 .eq(CtStudy::getDoctorId, doctorProfile.getId())
-                .orderByDesc(CtStudy::getCreatedAt));
+                .orderByDesc(CtStudy::getCreatedAt);
+
+        if (StringUtils.isNotBlank(status)) {
+            queryWrapper.eq(CtStudy::getStatus, status.trim());
+        }
+
+        if (StringUtils.isNotBlank(patientName)) {
+            Set<Long> matchedPatientIds = resolveStudyPatientIdsByName(patientName.trim());
+            if (matchedPatientIds.isEmpty()) {
+                Page<DoctorStudyVO> emptyPage = new Page<>(current, size, 0);
+                emptyPage.setRecords(List.of());
+                return emptyPage;
+            }
+            queryWrapper.in(CtStudy::getPatientId, matchedPatientIds);
+        }
+
+        Page<CtStudy> page = new Page<>(current, size);
+        IPage<CtStudy> studyPage = ctStudyMapper.selectPage(page, queryWrapper);
 
         List<Long> patientIds = studyPage.getRecords().stream().map(CtStudy::getPatientId).distinct().toList();
         Map<Long, Long> patientUserIdMap = new HashMap<>();
@@ -167,6 +186,33 @@ public class DoctorServiceImpl implements DoctorService {
         Page<DoctorStudyVO> voPage = new Page<>(current, size, studyPage.getTotal());
         voPage.setRecords(records);
         return voPage;
+    }
+
+    private Set<Long> resolveStudyPatientIdsByName(String patientName) {
+        List<SysUser> matchedUsers = sysUserMapper.selectList(new LambdaQueryWrapper<SysUser>()
+                .select(SysUser::getId)
+                .eq(SysUser::getRole, "PATIENT")
+                .like(SysUser::getRealName, patientName));
+        if (matchedUsers.isEmpty()) {
+            return Set.of();
+        }
+
+        List<Long> matchedUserIds = matchedUsers.stream()
+                .map(SysUser::getId)
+                .toList();
+
+        List<PatientProfile> patientProfiles = patientProfileMapper.selectList(new LambdaQueryWrapper<PatientProfile>()
+                .select(PatientProfile::getId, PatientProfile::getUserId)
+                .in(PatientProfile::getUserId, matchedUserIds));
+
+        Set<Long> matchedPatientIds = new HashSet<>();
+        for (PatientProfile patientProfile : patientProfiles) {
+            matchedPatientIds.add(patientProfile.getId());
+        }
+
+        // Compatibility for legacy data where ct_study.patient_id stores sys_user.id directly.
+        matchedPatientIds.addAll(matchedUserIds);
+        return matchedPatientIds;
     }
 
     @Override

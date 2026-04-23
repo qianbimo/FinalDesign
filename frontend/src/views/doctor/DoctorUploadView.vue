@@ -1,13 +1,14 @@
 ﻿<script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
-import { ElMessage } from 'element-plus'
-import { getRegistrationListApi } from '@/api/registration'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { getRegistrationListApi, updateRegistrationStatusApi } from '@/api/registration'
 import { createStudyApi } from '@/api/study'
 import { uploadCtFileApi } from '@/api/upload'
 import { getDoctorPatientsApi, getDoctorStudiesApi } from '@/api/doctor'
 
 const loading = ref(false)
 const confirmLoading = ref(false)
+const cancelLoading = ref(false)
 const uploadLoading = ref(false)
 
 const registrations = ref([])
@@ -204,6 +205,53 @@ async function confirmRegistration() {
   }
 }
 
+async function cancelRegistration() {
+  const registration = selectedRegistration.value
+  if (!registration) {
+    ElMessage.warning('请先选择挂号单')
+    return
+  }
+
+  if (registration.status === 'CANCELLED') {
+    ElMessage.info('该挂号单已经是已取消状态')
+    return
+  }
+
+  if (registration.status === 'FINISHED') {
+    ElMessage.error('已完成的挂号单不能取消')
+    return
+  }
+
+  if (registration.status === 'CONFIRMED') {
+    ElMessage.warning('已确认的挂号单已生成检查记录，暂不支持取消')
+    return
+  }
+
+  try {
+    await ElMessageBox.confirm(
+      '取消后，该挂号单将不再进入后续检查流程。是否确认取消？',
+      '取消挂号单',
+      {
+        type: 'warning',
+        confirmButtonText: '确认取消',
+        cancelButtonText: '返回'
+      }
+    )
+  } catch (error) {
+    return
+  }
+
+  cancelLoading.value = true
+  try {
+    await updateRegistrationStatusApi(registration.id, 'CANCELLED')
+    ElMessage.success('挂号单已取消')
+    resetUploadState()
+    await refreshAll()
+  } finally {
+    cancelLoading.value = false
+  }
+}
+
 function onRegistrationChange() {
   syncDescriptionFromRegistration()
   resetUploadState()
@@ -287,6 +335,14 @@ onMounted(refreshAll)
 
         <el-form-item>
           <el-button type="primary" :loading="confirmLoading" @click="confirmRegistration">确认挂号单</el-button>
+          <el-button
+            type="danger"
+            plain
+            :loading="cancelLoading"
+            @click="cancelRegistration"
+          >
+            取消挂号单
+          </el-button>
         </el-form-item>
       </el-form>
     </el-card>

@@ -71,8 +71,16 @@ public class DoctorController {
     @GetMapping("/studies")
     @Operation(summary = "Get doctor studies")
     public Result<PageResult<DoctorStudyVO>> studies(@RequestParam(defaultValue = "1") Long current,
-                                                     @RequestParam(defaultValue = "10") Long size) {
-        IPage<DoctorStudyVO> page = doctorService.pageDoctorStudies(CurrentUserUtil.userId(), current, size);
+                                                     @RequestParam(defaultValue = "10") Long size,
+                                                     @RequestParam(required = false) String patientName,
+                                                     @RequestParam(required = false) String status) {
+        IPage<DoctorStudyVO> page = doctorService.pageDoctorStudies(
+                CurrentUserUtil.userId(),
+                current,
+                size,
+                patientName,
+                status
+        );
         return Result.success(new PageResult<>(page.getTotal(), page.getCurrent(), page.getSize(), page.getRecords()));
     }
 

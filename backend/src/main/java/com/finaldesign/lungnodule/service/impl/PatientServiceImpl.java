@@ -7,12 +7,14 @@ import com.finaldesign.lungnodule.dto.PatientProfileUpdateRequest;
 import com.finaldesign.lungnodule.entity.AiTask;
 import com.finaldesign.lungnodule.entity.CtStudy;
 import com.finaldesign.lungnodule.entity.PatientProfile;
+import com.finaldesign.lungnodule.entity.RegistrationRecord;
 import com.finaldesign.lungnodule.entity.ReportRecord;
 import com.finaldesign.lungnodule.entity.SysUser;
 import com.finaldesign.lungnodule.exception.BusinessException;
 import com.finaldesign.lungnodule.mapper.AiTaskMapper;
 import com.finaldesign.lungnodule.mapper.CtStudyMapper;
 import com.finaldesign.lungnodule.mapper.PatientProfileMapper;
+import com.finaldesign.lungnodule.mapper.RegistrationRecordMapper;
 import com.finaldesign.lungnodule.mapper.ReportRecordMapper;
 import com.finaldesign.lungnodule.mapper.SysUserMapper;
 import com.finaldesign.lungnodule.service.PatientService;
@@ -21,6 +23,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -30,6 +35,7 @@ public class PatientServiceImpl implements PatientService {
     private final CtStudyMapper ctStudyMapper;
     private final AiTaskMapper aiTaskMapper;
     private final ReportRecordMapper reportRecordMapper;
+    private final RegistrationRecordMapper registrationRecordMapper;
     private final SysUserMapper sysUserMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -37,12 +43,14 @@ public class PatientServiceImpl implements PatientService {
                               CtStudyMapper ctStudyMapper,
                               AiTaskMapper aiTaskMapper,
                               ReportRecordMapper reportRecordMapper,
+                              RegistrationRecordMapper registrationRecordMapper,
                               SysUserMapper sysUserMapper,
                               PasswordEncoder passwordEncoder) {
         this.patientProfileMapper = patientProfileMapper;
         this.ctStudyMapper = ctStudyMapper;
         this.aiTaskMapper = aiTaskMapper;
         this.reportRecordMapper = reportRecordMapper;
+        this.registrationRecordMapper = registrationRecordMapper;
         this.sysUserMapper = sysUserMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -93,12 +101,54 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public IPage<CtStudy> pageStudies(Long userId, Long current, Long size) {
+    public IPage<CtStudy> pageStudies(Long userId, Long current, Long size, boolean includeCancelled) {
         PatientProfile profile = getProfileByUserId(userId);
-        Page<CtStudy> page = new Page<>(current, size);
-        return ctStudyMapper.selectPage(page, new LambdaQueryWrapper<CtStudy>()
+        if (!includeCancelled) {
+            Page<CtStudy> page = new Page<>(current, size);
+            return ctStudyMapper.selectPage(page, new LambdaQueryWrapper<CtStudy>()
+                    .eq(CtStudy::getPatientId, profile.getId())
+                    .orderByDesc(CtStudy::getCreatedAt));
+        }
+
+        List<CtStudy> studies = ctStudyMapper.selectList(new LambdaQueryWrapper<CtStudy>()
                 .eq(CtStudy::getPatientId, profile.getId())
                 .orderByDesc(CtStudy::getCreatedAt));
+
+        List<RegistrationRecord> cancelledRegistrations = registrationRecordMapper.selectList(
+                new LambdaQueryWrapper<RegistrationRecord>()
+                        .eq(RegistrationRecord::getPatientId, profile.getId())
+                        .eq(RegistrationRecord::getStatus, "CANCELLED")
+                        .orderByDesc(RegistrationRecord::getCreatedAt)
+        );
+
+        List<CtStudy> merged = new ArrayList<>(studies);
+        for (RegistrationRecord registration : cancelledRegistrations) {
+            CtStudy cancelledItem = new CtStudy();
+            cancelledItem.setId(-registration.getId());
+            cancelledItem.setStudyNo("REG-CANCELLED-" + registration.getId());
+            cancelledItem.setPatientId(registration.getPatientId());
+            cancelledItem.setDoctorId(registration.getDoctorId());
+            if (registration.getAppointmentTime() != null) {
+                cancelledItem.setStudyDate(registration.getAppointmentTime().toLocalDate());
+            }
+            cancelledItem.setStudyDesc(registration.getDescription());
+            cancelledItem.setStatus("CANCELLED");
+            cancelledItem.setCreatedAt(registration.getCreatedAt());
+            cancelledItem.setUpdatedAt(registration.getUpdatedAt());
+            merged.add(cancelledItem);
+        }
+
+        merged.sort(Comparator.comparing(CtStudy::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())));
+
+        long total = merged.size();
+        int from = Math.max(0, (int) ((current - 1) * size));
+        int to = Math.min((int) total, from + size.intValue());
+        List<CtStudy> records = from >= to ? List.of() : merged.subList(from, to);
+
+        Page<CtStudy> page = new Page<>(current, size);
+        page.setTotal(total);
+        page.setRecords(records);
+        return page;
     }
 
     @Override

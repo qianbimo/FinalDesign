@@ -11,6 +11,11 @@ const aiLoadingId = ref(null)
 const tableData = ref([])
 const pager = reactive({ current: 1, size: 10, total: 0 })
 
+const queryForm = reactive({
+  patientName: '',
+  status: ''
+})
+
 const studyStatusMap = {
   WAIT_UPLOAD: '待上传CT',
   UPLOADED: '已上传',
@@ -19,6 +24,15 @@ const studyStatusMap = {
   FINISHED: '已完成',
   FAILED: '失败'
 }
+
+const statusOptions = [
+  { label: '待上传CT', value: 'WAIT_UPLOAD' },
+  { label: '已上传', value: 'UPLOADED' },
+  { label: '预处理中', value: 'PREPROCESSING' },
+  { label: '分析中', value: 'ANALYZING' },
+  { label: '已完成', value: 'FINISHED' },
+  { label: '失败', value: 'FAILED' }
+]
 
 function studyStatusText(status) {
   return studyStatusMap[status] || '未知状态'
@@ -45,12 +59,29 @@ function studyStatusTagType(status) {
 async function loadData() {
   loading.value = true
   try {
-    const data = await getDoctorStudiesApi({ current: pager.current, size: pager.size })
+    const data = await getDoctorStudiesApi({
+      current: pager.current,
+      size: pager.size,
+      patientName: queryForm.patientName?.trim() || undefined,
+      status: queryForm.status || undefined
+    })
     tableData.value = data.records || []
     pager.total = data.total || 0
   } finally {
     loading.value = false
   }
+}
+
+function handleSearch() {
+  pager.current = 1
+  loadData()
+}
+
+function handleReset() {
+  queryForm.patientName = ''
+  queryForm.status = ''
+  pager.current = 1
+  loadData()
 }
 
 function toDetail(row) {
@@ -82,7 +113,7 @@ onMounted(loadData)
       <span class="page-hero__eyebrow">报告中心</span>
       <h1 class="page-hero__title">集中查看病例状态，并进入报告与分析详情</h1>
       <p class="page-hero__desc">
-        这里整合了医生当前负责的检查记录。你可以查看患者、检查编号、状态，并继续启动智能分析或进入详情页处理报告。
+        你可以按患者姓名和检查状态快速筛选病例，定位目标后直接进入详情处理报告或启动智能分析。
       </p>
     </section>
 
@@ -91,10 +122,41 @@ onMounted(loadData)
         <div class="section-head" style="margin-bottom: 0">
           <div>
             <h2 class="section-title">报告中心列表</h2>
-            <p class="section-subtitle">病例列表已并入报告中心，后续报告编辑和审核都从详情页进入。</p>
+            <p class="section-subtitle">支持按患者姓名与状态查询。</p>
           </div>
         </div>
       </template>
+
+      <el-form class="query-form" :inline="true" @submit.prevent>
+        <el-form-item label="患者姓名">
+          <el-input
+            v-model="queryForm.patientName"
+            clearable
+            placeholder="请输入患者姓名"
+            style="width: 220px"
+            @keyup.enter="handleSearch"
+          />
+        </el-form-item>
+        <el-form-item label="当前状态">
+          <el-select
+            v-model="queryForm.status"
+            clearable
+            placeholder="请选择状态"
+            style="width: 180px"
+          >
+            <el-option
+              v-for="item in statusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">查询</el-button>
+          <el-button @click="handleReset">重置</el-button>
+        </el-form-item>
+      </el-form>
 
       <el-table :data="tableData" v-loading="loading">
         <el-table-column prop="patientName" label="患者姓名" width="140" />
@@ -130,3 +192,9 @@ onMounted(loadData)
     </el-card>
   </div>
 </template>
+
+<style scoped>
+.query-form {
+  margin-bottom: 8px;
+}
+</style>

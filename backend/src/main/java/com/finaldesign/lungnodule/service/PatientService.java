@@ -14,7 +14,7 @@ public interface PatientService {
 
     void updatePassword(Long userId, String oldPassword, String newPassword);
 
-    IPage<CtStudy> pageStudies(Long userId, Long current, Long size);
+    IPage<CtStudy> pageStudies(Long userId, Long current, Long size, boolean includeCancelled);
 
     CtStudy getStudyDetail(Long userId, Long studyId);
 

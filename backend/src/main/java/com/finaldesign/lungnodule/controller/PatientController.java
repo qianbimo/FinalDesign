@@ -57,8 +57,9 @@ public class PatientController {
     @GetMapping("/studies")
     @Operation(summary = "Get patient studies")
     public Result<PageResult<CtStudy>> studies(@RequestParam(defaultValue = "1") Long current,
-                                                @RequestParam(defaultValue = "10") Long size) {
-        IPage<CtStudy> page = patientService.pageStudies(CurrentUserUtil.userId(), current, size);
+                                                @RequestParam(defaultValue = "10") Long size,
+                                                @RequestParam(defaultValue = "false") Boolean includeCancelled) {
+        IPage<CtStudy> page = patientService.pageStudies(CurrentUserUtil.userId(), current, size, Boolean.TRUE.equals(includeCancelled));
         return Result.success(new PageResult<>(page.getTotal(), page.getCurrent(), page.getSize(), page.getRecords()));
     }
 

@@ -15,7 +15,7 @@ public interface DoctorService {
 
     IPage<DoctorPatientVO> pagePatients(Long doctorUserId, Long current, Long size);
 
-    IPage<DoctorStudyVO> pageDoctorStudies(Long doctorUserId, Long current, Long size);
+    IPage<DoctorStudyVO> pageDoctorStudies(Long doctorUserId, Long current, Long size, String patientName, String status);
 
     DoctorStudyVO getPatientStudyDetail(Long patientId, Long studyId);
 }
