@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
@@ -72,6 +72,7 @@ async function createUser() {
     ElMessage.warning('用户名、密码和真实姓名不能为空')
     return
   }
+
   createLoading.value = true
   try {
     await createAdminUserApi({ ...createForm })
@@ -97,15 +98,11 @@ async function resetPassword(row) {
 }
 
 async function deleteUser(row) {
-  await ElMessageBox.confirm(
-    `确认删除用户 ${row.username} 吗？该操作不可恢复。`,
-    '删除确认',
-    {
-      type: 'warning',
-      confirmButtonText: '删除',
-      cancelButtonText: '取消'
-    }
-  )
+  await ElMessageBox.confirm(`确认删除用户 ${row.username} 吗？该操作不可恢复。`, '删除确认', {
+    type: 'warning',
+    confirmButtonText: '删除',
+    cancelButtonText: '取消'
+  })
 
   await deleteAdminUserApi(row.id)
   ElMessage.success('用户已删除')
@@ -120,15 +117,15 @@ onMounted(loadData)
 </script>
 
 <template>
-  <el-card>
+  <el-card class="admin-panel-card">
     <template #header>
-      <div style="display: flex; justify-content: space-between; align-items: center">
+      <div class="admin-panel-head">
         <span>用户管理</span>
         <el-button type="primary" @click="createDialogVisible = true">新建用户</el-button>
       </div>
     </template>
 
-    <el-form inline>
+    <el-form inline class="admin-filter-form">
       <el-form-item label="角色">
         <el-select v-model="filters.role" clearable style="width: 160px">
           <el-option label="患者" value="PATIENT" />
@@ -150,7 +147,7 @@ onMounted(loadData)
       </el-form-item>
     </el-form>
 
-    <el-table :data="tableData" v-loading="loading">
+    <el-table class="admin-panel-table" :data="tableData" v-loading="loading">
       <el-table-column prop="id" label="编号" width="120" />
       <el-table-column prop="username" label="用户名" min-width="140" />
       <el-table-column prop="realName" label="真实姓名" min-width="140" />
@@ -165,20 +162,25 @@ onMounted(loadData)
       <el-table-column label="操作" min-width="260">
         <template #default="scope">
           <el-button
-            link
+            size="small"
+            class="action-btn"
             :type="scope.row.status === 1 ? 'warning' : 'success'"
             @click="toggleStatus(scope.row)"
           >
             {{ scope.row.status === 1 ? '禁用' : '启用' }}
           </el-button>
-          <el-button link type="primary" @click="resetPassword(scope.row)">重置密码</el-button>
-          <el-button link type="danger" @click="deleteUser(scope.row)">删除用户</el-button>
+          <el-button size="small" class="action-btn" type="primary" @click="resetPassword(scope.row)">
+            重置密码
+          </el-button>
+          <el-button size="small" class="action-btn" type="danger" @click="deleteUser(scope.row)">
+            删除用户
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <el-pagination
-      style="margin-top: 16px"
+      class="admin-panel-pagination"
       background
       layout="total, prev, pager, next"
       :total="pager.total"
@@ -188,8 +190,8 @@ onMounted(loadData)
     />
   </el-card>
 
-  <el-dialog v-model="createDialogVisible" title="新建用户" width="520px">
-    <el-form label-width="130px">
+  <el-dialog v-model="createDialogVisible" class="admin-panel-dialog" title="新建用户" width="520px">
+    <el-form label-width="130px" class="admin-dialog-form">
       <el-form-item label="用户名"><el-input v-model="createForm.username" /></el-form-item>
       <el-form-item label="密码"><el-input v-model="createForm.password" type="password" show-password /></el-form-item>
       <el-form-item label="角色">
@@ -215,3 +217,81 @@ onMounted(loadData)
     </template>
   </el-dialog>
 </template>
+
+<style scoped>
+.admin-panel-card {
+  --admin-card-radius: 16px;
+  --admin-control-radius: 10px;
+  border-radius: var(--admin-card-radius);
+  border: 1px solid #e6edf7;
+  overflow: hidden;
+}
+
+.admin-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-filter-form {
+  margin-bottom: 8px;
+}
+
+.admin-panel-pagination {
+  margin-top: 16px;
+}
+
+:deep(.admin-panel-card .el-card__header) {
+  padding: 14px 18px;
+  background: #f8fafc;
+}
+
+:deep(.admin-panel-card .el-card__body) {
+  padding: 18px;
+}
+
+:deep(.admin-filter-form .el-input__wrapper),
+:deep(.admin-filter-form .el-select__wrapper),
+:deep(.admin-dialog-form .el-input__wrapper),
+:deep(.admin-dialog-form .el-select__wrapper) {
+  border-radius: var(--admin-control-radius);
+}
+
+:deep(.admin-filter-form .el-button),
+:deep(.admin-dialog-form .el-button),
+:deep(.admin-panel-head .el-button),
+:deep(.admin-panel-table .action-btn) {
+  border-radius: var(--admin-control-radius);
+}
+
+:deep(.admin-panel-table) {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #eef2f7;
+}
+
+:deep(.admin-panel-table th.el-table__cell) {
+  background: #f8fafc;
+}
+
+:deep(.admin-panel-pagination .btn-prev),
+:deep(.admin-panel-pagination .btn-next),
+:deep(.admin-panel-pagination .el-pager li) {
+  border-radius: 10px;
+}
+
+:deep(.admin-panel-dialog .el-dialog) {
+  border-radius: var(--admin-card-radius);
+  overflow: hidden;
+}
+
+:deep(.admin-panel-dialog .el-dialog__header) {
+  border-bottom: 1px solid #eef2f7;
+  margin-right: 0;
+  padding: 16px 20px;
+}
+
+:deep(.admin-panel-dialog .el-dialog__body) {
+  padding: 16px 20px;
+}
+</style>

@@ -111,10 +111,10 @@ onMounted(loadData)
 </script>
 
 <template>
-  <div v-loading="loading">
-    <el-card style="margin-bottom: 16px">
+  <div v-loading="loading" class="patient-detail-page">
+    <el-card class="patient-panel-card patient-panel-card--mb">
       <template #header>检查详情</template>
-      <el-descriptions :column="2" border>
+      <el-descriptions class="patient-detail-descriptions" :column="2" border>
         <el-descriptions-item label="编号">{{ study?.id }}</el-descriptions-item>
         <el-descriptions-item label="检查编号">{{ study?.studyNo }}</el-descriptions-item>
         <el-descriptions-item label="检查日期">{{ study?.studyDate || '-' }}</el-descriptions-item>
@@ -124,9 +124,9 @@ onMounted(loadData)
       </el-descriptions>
     </el-card>
 
-    <el-card style="margin-bottom: 16px">
+    <el-card class="patient-panel-card patient-panel-card--mb">
       <template #header>影像文件</template>
-      <el-table :data="ctFiles">
+      <el-table class="patient-detail-table" :data="ctFiles">
         <el-table-column prop="id" label="文件编号" width="120" />
         <el-table-column prop="fileName" label="文件名" min-width="220" />
         <el-table-column prop="fileType" label="类型" width="120" />
@@ -137,25 +137,25 @@ onMounted(loadData)
               :src="filePreviewUrl(scope.row)"
               :preview-src-list="[filePreviewUrl(scope.row)]"
               fit="cover"
-              style="width: 160px; height: 90px"
+              class="file-preview-image"
             >
               <template #error>
-                <div style="font-size: 12px; color: #909399">图片加载失败</div>
+                <div class="preview-error-text">图片加载失败</div>
               </template>
             </el-image>
-            <span v-else style="color: #909399">体数据文件，暂不直接预览</span>
+            <span v-else class="preview-muted-text">体数据文件，暂不直接预览</span>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
 
-    <el-card style="margin-bottom: 16px">
+    <el-card class="patient-panel-card patient-panel-card--mb">
       <template #header>原图预览</template>
       <el-image
         :src="originalPreviewUrl"
         :preview-src-list="[originalPreviewUrl]"
         fit="contain"
-        style="width: 100%; max-width: 640px; height: 360px; background: #f5f7fa"
+        class="large-preview-image"
       >
         <template #error>
           <el-empty description="暂无可用原图预览" />
@@ -163,49 +163,49 @@ onMounted(loadData)
       </el-image>
     </el-card>
 
-    <el-card style="margin-bottom: 16px">
+    <el-card class="patient-panel-card patient-panel-card--mb">
       <template #header>标注与叠加图</template>
       <el-row :gutter="16">
         <el-col :xs="24" :md="12">
-          <el-card shadow="hover">
-            <div style="font-weight: 600; margin-bottom: 8px">标注图</div>
+          <el-card class="preview-sub-card" shadow="hover">
+            <div class="preview-title">标注图</div>
             <el-image
               :src="annotatedPreviewUrl"
               :preview-src-list="[annotatedPreviewUrl]"
               fit="cover"
-              style="width: 100%; height: 220px; background: #f5f7fa"
+              class="sub-preview-image"
             >
               <template #error>
-                <div style="padding-top: 90px; text-align: center; color: #909399">标注图加载失败（pipeline_annotated.png）</div>
+                <div class="sub-preview-error-text">标注图加载失败（pipeline_annotated.png）</div>
               </template>
             </el-image>
-            <div style="margin-top: 8px; color: #606266; font-size: 12px">pipeline_annotated.png</div>
+            <div class="preview-file-name">pipeline_annotated.png</div>
           </el-card>
         </el-col>
 
         <el-col :xs="24" :md="12">
-          <el-card shadow="hover">
-            <div style="font-weight: 600; margin-bottom: 8px">叠加图</div>
+          <el-card class="preview-sub-card" shadow="hover">
+            <div class="preview-title">叠加图</div>
             <el-image
               :src="overlayPreviewUrl"
               :preview-src-list="[overlayPreviewUrl]"
               fit="cover"
-              style="width: 100%; height: 220px; background: #f5f7fa"
+              class="sub-preview-image"
             >
               <template #error>
-                <div style="padding-top: 90px; text-align: center; color: #909399">叠加图加载失败（pipeline_overlay.png）</div>
+                <div class="sub-preview-error-text">叠加图加载失败（pipeline_overlay.png）</div>
               </template>
             </el-image>
-            <div style="margin-top: 8px; color: #606266; font-size: 12px">pipeline_overlay.png</div>
+            <div class="preview-file-name">pipeline_overlay.png</div>
           </el-card>
         </el-col>
       </el-row>
     </el-card>
 
-    <el-card style="margin-bottom: 16px">
+    <el-card class="patient-panel-card patient-panel-card--mb">
       <template #header>智能分析结果</template>
       <el-empty v-if="!aiTask" description="暂无智能分析任务" />
-      <el-descriptions v-else :column="2" border>
+      <el-descriptions v-else class="patient-detail-descriptions" :column="2" border>
         <el-descriptions-item label="任务编号">{{ aiTask?.id }}</el-descriptions-item>
         <el-descriptions-item label="任务状态">{{ taskStatusText(aiTask?.taskStatus) }}</el-descriptions-item>
         <el-descriptions-item label="模型版本">{{ aiTask?.modelVersion || '-' }}</el-descriptions-item>
@@ -213,17 +213,118 @@ onMounted(loadData)
       </el-descriptions>
     </el-card>
 
-    <el-card>
+    <el-card class="patient-panel-card">
       <template #header>报告单</template>
       <el-empty v-if="!report" description="暂无报告" />
-      <el-descriptions v-else :column="1" border>
+      <el-descriptions v-else class="patient-detail-descriptions" :column="1" border>
         <el-descriptions-item label="标题">{{ report?.reportTitle }}</el-descriptions-item>
         <el-descriptions-item label="摘要">{{ report?.reportSummary }}</el-descriptions-item>
         <el-descriptions-item label="状态">{{ reportStatusText(report?.status) }}</el-descriptions-item>
         <el-descriptions-item label="内容">
-          <pre style="white-space: pre-wrap; margin: 0">{{ report?.reportContent }}</pre>
+          <pre class="report-content-pre">{{ report?.reportContent }}</pre>
         </el-descriptions-item>
       </el-descriptions>
     </el-card>
   </div>
 </template>
+
+<style scoped>
+.patient-detail-page {
+  --panel-radius: 16px;
+}
+
+.patient-panel-card {
+  border-radius: var(--panel-radius);
+  border: 1px solid #e7edf6;
+  overflow: hidden;
+}
+
+.patient-panel-card--mb {
+  margin-bottom: 16px;
+}
+
+.patient-detail-table {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #edf2f7;
+}
+
+.file-preview-image {
+  width: 160px;
+  height: 90px;
+  border-radius: 10px;
+  border: 1px solid #e9eef5;
+}
+
+.preview-error-text {
+  font-size: 12px;
+  color: #909399;
+}
+
+.preview-muted-text {
+  color: #909399;
+}
+
+.large-preview-image {
+  width: 100%;
+  max-width: 640px;
+  height: 360px;
+  background: #f5f7fa;
+  border-radius: 12px;
+  border: 1px solid #e9eef5;
+}
+
+.preview-sub-card {
+  border-radius: 14px;
+  border: 1px solid #e9eef5;
+  overflow: hidden;
+}
+
+.preview-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.sub-preview-image {
+  width: 100%;
+  height: 220px;
+  background: #f5f7fa;
+  border-radius: 10px;
+  border: 1px solid #e9eef5;
+}
+
+.sub-preview-error-text {
+  padding-top: 90px;
+  text-align: center;
+  color: #909399;
+}
+
+.preview-file-name {
+  margin-top: 8px;
+  color: #606266;
+  font-size: 12px;
+}
+
+.report-content-pre {
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+:deep(.patient-panel-card .el-card__header) {
+  padding: 14px 18px;
+  background: #f8fafc;
+}
+
+:deep(.patient-panel-card .el-card__body) {
+  padding: 18px;
+}
+
+:deep(.patient-detail-table th.el-table__cell) {
+  background: #f8fafc;
+}
+
+:deep(.patient-detail-descriptions .el-descriptions__table) {
+  border-radius: 12px;
+  overflow: hidden;
+}
+</style>

@@ -46,14 +46,6 @@ onMounted(loadData)
 
 <template>
   <div class="page-shell">
-    <section class="page-hero hero-doctor">
-      <span class="page-hero__eyebrow">医生资料</span>
-      <h1 class="page-hero__title">维护当前医生账户的科室与执业信息</h1>
-      <p class="page-hero__desc">
-        这里用于维护医生展示资料。更新后，挂号选择、病例关联和医生端资料展示都会同步使用最新信息。
-      </p>
-    </section>
-
     <el-card class="fd-form-card" v-loading="loading">
       <div class="section-head">
         <div>

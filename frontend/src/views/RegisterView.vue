@@ -89,7 +89,7 @@ async function onSubmit() {
         <span class="register-chip">患者注册入口</span>
         <h1>先建立患者账号，再开始你的挂号和检查流程</h1>
         <p>
-          公开注册仅面向患者。医生与管理员账号建议由平台管理员统一维护，这样角色权限和业务边界会更清晰。
+          公开注册仅面向患者。
         </p>
 
         <div class="register-steps">

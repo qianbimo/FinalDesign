@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { getAdminReportsApi } from '@/api/admin'
 import { getReportByIdApi } from '@/api/report'
@@ -62,10 +62,10 @@ onMounted(loadData)
 </script>
 
 <template>
-  <el-card>
+  <el-card class="admin-panel-card">
     <template #header>报告总览</template>
 
-    <el-form inline>
+    <el-form inline class="admin-filter-form">
       <el-form-item label="报告状态">
         <el-select v-model="filters.status" clearable style="width: 160px">
           <el-option label="草稿" value="DRAFT" />
@@ -81,7 +81,7 @@ onMounted(loadData)
       </el-form-item>
     </el-form>
 
-    <el-table :data="tableData" v-loading="loading">
+    <el-table class="admin-panel-table" :data="tableData" v-loading="loading">
       <el-table-column prop="id" label="报告编号" width="110" />
       <el-table-column prop="studyNo" label="检查编号" min-width="180" />
       <el-table-column prop="patientName" label="患者姓名" min-width="120" />
@@ -97,13 +97,15 @@ onMounted(loadData)
       <el-table-column prop="createdAt" label="创建时间" min-width="170" />
       <el-table-column label="操作" width="100">
         <template #default="scope">
-          <el-button type="primary" link @click="openDetail(scope.row)">查看</el-button>
+          <el-button size="small" class="action-btn" type="primary" @click="openDetail(scope.row)">
+            查看
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <el-pagination
-      style="margin-top: 16px"
+      class="admin-panel-pagination"
       background
       layout="total, prev, pager, next"
       :total="pager.total"
@@ -113,7 +115,7 @@ onMounted(loadData)
     />
   </el-card>
 
-  <el-dialog v-model="detailVisible" title="报告详情" width="760px">
+  <el-dialog v-model="detailVisible" class="admin-panel-dialog" title="报告详情" width="760px">
     <div v-loading="detailLoading">
       <el-empty v-if="!detailReport && !detailLoading" description="未查询到报告详情" />
       <el-descriptions v-else-if="detailReport" :column="2" border>
@@ -124,9 +126,87 @@ onMounted(loadData)
         <el-descriptions-item label="标题" :span="2">{{ detailReport.reportTitle }}</el-descriptions-item>
         <el-descriptions-item label="摘要" :span="2">{{ detailReport.reportSummary || '-' }}</el-descriptions-item>
         <el-descriptions-item label="内容" :span="2">
-          <pre style="white-space: pre-wrap; margin: 0">{{ detailReport.reportContent }}</pre>
+          <pre class="report-content-pre">{{ detailReport.reportContent }}</pre>
         </el-descriptions-item>
       </el-descriptions>
     </div>
   </el-dialog>
 </template>
+
+<style scoped>
+.admin-panel-card {
+  --admin-card-radius: 16px;
+  --admin-control-radius: 10px;
+  border-radius: var(--admin-card-radius);
+  border: 1px solid #e6edf7;
+  overflow: hidden;
+}
+
+.admin-filter-form {
+  margin-bottom: 8px;
+}
+
+.admin-panel-pagination {
+  margin-top: 16px;
+}
+
+.report-content-pre {
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+:deep(.admin-panel-card .el-card__header) {
+  padding: 14px 18px;
+  background: #f8fafc;
+}
+
+:deep(.admin-panel-card .el-card__body) {
+  padding: 18px;
+}
+
+:deep(.admin-filter-form .el-input__wrapper),
+:deep(.admin-filter-form .el-select__wrapper) {
+  border-radius: var(--admin-control-radius);
+}
+
+:deep(.admin-filter-form .el-button),
+:deep(.admin-panel-table .action-btn) {
+  border-radius: var(--admin-control-radius);
+}
+
+:deep(.admin-panel-table) {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #eef2f7;
+}
+
+:deep(.admin-panel-table th.el-table__cell) {
+  background: #f8fafc;
+}
+
+:deep(.admin-panel-pagination .btn-prev),
+:deep(.admin-panel-pagination .btn-next),
+:deep(.admin-panel-pagination .el-pager li) {
+  border-radius: 10px;
+}
+
+:deep(.admin-panel-dialog .el-dialog) {
+  border-radius: var(--admin-card-radius);
+  overflow: hidden;
+}
+
+:deep(.admin-panel-dialog .el-dialog__header) {
+  border-bottom: 1px solid #eef2f7;
+  margin-right: 0;
+  padding: 16px 20px;
+}
+
+:deep(.admin-panel-dialog .el-dialog__body) {
+  padding: 16px 20px;
+}
+
+:deep(.admin-panel-dialog .el-descriptions) {
+  border-radius: 10px;
+  overflow: hidden;
+}
+</style>

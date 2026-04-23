@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getRegistrationListApi } from '@/api/registration'
@@ -116,7 +116,7 @@ function resetUploadState() {
 async function loadPatients() {
   const data = await getDoctorPatientsApi({ current: 1, size: 500 })
   const map = {}
-  for (const item of (data.records || [])) {
+  for (const item of data.records || []) {
     map[item.id] = item.patientName || `患者#${item.id}`
   }
   patientNameMap.value = map
@@ -125,9 +125,11 @@ async function loadPatients() {
 async function loadRegistrations() {
   const data = await getRegistrationListApi({ current: 1, size: 200 })
   registrations.value = (data.records || []).filter((item) => item.status !== 'CANCELLED')
+
   if (selectedRegistrationId.value && !registrations.value.some((item) => item.id === selectedRegistrationId.value)) {
     selectedRegistrationId.value = null
   }
+
   if (!selectedRegistrationId.value && registrations.value.length > 0) {
     selectedRegistrationId.value = registrations.value[0].id
     syncDescriptionFromRegistration()
@@ -137,9 +139,11 @@ async function loadRegistrations() {
 async function loadStudies() {
   const data = await getDoctorStudiesApi({ current: 1, size: 200 })
   studies.value = data.records || []
+
   if (selectedStudyId.value && !studies.value.some((item) => item.id === selectedStudyId.value)) {
     selectedStudyId.value = null
   }
+
   if (!selectedStudyId.value && studies.value.length > 0) {
     selectedStudyId.value = studies.value[0].id
   }
@@ -174,10 +178,12 @@ async function confirmRegistration() {
     ElMessage.error('已取消的挂号单不能创建检查')
     return
   }
+
   if (registration.status === 'FINISHED') {
     ElMessage.error('已完成的挂号单不能重复创建检查')
     return
   }
+
   if (registration.status !== 'PENDING') {
     ElMessage.info('该挂号单已确认，请直接上传CT或重新选择挂号单')
     return
@@ -212,6 +218,7 @@ async function submitUpload() {
     ElMessage.warning('请先选择检查记录')
     return
   }
+
   if (!file.value) {
     ElMessage.warning('请先选择CT文件')
     return
@@ -237,11 +244,11 @@ onMounted(refreshAll)
 </script>
 
 <template>
-  <div v-loading="loading">
-    <el-card style="margin-bottom: 16px">
+  <div v-loading="loading" class="doctor-upload-page">
+    <el-card class="doctor-panel-card doctor-panel-card--spaced">
       <template #header>挂号单处理</template>
 
-      <el-form label-width="160px">
+      <el-form label-width="160px" class="doctor-form">
         <el-form-item label="选择挂号单">
           <el-select
             v-model="selectedRegistrationId"
@@ -284,7 +291,7 @@ onMounted(refreshAll)
       </el-form>
     </el-card>
 
-    <el-card>
+    <el-card class="doctor-panel-card">
       <template #header>医生上传CT影像</template>
 
       <el-alert
@@ -292,10 +299,10 @@ onMounted(refreshAll)
         type="info"
         :closable="false"
         show-icon
-        style="margin-bottom: 16px"
+        class="doctor-flow-alert"
       />
 
-      <el-form label-width="160px">
+      <el-form label-width="160px" class="doctor-form">
         <el-form-item label="选择检查记录">
           <el-select v-model="selectedStudyId" style="width: 680px" placeholder="请选择检查记录">
             <el-option
@@ -334,3 +341,57 @@ onMounted(refreshAll)
     </el-card>
   </div>
 </template>
+
+<style scoped>
+.doctor-upload-page {
+  --doctor-card-radius: 16px;
+  --doctor-control-radius: 10px;
+}
+
+.doctor-panel-card {
+  border-radius: var(--doctor-card-radius);
+  border: 1px solid #e6edf7;
+  overflow: hidden;
+}
+
+.doctor-panel-card--spaced {
+  margin-bottom: 16px;
+}
+
+.doctor-flow-alert {
+  margin-bottom: 16px;
+}
+
+:deep(.doctor-panel-card .el-card__header) {
+  padding: 14px 18px;
+  background: #f8fafc;
+}
+
+:deep(.doctor-panel-card .el-card__body) {
+  padding: 18px;
+}
+
+:deep(.doctor-form .el-input__wrapper),
+:deep(.doctor-form .el-textarea__inner),
+:deep(.doctor-form .el-select__wrapper) {
+  border-radius: var(--doctor-control-radius);
+}
+
+:deep(.doctor-form .el-button),
+:deep(.doctor-upload-page .el-upload-list__item),
+:deep(.doctor-upload-page .el-alert) {
+  border-radius: var(--doctor-control-radius);
+}
+
+:deep(.doctor-upload-page .el-tag) {
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  :deep(.doctor-form .el-form-item__content > .el-select),
+  :deep(.doctor-form .el-form-item__content > .el-input),
+  :deep(.doctor-form .el-form-item__content > .el-textarea) {
+    width: 100% !important;
+  }
+}
+</style>

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.finaldesign.lungnodule.common.PageResult;
 import com.finaldesign.lungnodule.common.Result;
 import com.finaldesign.lungnodule.dto.DoctorProfileUpdateRequest;
-import com.finaldesign.lungnodule.entity.CtStudy;
 import com.finaldesign.lungnodule.entity.DoctorProfile;
 import com.finaldesign.lungnodule.security.CurrentUserUtil;
 import com.finaldesign.lungnodule.security.StudyAccessGuard;
@@ -52,7 +51,11 @@ public class DoctorController {
     @Operation(summary = "查询患者列表")
     public Result<PageResult<DoctorPatientVO>> patients(@RequestParam(defaultValue = "1") Long current,
                                                         @RequestParam(defaultValue = "10") Long size) {
-        IPage<DoctorPatientVO> page = doctorService.pagePatients(current, size);
+        Long doctorUserId = null;
+        if ("DOCTOR".equals(CurrentUserUtil.role())) {
+            doctorUserId = CurrentUserUtil.userId();
+        }
+        IPage<DoctorPatientVO> page = doctorService.pagePatients(doctorUserId, current, size);
         return Result.success(new PageResult<>(page.getTotal(), page.getCurrent(), page.getSize(), page.getRecords()));
     }
 
@@ -66,7 +69,7 @@ public class DoctorController {
 
     @GetMapping("/patient/{patientId}/studies/{studyId}")
     @Operation(summary = "查看某患者检查详情")
-    public Result<CtStudy> patientStudy(@PathVariable Long patientId, @PathVariable Long studyId) {
+    public Result<DoctorStudyVO> patientStudy(@PathVariable Long patientId, @PathVariable Long studyId) {
         studyAccessGuard.assertCurrentUserCanAccessStudy(studyId);
         return Result.success(doctorService.getPatientStudyDetail(patientId, studyId));
     }

@@ -131,7 +131,6 @@ onMounted(() => {
       <h1 class="page-hero__title">{{ currentView.title }}</h1>
       <p class="page-hero__desc">{{ currentView.desc }}</p>
     </section>
-
     <section class="stat-grid">
       <article v-for="item in currentView.metrics" :key="item.label" class="stat-card">
         <div class="stat-card__label">{{ item.label }}</div>

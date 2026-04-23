@@ -299,6 +299,13 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.overview-chart-panel {
+  --admin-card-radius: 16px;
+  border-radius: var(--admin-card-radius);
+  border: 1px solid #e6edf7;
+  overflow: hidden;
+}
+
 .overview-chart-header {
   display: flex;
   flex-direction: column;
@@ -329,6 +336,7 @@ onBeforeUnmount(() => {
 
 .chart-card {
   border: 1px solid #eef2f7;
+  border-radius: 14px;
 }
 
 .chart-card__title {
@@ -340,5 +348,18 @@ onBeforeUnmount(() => {
 .pie-canvas {
   width: 100%;
   height: 320px;
+}
+
+:deep(.overview-chart-panel .el-card__header) {
+  padding: 14px 18px;
+  background: #f8fafc;
+}
+
+:deep(.overview-chart-panel .el-card__body) {
+  padding: 18px;
+}
+
+:deep(.chart-card .el-card__body) {
+  border-radius: 14px;
 }
 </style>

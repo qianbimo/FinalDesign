@@ -10,13 +10,13 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),
-    meta: { public: true }
+    meta: { public: true, transition: 'auth-switch' }
   },
   {
     path: '/register',
     name: 'Register',
     component: () => import('@/views/RegisterView.vue'),
-    meta: { public: true }
+    meta: { public: true, transition: 'auth-switch' }
   },
   {
     path: '/app',

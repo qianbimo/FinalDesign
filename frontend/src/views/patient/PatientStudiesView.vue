@@ -40,9 +40,9 @@ onMounted(loadData)
 </script>
 
 <template>
-  <el-card>
+  <el-card class="patient-panel-card">
     <template #header>检查记录</template>
-    <el-table :data="tableData" v-loading="loading">
+    <el-table class="patient-panel-table" :data="tableData" v-loading="loading">
       <el-table-column prop="id" label="编号" width="110" />
       <el-table-column prop="studyNo" label="检查编号" min-width="180" />
       <el-table-column prop="studyDate" label="检查日期" width="130" />
@@ -58,7 +58,7 @@ onMounted(loadData)
     </el-table>
 
     <el-pagination
-      style="margin-top: 16px"
+      class="patient-panel-pagination"
       background
       layout="total, prev, pager, next"
       :total="pager.total"
@@ -68,3 +68,40 @@ onMounted(loadData)
     />
   </el-card>
 </template>
+
+<style scoped>
+.patient-panel-card {
+  border-radius: 16px;
+  border: 1px solid #e6edf7;
+  overflow: hidden;
+}
+
+.patient-panel-pagination {
+  margin-top: 16px;
+}
+
+:deep(.patient-panel-card .el-card__header) {
+  padding: 14px 18px;
+  background: #f8fafc;
+}
+
+:deep(.patient-panel-card .el-card__body) {
+  padding: 18px;
+}
+
+:deep(.patient-panel-table) {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #eef2f7;
+}
+
+:deep(.patient-panel-table th.el-table__cell) {
+  background: #f8fafc;
+}
+
+:deep(.patient-panel-pagination .btn-prev),
+:deep(.patient-panel-pagination .btn-next),
+:deep(.patient-panel-pagination .el-pager li) {
+  border-radius: 10px;
+}
+</style>

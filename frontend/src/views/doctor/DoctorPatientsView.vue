@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { getDoctorPatientsApi } from '@/api/doctor'
 
@@ -56,10 +56,10 @@ onMounted(loadData)
 </script>
 
 <template>
-  <el-card>
+  <el-card class="doctor-panel-card">
     <template #header>患者列表</template>
 
-    <el-table :data="tableData" v-loading="loading">
+    <el-table class="doctor-panel-table" :data="tableData" v-loading="loading">
       <el-table-column prop="id" label="患者编号" width="120" />
       <el-table-column prop="patientName" label="患者姓名" width="140" />
       <el-table-column prop="medicalRecordNo" label="病历号" min-width="180" />
@@ -73,7 +73,7 @@ onMounted(loadData)
     </el-table>
 
     <el-pagination
-      style="margin-top: 16px"
+      class="doctor-panel-pagination"
       background
       layout="total, prev, pager, next"
       :total="pager.total"
@@ -83,3 +83,40 @@ onMounted(loadData)
     />
   </el-card>
 </template>
+
+<style scoped>
+.doctor-panel-card {
+  border-radius: 16px;
+  border: 1px solid #e6edf7;
+  overflow: hidden;
+}
+
+.doctor-panel-pagination {
+  margin-top: 16px;
+}
+
+:deep(.doctor-panel-card .el-card__header) {
+  padding: 14px 18px;
+  background: #f8fafc;
+}
+
+:deep(.doctor-panel-card .el-card__body) {
+  padding: 18px;
+}
+
+:deep(.doctor-panel-table) {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #eef2f7;
+}
+
+:deep(.doctor-panel-table th.el-table__cell) {
+  background: #f8fafc;
+}
+
+:deep(.doctor-panel-pagination .btn-prev),
+:deep(.doctor-panel-pagination .btn-next),
+:deep(.doctor-panel-pagination .el-pager li) {
+  border-radius: 10px;
+}
+</style>

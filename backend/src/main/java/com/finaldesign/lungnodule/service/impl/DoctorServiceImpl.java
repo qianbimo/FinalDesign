@@ -48,7 +48,7 @@ public class DoctorServiceImpl implements DoctorService {
         DoctorProfile profile = doctorProfileMapper.selectOne(new LambdaQueryWrapper<DoctorProfile>()
                 .eq(DoctorProfile::getUserId, userId));
         if (profile == null) {
-            throw new BusinessException(404, "医生档案不存在");
+            throw new BusinessException(404, "Doctor profile not found");
         }
         return profile;
     }
@@ -61,10 +61,20 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public IPage<DoctorPatientVO> pagePatients(Long current, Long size) {
+    public IPage<DoctorPatientVO> pagePatients(Long doctorUserId, Long current, Long size) {
+        LambdaQueryWrapper<PatientProfile> queryWrapper = new LambdaQueryWrapper<PatientProfile>();
+        if (doctorUserId != null) {
+            DoctorProfile doctorProfile = getProfileByUserId(doctorUserId);
+            queryWrapper.inSql(
+                    PatientProfile::getId,
+                    "select distinct patient_id from registration_record " +
+                            "where doctor_id = " + doctorProfile.getId() + " and status <> 'CANCELLED'"
+            );
+        }
+        queryWrapper.orderByDesc(PatientProfile::getCreatedAt);
+
         Page<PatientProfile> page = new Page<>(current, size);
-        IPage<PatientProfile> profilePage = patientProfileMapper.selectPage(page, new LambdaQueryWrapper<PatientProfile>()
-                .orderByDesc(PatientProfile::getCreatedAt));
+        IPage<PatientProfile> profilePage = patientProfileMapper.selectPage(page, queryWrapper);
 
         Map<Long, String> patientNameMap = buildUserNameMap(profilePage.getRecords().stream()
                 .map(PatientProfile::getUserId)
@@ -120,7 +130,11 @@ public class DoctorServiceImpl implements DoctorService {
                     vo.setId(study.getId());
                     vo.setStudyNo(study.getStudyNo());
                     vo.setPatientId(study.getPatientId());
-                    vo.setPatientName(userNameMap.get(patientUserIdMap.get(study.getPatientId())));
+                    String patientName = userNameMap.get(patientUserIdMap.get(study.getPatientId()));
+                    if (patientName == null || patientName.isBlank()) {
+                        patientName = resolvePatientName(study.getPatientId());
+                    }
+                    vo.setPatientName(patientName);
                     vo.setDoctorId(study.getDoctorId());
                     vo.setStudyDate(study.getStudyDate());
                     vo.setStudyDesc(study.getStudyDesc());
@@ -135,12 +149,59 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public CtStudy getPatientStudyDetail(Long patientId, Long studyId) {
+    public DoctorStudyVO getPatientStudyDetail(Long patientId, Long studyId) {
         CtStudy study = ctStudyMapper.selectById(studyId);
         if (study == null || !study.getPatientId().equals(patientId)) {
-            throw new BusinessException(404, "检查记录不存在");
+            throw new BusinessException(404, "妫€鏌ヨ褰曚笉瀛樺湪");
         }
-        return study;
+
+        DoctorStudyVO vo = new DoctorStudyVO();
+        vo.setId(study.getId());
+        vo.setStudyNo(study.getStudyNo());
+        vo.setPatientId(study.getPatientId());
+        vo.setDoctorId(study.getDoctorId());
+        vo.setStudyDate(study.getStudyDate());
+        vo.setStudyDesc(study.getStudyDesc());
+        vo.setStatus(study.getStatus());
+
+        vo.setPatientName(resolvePatientName(study.getPatientId()));
+        return vo;
+    }
+
+    private String resolvePatientName(Long patientId) {
+        if (patientId == null) {
+            return null;
+        }
+
+        PatientProfile patientProfile = patientProfileMapper.selectById(patientId);
+        if (patientProfile != null && patientProfile.getUserId() != null) {
+            SysUser patientUser = sysUserMapper.selectById(patientProfile.getUserId());
+            String displayName = extractDisplayName(patientUser);
+            if (displayName != null) {
+                return displayName;
+            }
+        }
+
+        // 兼容历史数据：部分数据可能直接保存了 sys_user.id 到 patient_id 字段
+        SysUser fallbackUser = sysUserMapper.selectById(patientId);
+        String fallbackName = extractDisplayName(fallbackUser);
+        if (fallbackName != null) {
+            return fallbackName;
+        }
+        return null;
+    }
+
+    private String extractDisplayName(SysUser user) {
+        if (user == null) {
+            return null;
+        }
+        if (user.getRealName() != null && !user.getRealName().isBlank()) {
+            return user.getRealName();
+        }
+        if (user.getUsername() != null && !user.getUsername().isBlank()) {
+            return user.getUsername();
+        }
+        return null;
     }
 
     private Map<Long, String> buildUserNameMap(List<Long> userIds) {
@@ -166,3 +227,4 @@ public class DoctorServiceImpl implements DoctorService {
         return Period.between(birthday, LocalDate.now()).getYears();
     }
 }
+
