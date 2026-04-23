@@ -3,6 +3,7 @@ package com.finaldesign.lungnodule.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.finaldesign.lungnodule.common.PageResult;
 import com.finaldesign.lungnodule.common.Result;
+import com.finaldesign.lungnodule.dto.DoctorPasswordUpdateRequest;
 import com.finaldesign.lungnodule.dto.DoctorProfileUpdateRequest;
 import com.finaldesign.lungnodule.entity.DoctorProfile;
 import com.finaldesign.lungnodule.security.CurrentUserUtil;
@@ -35,20 +36,28 @@ public class DoctorController {
     }
 
     @GetMapping("/profile")
-    @Operation(summary = "查询医生资料")
+    @Operation(summary = "Get doctor profile")
     public Result<DoctorProfile> profile() {
         return Result.success(doctorService.getProfileByUserId(CurrentUserUtil.userId()));
     }
 
     @PutMapping("/profile")
-    @Operation(summary = "更新医生资料")
+    @Operation(summary = "Update doctor profile")
     public Result<Void> updateProfile(@Valid @RequestBody DoctorProfileUpdateRequest request) {
         doctorService.updateProfile(CurrentUserUtil.userId(), request);
-        return Result.success("更新成功", null);
+        return Result.success("Profile updated successfully", null);
+    }
+
+    @PutMapping("/password")
+    @PreAuthorize("hasRole('DOCTOR')")
+    @Operation(summary = "Update doctor password")
+    public Result<Void> updatePassword(@Valid @RequestBody DoctorPasswordUpdateRequest request) {
+        doctorService.updatePassword(CurrentUserUtil.userId(), request.getOldPassword(), request.getNewPassword());
+        return Result.success("Password updated successfully", null);
     }
 
     @GetMapping("/patients")
-    @Operation(summary = "查询患者列表")
+    @Operation(summary = "Get doctor patients")
     public Result<PageResult<DoctorPatientVO>> patients(@RequestParam(defaultValue = "1") Long current,
                                                         @RequestParam(defaultValue = "10") Long size) {
         Long doctorUserId = null;
@@ -60,7 +69,7 @@ public class DoctorController {
     }
 
     @GetMapping("/studies")
-    @Operation(summary = "查询医生分析过的病例")
+    @Operation(summary = "Get doctor studies")
     public Result<PageResult<DoctorStudyVO>> studies(@RequestParam(defaultValue = "1") Long current,
                                                      @RequestParam(defaultValue = "10") Long size) {
         IPage<DoctorStudyVO> page = doctorService.pageDoctorStudies(CurrentUserUtil.userId(), current, size);
@@ -68,7 +77,7 @@ public class DoctorController {
     }
 
     @GetMapping("/patient/{patientId}/studies/{studyId}")
-    @Operation(summary = "查看某患者检查详情")
+    @Operation(summary = "Get doctor patient study detail")
     public Result<DoctorStudyVO> patientStudy(@PathVariable Long patientId, @PathVariable Long studyId) {
         studyAccessGuard.assertCurrentUserCanAccessStudy(studyId);
         return Result.success(doctorService.getPatientStudyDetail(patientId, studyId));

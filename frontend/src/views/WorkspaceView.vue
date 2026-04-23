@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { getRegistrationListApi } from '@/api/registration'
+import { getPatientStudiesApi } from '@/api/patient'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -60,10 +61,14 @@ const roleViews = {
 }
 
 const isDoctor = computed(() => authStore.role === 'DOCTOR')
+const isPatient = computed(() => authStore.role === 'PATIENT')
 const currentView = computed(() => roleViews[authStore.role] || roleViews.PATIENT)
 const pendingRegistrationCount = ref(0)
 const pendingCountLoading = ref(false)
 const pendingCountLoadError = ref(false)
+const patientStudyCount = ref(0)
+const patientStudyCountLoading = ref(false)
+const patientStudyCountLoadError = ref(false)
 
 const pendingRegistrationCountText = computed(() => {
   if (pendingCountLoading.value) return '...'
@@ -115,12 +120,56 @@ async function loadDoctorPendingRegistrationCount() {
   }
 }
 
+const patientStudyCountText = computed(() => {
+  if (patientStudyCountLoading.value) return '...'
+  return String(patientStudyCount.value)
+})
+
+const patientStudyCountNote = computed(() => {
+  if (!isPatient.value) return ''
+  if (patientStudyCountLoading.value) return '正在统计历史检查次数'
+  if (patientStudyCountLoadError.value) return '统计失败，请稍后重试'
+  return '累计完成的历史检查记录数量'
+})
+
+async function loadPatientStudyCount() {
+  if (!isPatient.value) return
+
+  patientStudyCountLoading.value = true
+  patientStudyCountLoadError.value = false
+  try {
+    const data = await getPatientStudiesApi({ current: 1, size: 1 })
+    patientStudyCount.value = Number(data?.total || 0)
+  } catch (error) {
+    patientStudyCountLoadError.value = true
+    patientStudyCount.value = 0
+  } finally {
+    patientStudyCountLoading.value = false
+  }
+}
+
+function metricLabel(item, index) {
+  if (isPatient.value && index === 1) return '历史检查次数'
+  return item.label
+}
+
+function metricValue(item, index) {
+  if (isPatient.value && index === 1) return patientStudyCountText.value
+  return item.value
+}
+
+function metricNote(item, index) {
+  if (isPatient.value && index === 1) return patientStudyCountNote.value
+  return item.note
+}
+
 function to(path) {
   router.push(path)
 }
 
 onMounted(() => {
   loadDoctorPendingRegistrationCount()
+  loadPatientStudyCount()
 })
 </script>
 
@@ -132,10 +181,10 @@ onMounted(() => {
       <p class="page-hero__desc">{{ currentView.desc }}</p>
     </section>
     <section class="stat-grid">
-      <article v-for="item in currentView.metrics" :key="item.label" class="stat-card">
-        <div class="stat-card__label">{{ item.label }}</div>
-        <div class="stat-card__value">{{ item.value }}</div>
-        <div class="stat-card__note">{{ item.note }}</div>
+      <article v-for="(item, index) in currentView.metrics" :key="item.label" class="stat-card">
+        <div class="stat-card__label">{{ metricLabel(item, index) }}</div>
+        <div class="stat-card__value">{{ metricValue(item, index) }}</div>
+        <div class="stat-card__note">{{ metricNote(item, index) }}</div>
       </article>
     </section>
 

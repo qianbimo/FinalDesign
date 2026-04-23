@@ -11,6 +11,8 @@ public interface DoctorService {
 
     void updateProfile(Long userId, DoctorProfileUpdateRequest request);
 
+    void updatePassword(Long userId, String oldPassword, String newPassword);
+
     IPage<DoctorPatientVO> pagePatients(Long doctorUserId, Long current, Long size);
 
     IPage<DoctorStudyVO> pageDoctorStudies(Long doctorUserId, Long current, Long size);

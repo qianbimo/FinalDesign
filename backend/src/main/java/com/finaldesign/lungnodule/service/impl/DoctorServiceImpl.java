@@ -17,6 +17,7 @@ import com.finaldesign.lungnodule.service.DoctorService;
 import com.finaldesign.lungnodule.vo.DoctorPatientVO;
 import com.finaldesign.lungnodule.vo.DoctorStudyVO;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -32,15 +33,18 @@ public class DoctorServiceImpl implements DoctorService {
     private final PatientProfileMapper patientProfileMapper;
     private final CtStudyMapper ctStudyMapper;
     private final SysUserMapper sysUserMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public DoctorServiceImpl(DoctorProfileMapper doctorProfileMapper,
                              PatientProfileMapper patientProfileMapper,
                              CtStudyMapper ctStudyMapper,
-                             SysUserMapper sysUserMapper) {
+                             SysUserMapper sysUserMapper,
+                             PasswordEncoder passwordEncoder) {
         this.doctorProfileMapper = doctorProfileMapper;
         this.patientProfileMapper = patientProfileMapper;
         this.ctStudyMapper = ctStudyMapper;
         this.sysUserMapper = sysUserMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -58,6 +62,23 @@ public class DoctorServiceImpl implements DoctorService {
         DoctorProfile profile = getProfileByUserId(userId);
         BeanUtils.copyProperties(request, profile);
         doctorProfileMapper.updateById(profile);
+    }
+
+    @Override
+    public void updatePassword(Long userId, String oldPassword, String newPassword) {
+        SysUser user = sysUserMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException(404, "User not found");
+        }
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new BusinessException(400, "Old password is incorrect");
+        }
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new BusinessException(400, "New password cannot be the same as old password");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        sysUserMapper.updateById(user);
     }
 
     @Override

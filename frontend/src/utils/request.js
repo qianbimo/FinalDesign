@@ -33,7 +33,11 @@ const errorMessageMap = {
   'Registration record not found': '挂号记录不存在',
   'Cannot delete current user': '不能删除当前登录账号',
   'Cannot delete last admin': '不能删除最后一个管理员账号',
-  'User has related records and cannot be deleted': '该用户已有业务关联数据，暂不允许删除'
+  'User has related records and cannot be deleted': '该用户已有业务关联数据，暂不允许删除',
+  'Old password is incorrect': '原密码错误',
+  'New password cannot be the same as old password': '新密码不能与原密码相同',
+  'Old password cannot be empty': '原密码不能为空',
+  'New password cannot be empty': '新密码不能为空'
 }
 
 function toReadableMessage(message, fallback) {

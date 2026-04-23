@@ -12,6 +12,8 @@ public interface PatientService {
 
     void updateProfile(Long userId, PatientProfileUpdateRequest request);
 
+    void updatePassword(Long userId, String oldPassword, String newPassword);
+
     IPage<CtStudy> pageStudies(Long userId, Long current, Long size);
 
     CtStudy getStudyDetail(Long userId, Long studyId);

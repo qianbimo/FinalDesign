@@ -8,6 +8,10 @@ export function updatePatientProfileApi(payload) {
   return request({ url: '/api/patient/profile', method: 'put', data: payload })
 }
 
+export function updatePatientPasswordApi(payload) {
+  return request({ url: '/api/patient/password', method: 'put', data: payload })
+}
+
 export function getPatientStudiesApi(params) {
   return request({ url: '/api/patient/studies', method: 'get', params })
 }

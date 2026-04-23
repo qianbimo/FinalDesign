@@ -8,12 +8,15 @@ import com.finaldesign.lungnodule.entity.AiTask;
 import com.finaldesign.lungnodule.entity.CtStudy;
 import com.finaldesign.lungnodule.entity.PatientProfile;
 import com.finaldesign.lungnodule.entity.ReportRecord;
+import com.finaldesign.lungnodule.entity.SysUser;
 import com.finaldesign.lungnodule.exception.BusinessException;
 import com.finaldesign.lungnodule.mapper.AiTaskMapper;
 import com.finaldesign.lungnodule.mapper.CtStudyMapper;
 import com.finaldesign.lungnodule.mapper.PatientProfileMapper;
 import com.finaldesign.lungnodule.mapper.ReportRecordMapper;
+import com.finaldesign.lungnodule.mapper.SysUserMapper;
 import com.finaldesign.lungnodule.service.PatientService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,15 +30,21 @@ public class PatientServiceImpl implements PatientService {
     private final CtStudyMapper ctStudyMapper;
     private final AiTaskMapper aiTaskMapper;
     private final ReportRecordMapper reportRecordMapper;
+    private final SysUserMapper sysUserMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public PatientServiceImpl(PatientProfileMapper patientProfileMapper,
                               CtStudyMapper ctStudyMapper,
                               AiTaskMapper aiTaskMapper,
-                              ReportRecordMapper reportRecordMapper) {
+                              ReportRecordMapper reportRecordMapper,
+                              SysUserMapper sysUserMapper,
+                              PasswordEncoder passwordEncoder) {
         this.patientProfileMapper = patientProfileMapper;
         this.ctStudyMapper = ctStudyMapper;
         this.aiTaskMapper = aiTaskMapper;
         this.reportRecordMapper = reportRecordMapper;
+        this.sysUserMapper = sysUserMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -64,6 +73,23 @@ public class PatientServiceImpl implements PatientService {
         profile.setAddress(request.getAddress());
         profile.setRemark(request.getRemark());
         patientProfileMapper.updateById(profile);
+    }
+
+    @Override
+    public void updatePassword(Long userId, String oldPassword, String newPassword) {
+        SysUser user = sysUserMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException(404, "User not found");
+        }
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new BusinessException(400, "Old password is incorrect");
+        }
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new BusinessException(400, "New password cannot be the same as old password");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        sysUserMapper.updateById(user);
     }
 
     @Override
