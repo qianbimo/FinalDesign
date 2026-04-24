@@ -208,8 +208,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--ct", type=str, required=True, help="输入 CT 文件")
     parser.add_argument("--seg_config", type=str, default="configs/seg_config.yaml")
     parser.add_argument("--cls_config", type=str, default="configs/cls_config.yaml")
-    parser.add_argument("--seg_ckpt", type=str, default="workspace/weights/seg_best.pth") #workspace/weights/seg_best.pth
-    parser.add_argument("--cls_ckpt", type=str, default="workspace/weights/cls_best.pth")#"workspace/runs/full_full_mamba_20260423_170713/train_cls/checkpoints/cls_best_mamba.pth"
+    parser.add_argument("--seg_ckpt", type=str, default="workspace/runs/full_full_mamba_20260423_170713/train_seg/checkpoints/seg_best.pth") #workspace/weights/seg_best.pth
+    parser.add_argument("--cls_ckpt", type=str, default="workspace/runs/full_full_mamba_20260423_170713/train_cls/checkpoints/cls_best_mamba.pth")#"workspace/runs/full_full_mamba_20260423_170713/train_cls/checkpoints/cls_best_mamba.pth"
     parser.add_argument("--model", type=str, default="mamba", help="mamba/cnn/cnn_transformer")
     parser.add_argument("--out_root", type=str, default="", help="输出根目录(默认自动使用 runs)")
     return parser.parse_args()

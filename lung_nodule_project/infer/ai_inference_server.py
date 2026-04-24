@@ -170,9 +170,9 @@ def _try_real_pipeline(study_id: int, file_path: Path, out_root: Path) -> dict[s
 
     seg_cfg = PROJECT_ROOT / "lung_nodule_project" / "configs" / "seg_config.yaml"
     cls_cfg = PROJECT_ROOT / "lung_nodule_project" / "configs" / "cls_config.yaml"
-    seg_ckpt = PROJECT_ROOT / "lung_nodule_project" / "workspace" / "weights" / "seg_best.pth"
+    seg_ckpt = PROJECT_ROOT / "lung_nodule_project" / "workspace" / "runs" / "full_full_mamba_20260423_170713" /"train_seg" / "checkpoints" / "seg_best.pth"
     cls_candidates = [
-        ("mamba", PROJECT_ROOT / "lung_nodule_project" / "workspace" / "weights" / "cls_best_mamba.pth"),
+        ("mamba", PROJECT_ROOT / "lung_nodule_project" / "workspace" / "runs" / "full_full_mamba_20260423_170713" / "train_cls" / "checkpoints" / "cls_best_mamba.pth"),
         ("cnn_transformer", PROJECT_ROOT / "lung_nodule_project" / "workspace" / "weights" / "cls_best_cnn_transformer.pth"),
         ("cnn", PROJECT_ROOT / "lung_nodule_project" / "workspace" / "weights" / "cls_best_cnn.pth"),
     ]

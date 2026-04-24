@@ -44,7 +44,7 @@ train:
   use_class_weight: true
 model:
   in_channels: 1
-  num_classes: 2
+  num_classes: 1
   backbone_depth: 18
   feat_dim: 256
   mamba_dim: 256
