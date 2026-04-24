@@ -26,7 +26,7 @@ preprocess:
   max_cases: -1
 train:
   epochs: 200
-  batch_size: 64
+  batch_size: 32
   num_workers: 8
   pin_memory: false
   patch_size_zyx:
