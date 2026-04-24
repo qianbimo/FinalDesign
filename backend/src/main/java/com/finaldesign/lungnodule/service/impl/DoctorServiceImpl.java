@@ -170,11 +170,11 @@ public class DoctorServiceImpl implements DoctorService {
                     vo.setId(study.getId());
                     vo.setStudyNo(study.getStudyNo());
                     vo.setPatientId(study.getPatientId());
-                    String patientName = userNameMap.get(patientUserIdMap.get(study.getPatientId()));
-                    if (patientName == null || patientName.isBlank()) {
-                        patientName = resolvePatientName(study.getPatientId());
+                    String patientNameTest = userNameMap.get(patientUserIdMap.get(study.getPatientId()));
+                    if (patientNameTest == null || patientNameTest.isBlank()) {
+                        patientNameTest = resolvePatientName(study.getPatientId());
                     }
-                    vo.setPatientName(patientName);
+                    vo.setPatientName(patientNameTest);
                     vo.setDoctorId(study.getDoctorId());
                     vo.setStudyDate(study.getStudyDate());
                     vo.setStudyDesc(study.getStudyDesc());
