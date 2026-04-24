@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 import numpy as np
 import SimpleITK as sitk
-from PIL import Image, ImageDraw
+from PIL import Image
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -109,36 +109,29 @@ def _overlay_png(slice_img: np.ndarray, slice_mask: np.ndarray, out_path: Path, 
     Image.fromarray(rgb).save(out_path)
 
 
-def _save_ct_slice_png(slice_img: np.ndarray, out_path: Path) -> None:
-    gray = _normalize_uint8(slice_img)
-    rgb = np.stack([gray, gray, gray], axis=-1).astype(np.uint8)
+def _save_gray_png(slice_img: np.ndarray, out_path: Path) -> None:
     _ensure_dir(out_path.parent)
-    Image.fromarray(rgb).save(out_path)
+    Image.fromarray(_normalize_uint8(slice_img)).save(out_path)
 
 
-def _save_annotated_png(
-    slice_img: np.ndarray,
-    slice_mask: np.ndarray,
-    out_path: Path,
-    bbox_xyxy: tuple[int, int, int, int],
-    label_text: str,
-) -> None:
-    gray = _normalize_uint8(slice_img)
-    rgb = np.stack([gray, gray, gray], axis=-1).astype(np.uint8)
+def _crop_with_padding(
+    vol_zyx: np.ndarray,
+    center_zyx: tuple[int, int, int],
+    size_zyx: tuple[int, int, int] = (64, 64, 64),
+) -> np.ndarray:
+    d, h, w = size_zyx
+    cz, cy, cx = [int(v) for v in center_zyx]
+    z1, y1, x1 = cz - d // 2, cy - h // 2, cx - w // 2
+    z2, y2, x2 = z1 + d, y1 + h, x1 + w
 
-    mask = slice_mask.astype(bool)
-    alpha = 0.35
-    color = np.array([255, 0, 0], dtype=np.float32)
-    rgb[mask] = ((1.0 - alpha) * rgb[mask] + alpha * color).astype(np.uint8)
-
-    image = Image.fromarray(rgb)
-    draw = ImageDraw.Draw(image)
-    x1, y1, x2, y2 = bbox_xyxy
-    draw.rectangle([x1, y1, x2, y2], outline=(0, 255, 0), width=2)
-    draw.text((max(4, x1), max(4, y1 - 14)), label_text, fill=(255, 255, 0))
-
-    _ensure_dir(out_path.parent)
-    image.save(out_path)
+    out = np.zeros((d, h, w), dtype=vol_zyx.dtype)
+    sz1, sy1, sx1 = max(0, z1), max(0, y1), max(0, x1)
+    sz2, sy2, sx2 = min(vol_zyx.shape[0], z2), min(vol_zyx.shape[1], y2), min(vol_zyx.shape[2], x2)
+    dz1, dy1, dx1 = sz1 - z1, sy1 - y1, sx1 - x1
+    dz2, dy2, dx2 = dz1 + (sz2 - sz1), dy1 + (sy2 - sy1), dx1 + (sx2 - sx1)
+    if sz1 < sz2 and sy1 < sy2 and sx1 < sx2:
+        out[dz1:dz2, dy1:dy2, dx1:dx2] = vol_zyx[sz1:sz2, sy1:sy2, sx1:sx2]
+    return out
 
 
 def _pick_center(volume_zyx: np.ndarray) -> tuple[int, int, int]:
@@ -178,58 +171,78 @@ def _try_real_pipeline(study_id: int, file_path: Path, out_root: Path) -> dict[s
     seg_cfg = PROJECT_ROOT / "lung_nodule_project" / "configs" / "seg_config.yaml"
     cls_cfg = PROJECT_ROOT / "lung_nodule_project" / "configs" / "cls_config.yaml"
     seg_ckpt = PROJECT_ROOT / "lung_nodule_project" / "workspace" / "weights" / "seg_best.pth"
-    cls_ckpt = PROJECT_ROOT / "lung_nodule_project" / "workspace" / "weights" / "cls_best_mamba.pth"
-    if not (seg_cfg.exists() and cls_cfg.exists() and seg_ckpt.exists() and cls_ckpt.exists()):
+    cls_candidates = [
+        ("mamba", PROJECT_ROOT / "lung_nodule_project" / "workspace" / "weights" / "cls_best_mamba.pth"),
+        ("cnn_transformer", PROJECT_ROOT / "lung_nodule_project" / "workspace" / "weights" / "cls_best_cnn_transformer.pth"),
+        ("cnn", PROJECT_ROOT / "lung_nodule_project" / "workspace" / "weights" / "cls_best_cnn.pth"),
+    ]
+    if not (seg_cfg.exists() and cls_cfg.exists() and seg_ckpt.exists()):
         return None
 
-    try:
-        result = pipeline_predict(
-            ct_path=str(file_path),
-            seg_config_path=str(seg_cfg),
-            cls_config_path=str(cls_cfg),
-            seg_ckpt=str(seg_ckpt),
-            cls_ckpt=str(cls_ckpt),
-            model_type="mamba",
-            out_root=str(out_root / "pipeline"),
-        )
-        prob = float(result.get("prob_malignant", 0.5))
-        level = _risk_level(prob)
-        mask_path = str(Path(result["mask_nii"]).resolve()) if result.get("mask_nii") else ""
-        overlay = result.get("figures", {}).get("overlay", "")
-        return {
-            "taskStatus": "SUCCESS",
+    errors: list[str] = []
+    for model_type, cls_ckpt in cls_candidates:
+        if not cls_ckpt.exists():
+            errors.append(f"{model_type}: checkpoint missing ({cls_ckpt})")
+            continue
+        try:
+            result = pipeline_predict(
+                ct_path=str(file_path),
+                seg_config_path=str(seg_cfg),
+                cls_config_path=str(cls_cfg),
+                seg_ckpt=str(seg_ckpt),
+                cls_ckpt=str(cls_ckpt),
+                model_type=model_type,
+                out_root=str(out_root / "pipeline"),
+            )
+            prob = float(result.get("prob_malignant", 0.5))
+            level = _risk_level(prob)
+            mask_path = str(Path(result["mask_nii"]).resolve()) if result.get("mask_nii") else ""
+            overlay = result.get("figures", {}).get("overlay", "")
+            return {
+                "taskStatus": "SUCCESS",
+                "studyId": int(study_id),
+                "segmentationPath": mask_path,
+                "summary": {
+                    "noduleCount": 1,
+                    "overallRisk": level,
+                    "diagnosisSuggestion": _suggestion(level),
+                },
+                "nodules": [
+                    {
+                        "noduleNo": 1,
+                        "centerX": 120,
+                        "centerY": 155,
+                        "centerZ": 48,
+                        "width": 18.5,
+                        "height": 16.2,
+                        "depth": 14.8,
+                        "volume": 1520.3,
+                        "diameterMm": 17.6,
+                        "malignancyProb": prob,
+                        "riskLevel": level,
+                        "description": f"Pipeline inference result ({model_type})",
+                        "maskPath": mask_path,
+                        "bbox": {"x1": 110, "y1": 146, "z1": 40, "x2": 130, "y2": 164, "z2": 56},
+                        "annotations": [
+                            {"viewType": "AXIAL", "overlayPath": overlay, "color": "#FF0000"},
+                            {"viewType": "CORONAL", "overlayPath": overlay, "color": "#00FF00"},
+                        ],
+                    }
+                ],
+            }
+        except Exception as exc:
+            errors.append(f"{model_type}: {type(exc).__name__}: {exc}")
+
+    _append_request_log(
+        {
+            "time": datetime.now().isoformat(),
+            "path": "pipeline_predict",
             "studyId": int(study_id),
-            "segmentationPath": mask_path,
-            "summary": {
-                "noduleCount": 1,
-                "overallRisk": level,
-                "diagnosisSuggestion": _suggestion(level),
-            },
-            "nodules": [
-                {
-                    "noduleNo": 1,
-                    "centerX": 120,
-                    "centerY": 155,
-                    "centerZ": 48,
-                    "width": 18.5,
-                    "height": 16.2,
-                    "depth": 14.8,
-                    "volume": 1520.3,
-                    "diameterMm": 17.6,
-                    "malignancyProb": prob,
-                    "riskLevel": level,
-                    "description": "Pipeline inference result",
-                    "maskPath": mask_path,
-                    "bbox": {"x1": 110, "y1": 146, "z1": 40, "x2": 130, "y2": 164, "z2": 56},
-                    "annotations": [
-                        {"viewType": "AXIAL", "overlayPath": overlay, "color": "#FF0000"},
-                        {"viewType": "CORONAL", "overlayPath": overlay, "color": "#00FF00"},
-                    ],
-                }
-            ],
+            "status": "all_models_failed",
+            "errors": errors,
         }
-    except Exception:
-        return None
+    )
+    return None
 
 
 def _fallback_predict(study_id: int, file_path: Path) -> dict[str, Any]:
@@ -243,37 +256,48 @@ def _fallback_predict(study_id: int, file_path: Path) -> dict[str, Any]:
     bbox = _bbox_from_mask(mask_zyx)
 
     result_dir = STORAGE_ROOT / "result" / str(study_id)
-    pipeline_fig_dir = result_dir / "pipeline" / "figures"
     overlay_dir = STORAGE_ROOT / "overlay" / str(study_id)
+    pipeline_dir = result_dir / "pipeline"
+    pipeline_masks_dir = pipeline_dir / "masks"
+    pipeline_predictions_dir = pipeline_dir / "predictions"
+    pipeline_figures_dir = pipeline_dir / "figures"
     _ensure_dir(result_dir)
-    _ensure_dir(pipeline_fig_dir)
     _ensure_dir(overlay_dir)
+    _ensure_dir(pipeline_masks_dir)
+    _ensure_dir(pipeline_predictions_dir)
+    _ensure_dir(pipeline_figures_dir)
 
     mask_nii = result_dir / f"{study_id}_mask.nii.gz"
+    pipeline_mask_nii = pipeline_masks_dir / "pipeline_mask.nii.gz"
+    pipeline_mask_npy = pipeline_masks_dir / "pipeline_mask.npy"
+    pipeline_roi_npy = pipeline_predictions_dir / "pipeline_roi.npy"
+    pipeline_ct_png = pipeline_figures_dir / "pipeline_ct_slice.png"
+    pipeline_overlay_png = pipeline_figures_dir / "pipeline_overlay.png"
+    pipeline_annotated_png = pipeline_figures_dir / "pipeline_annotated.png"
+    pipeline_roi_png = pipeline_figures_dir / "pipeline_roi.png"
+    legacy_original_png = result_dir / "original_preview.png"
+
     mask_img = sitk.GetImageFromArray(mask_zyx.astype(np.uint8))
     mask_img.SetOrigin(image.GetOrigin())
     mask_img.SetSpacing(image.GetSpacing())
     mask_img.SetDirection(image.GetDirection())
     sitk.WriteImage(mask_img, str(mask_nii))
+    sitk.WriteImage(mask_img, str(pipeline_mask_nii))
+    np.save(pipeline_mask_npy, mask_zyx.astype(np.uint8))
+
+    roi_zyx = _crop_with_padding(volume_zyx, center_zyx=(center_z, center_y, center_x), size_zyx=(64, 64, 64))
+    np.save(pipeline_roi_npy, roi_zyx.astype(np.float32))
+
+    _save_gray_png(volume_zyx[center_z], pipeline_ct_png)
+    _save_gray_png(roi_zyx[roi_zyx.shape[0] // 2], pipeline_roi_png)
+    _save_gray_png(volume_zyx[center_z], legacy_original_png)
+    _overlay_png(volume_zyx[center_z], mask_zyx[center_z], pipeline_overlay_png, "#FF0000")
+    _overlay_png(volume_zyx[center_z], mask_zyx[center_z], pipeline_annotated_png, "#FF0000")
 
     axial_png = overlay_dir / "nodule1_axial.png"
     coronal_png = overlay_dir / "nodule1_coronal.png"
     sagittal_png = overlay_dir / "nodule1_sagittal.png"
-    pipeline_ct_png = pipeline_fig_dir / "pipeline_ct_slice.png"
-    pipeline_overlay_png = pipeline_fig_dir / "pipeline_overlay.png"
-    pipeline_annotated_png = pipeline_fig_dir / "pipeline_annotated.png"
-    legacy_original_png = result_dir / "original_preview.png"
 
-    _save_ct_slice_png(volume_zyx[center_z], pipeline_ct_png)
-    _save_ct_slice_png(volume_zyx[center_z], legacy_original_png)
-    _overlay_png(volume_zyx[center_z], mask_zyx[center_z], pipeline_overlay_png, "#FF0000")
-    _save_annotated_png(
-        volume_zyx[center_z],
-        mask_zyx[center_z],
-        pipeline_annotated_png,
-        bbox_xyxy=(bbox["x1"], bbox["y1"], bbox["x2"], bbox["y2"]),
-        label_text="Nodule Center Slice",
-    )
     _overlay_png(volume_zyx[center_z], mask_zyx[center_z], axial_png, "#FF0000")
     _overlay_png(volume_zyx[:, center_y, :], mask_zyx[:, center_y, :], coronal_png, "#00FF00")
     _overlay_png(volume_zyx[:, :, center_x], mask_zyx[:, :, center_x], sagittal_png, "#00BFFF")
@@ -291,7 +315,7 @@ def _fallback_predict(study_id: int, file_path: Path) -> dict[str, Any]:
     return {
         "taskStatus": "SUCCESS",
         "studyId": int(study_id),
-        "segmentationPath": _wsl_to_windows(mask_nii.resolve()),
+        "segmentationPath": _wsl_to_windows(pipeline_mask_nii.resolve()),
         "summary": {
             "noduleCount": 1,
             "overallRisk": level,
@@ -311,7 +335,7 @@ def _fallback_predict(study_id: int, file_path: Path) -> dict[str, Any]:
                 "malignancyProb": round(prob, 4),
                 "riskLevel": level,
                 "description": "Auto-generated fallback nodule candidate",
-                "maskPath": _wsl_to_windows(mask_nii.resolve()),
+                "maskPath": _wsl_to_windows(pipeline_mask_nii.resolve()),
                 "bbox": bbox,
                 "annotations": [
                     {"viewType": "AXIAL", "overlayPath": _wsl_to_windows(pipeline_overlay_png.resolve()), "color": "#FF0000"},

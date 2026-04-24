@@ -1,5 +1,5 @@
 ﻿<script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPatientAiResultApi, getPatientReportApi, getPatientStudyDetailApi } from '@/api/patient'
 import { getCtFilesByStudyApi } from '@/api/study'
@@ -50,15 +50,52 @@ function reportStatusText(status) {
   return reportStatusMap[status] || '未知状态'
 }
 
-const originalPreviewUrl = computed(() => {
-  const aiPreviewPath = annotationData.value?.originalPreviewPath
-  if (aiPreviewPath) return toFileUrl(aiPreviewPath)
+function toUniqueFileUrls(paths) {
+  const seen = new Set()
+  const urls = []
+  for (const path of paths) {
+    const url = toFileUrl(path)
+    if (!url || seen.has(url)) continue
+    seen.add(url)
+    urls.push(url)
+  }
+  return urls
+}
 
+const originalPreviewCandidates = computed(() => {
   const imageFile = ctFiles.value.find((item) => isImageFileType(item.fileType) || isImagePath(item.filePath))
-  if (imageFile) return toFileUrl(imageFile.filePath)
-
-  return toFileUrl(`result/${studyId}/pipeline/figures/pipeline_ct_slice.png`)
+  return toUniqueFileUrls([
+    annotationData.value?.originalPreviewPath,
+    annotationData.value?.annotatedPreviewPath,
+    annotationData.value?.overlayPreviewPath,
+    imageFile?.filePath,
+    `result/${studyId}/pipeline/figures/pipeline_ct_slice.png`,
+    `result/${studyId}/original_preview.png`,
+    `result/${studyId}/pipeline_ct_slice.png`,
+    `overlay/${studyId}/nodule1_axial.png`,
+    `overlay/${studyId}/nodule1_coronal.png`
+  ])
 })
+
+const originalPreviewIndex = ref(0)
+
+const originalPreviewUrl = computed(() => {
+  return originalPreviewCandidates.value[originalPreviewIndex.value] || ''
+})
+
+const originalPreviewList = computed(() => {
+  return originalPreviewCandidates.value.slice(originalPreviewIndex.value)
+})
+
+watch(originalPreviewCandidates, () => {
+  originalPreviewIndex.value = 0
+})
+
+function handleOriginalPreviewError() {
+  if (originalPreviewIndex.value < originalPreviewCandidates.value.length - 1) {
+    originalPreviewIndex.value += 1
+  }
+}
 
 const annotatedPreviewUrl = computed(() => {
   const path =
@@ -156,9 +193,10 @@ onMounted(loadData)
       <template #header>原图预览</template>
       <el-image
         :src="originalPreviewUrl"
-        :preview-src-list="[originalPreviewUrl]"
+        :preview-src-list="originalPreviewList"
         fit="contain"
         class="large-preview-image"
+        @error="handleOriginalPreviewError"
       >
         <template #error>
           <el-empty description="暂无可用原图预览" />

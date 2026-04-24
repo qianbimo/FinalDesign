@@ -19,5 +19,7 @@ public interface AdminService {
 
     void deleteUser(Long currentUserId, Long userId);
 
+    void deleteReport(Long reportId);
+
     AdminDashboardVO dashboard();
 }

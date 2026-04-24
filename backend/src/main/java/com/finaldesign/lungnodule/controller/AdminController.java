@@ -88,6 +88,13 @@ public class AdminController {
         return Result.success("Deleted", null);
     }
 
+    @DeleteMapping("/reports/{id}")
+    @Operation(summary = "Admin delete report")
+    public Result<Void> deleteReport(@PathVariable("id") Long reportId) {
+        adminService.deleteReport(reportId);
+        return Result.success("Deleted", null);
+    }
+
     @GetMapping("/dashboard")
     @Operation(summary = "Admin dashboard")
     public Result<AdminDashboardVO> dashboard() {

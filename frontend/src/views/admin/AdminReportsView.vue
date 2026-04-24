@@ -1,6 +1,7 @@
 ﻿<script setup>
 import { onMounted, reactive, ref } from 'vue'
-import { getAdminReportsApi } from '@/api/admin'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { deleteAdminReportApi, getAdminReportsApi } from '@/api/admin'
 import { getReportByIdApi } from '@/api/report'
 
 const loading = ref(false)
@@ -58,6 +59,32 @@ async function openDetail(row) {
   }
 }
 
+async function deleteReport(row) {
+  try {
+    await ElMessageBox.confirm(`确认删除报告 #${row.id} 吗？该操作不可恢复。`, '删除确认', {
+      type: 'warning',
+      confirmButtonText: '删除',
+      cancelButtonText: '取消'
+    })
+  } catch (error) {
+    if (error === 'cancel' || error === 'close') return
+    throw error
+  }
+
+  await deleteAdminReportApi(row.id)
+  ElMessage.success('报告已删除')
+
+  if (detailReport.value?.id === row.id) {
+    detailVisible.value = false
+    detailReport.value = null
+  }
+
+  if (tableData.value.length === 1 && pager.current > 1) {
+    pager.current -= 1
+  }
+  await loadData()
+}
+
 onMounted(loadData)
 </script>
 
@@ -95,10 +122,13 @@ onMounted(loadData)
       </el-table-column>
       <el-table-column prop="versionNo" label="版本" width="80" />
       <el-table-column prop="createdAt" label="创建时间" min-width="170" />
-      <el-table-column label="操作" width="100">
+      <el-table-column label="操作" width="170">
         <template #default="scope">
           <el-button size="small" class="action-btn" type="primary" @click="openDetail(scope.row)">
             查看
+          </el-button>
+          <el-button size="small" class="action-btn" type="danger" @click="deleteReport(scope.row)">
+            删除
           </el-button>
         </template>
       </el-table-column>

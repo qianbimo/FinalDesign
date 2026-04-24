@@ -319,6 +319,15 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public void deleteReport(Long reportId) {
+        ReportRecord report = reportRecordMapper.selectById(reportId);
+        if (report == null) {
+            throw new BusinessException(404, "Report not found");
+        }
+        reportRecordMapper.deleteById(reportId);
+    }
+
+    @Override
     public AdminDashboardVO dashboard() {
         AdminDashboardVO vo = new AdminDashboardVO();
         vo.setTotalUsers(sysUserMapper.selectCount(new LambdaQueryWrapper<SysUser>()));

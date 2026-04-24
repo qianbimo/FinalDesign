@@ -38,3 +38,10 @@ export function getAdminDashboardApi() {
 export function getAdminReportsApi(params) {
   return request({ url: '/api/admin/reports', method: 'get', params })
 }
+
+export function deleteAdminReportApi(id) {
+  return request({
+    url: `/api/admin/reports/${id}`,
+    method: 'delete'
+  })
+}
