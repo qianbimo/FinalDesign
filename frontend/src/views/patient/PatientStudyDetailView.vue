@@ -57,16 +57,19 @@ const originalPreviewUrl = computed(() => {
   const imageFile = ctFiles.value.find((item) => isImageFileType(item.fileType) || isImagePath(item.filePath))
   if (imageFile) return toFileUrl(imageFile.filePath)
 
-  return toFileUrl(`result/${studyId}/original_preview.png`)
+  return toFileUrl(`result/${studyId}/pipeline/figures/pipeline_ct_slice.png`)
 })
 
 const annotatedPreviewUrl = computed(() => {
-  const path = annotationData.value?.annotatedPreviewPath || `result/${studyId}/pipeline_annotated.png`
+  const path =
+    annotationData.value?.annotatedPreviewPath ||
+    annotationData.value?.overlayPreviewPath ||
+    `result/${studyId}/pipeline/figures/pipeline_annotated.png`
   return toFileUrl(path)
 })
 
 const overlayPreviewUrl = computed(() => {
-  const path = annotationData.value?.overlayPreviewPath || `result/${studyId}/pipeline_overlay.png`
+  const path = annotationData.value?.overlayPreviewPath || `result/${studyId}/pipeline/figures/pipeline_overlay.png`
   return toFileUrl(path)
 })
 

@@ -47,9 +47,11 @@ storage:
     - dcm
     - nii
     - nii.gz
+    - mhd
+    - raw
 
 ai:
   base-url: http://localhost:8000
   predict-path: /api/inference/predict
-  timeout-seconds: 30
+  timeout-seconds: 180
   mock-enabled: false

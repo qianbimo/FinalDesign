@@ -1,6 +1,7 @@
 package com.finaldesign.lungnodule.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.finaldesign.lungnodule.config.StorageProperties;
 import com.finaldesign.lungnodule.dto.AiPredictResponse;
 import com.finaldesign.lungnodule.entity.AiTask;
 import com.finaldesign.lungnodule.entity.AnnotationResult;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -26,15 +28,18 @@ public class AnnotationServiceImpl implements AnnotationService {
     private final CtFileMapper ctFileMapper;
     private final NoduleResultMapper noduleResultMapper;
     private final AnnotationResultMapper annotationResultMapper;
+    private final StorageProperties storageProperties;
 
     public AnnotationServiceImpl(AiTaskMapper aiTaskMapper,
                                  CtFileMapper ctFileMapper,
                                  NoduleResultMapper noduleResultMapper,
-                                 AnnotationResultMapper annotationResultMapper) {
+                                 AnnotationResultMapper annotationResultMapper,
+                                 StorageProperties storageProperties) {
         this.aiTaskMapper = aiTaskMapper;
         this.ctFileMapper = ctFileMapper;
         this.noduleResultMapper = noduleResultMapper;
         this.annotationResultMapper = annotationResultMapper;
+        this.storageProperties = storageProperties;
     }
 
     @Override
@@ -68,11 +73,11 @@ public class AnnotationServiceImpl implements AnnotationService {
         String overlayPreviewPath = null;
         if (aiTask.getResponseJson() != null) {
             AiPredictResponse response = JsonUtils.fromJson(aiTask.getResponseJson(), AiPredictResponse.class);
-            segmentationPath = response.getSegmentationPath();
-            String overlayPath = firstOverlayPath(response);
-            originalPreviewPath = findPeerFigurePath(overlayPath, "pipeline_ct_slice.png");
-            annotatedPreviewPath = findPeerFigurePath(overlayPath, "pipeline_annotated.png");
-            overlayPreviewPath = findPeerFigurePath(overlayPath, "pipeline_overlay.png");
+            segmentationPath = normalizeToStorageRelative(response.getSegmentationPath());
+            String overlayPath = normalizeToStorageRelative(firstOverlayPath(response));
+            originalPreviewPath = resolveOriginalPreviewPath(overlayPath);
+            annotatedPreviewPath = resolveAnnotatedPreviewPath(overlayPath);
+            overlayPreviewPath = resolveOverlayPreviewPath(overlayPath);
         }
         return AnnotationStudyVO.builder()
                 .studyId(studyId)
@@ -103,23 +108,82 @@ public class AnnotationServiceImpl implements AnnotationService {
         return null;
     }
 
-    private String findPeerFigurePath(String overlayPath, String targetFilename) {
-        if (overlayPath == null || overlayPath.isBlank()) {
+    private String resolveOriginalPreviewPath(String overlayPath) {
+        String pipelineCt = buildSiblingPath(overlayPath, "pipeline_ct_slice.png");
+        String legacy = buildSiblingPath(overlayPath, "original_preview.png");
+        return firstExistingPath(pipelineCt, legacy, overlayPath);
+    }
+
+    private String resolveAnnotatedPreviewPath(String overlayPath) {
+        String pipelineAnnotated = buildSiblingPath(overlayPath, "pipeline_annotated.png");
+        return firstExistingPath(pipelineAnnotated, overlayPath);
+    }
+
+    private String resolveOverlayPreviewPath(String overlayPath) {
+        String pipelineOverlay = buildSiblingPath(overlayPath, "pipeline_overlay.png");
+        return firstExistingPath(pipelineOverlay, overlayPath);
+    }
+
+    private String buildSiblingPath(String basePath, String targetFilename) {
+        if (basePath == null || basePath.isBlank()) {
             return null;
+        }
+        String normalized = basePath.replace("\\", "/");
+        int idx = normalized.lastIndexOf('/');
+        if (idx < 0) {
+            return null;
+        }
+        return normalized.substring(0, idx + 1) + targetFilename;
+    }
+
+    private String firstExistingPath(String... candidates) {
+        for (String candidate : candidates) {
+            if (existsUnderStorage(candidate)) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    private boolean existsUnderStorage(String path) {
+        if (path == null || path.isBlank()) {
+            return false;
+        }
+        if (path.startsWith("http://") || path.startsWith("https://")) {
+            return true;
         }
         try {
-            Path overlay = Path.of(overlayPath);
-            Path parent = overlay.getParent();
-            if (parent == null) {
-                return null;
+            String normalized = normalizeToStorageRelative(path);
+            if (normalized == null || normalized.isBlank()) {
+                return false;
             }
-            Path target = parent.resolve(targetFilename);
-            if (!Files.exists(target)) {
-                return null;
-            }
-            return target.toString().replace("\\", "/");
+            Path absolute = Paths.get(storageProperties.getBasePath(), normalized).normalize();
+            return Files.exists(absolute);
         } catch (Exception ignored) {
+            return false;
+        }
+    }
+
+    private String normalizeToStorageRelative(String path) {
+        if (path == null || path.isBlank()) {
             return null;
         }
+        String raw = path.trim().replace("\\", "/");
+
+        if (raw.startsWith("/files/")) {
+            raw = raw.substring("/files/".length());
+        }
+        if (raw.startsWith("ct/") || raw.startsWith("overlay/") || raw.startsWith("result/")) {
+            return raw;
+        }
+
+        String[] anchors = {"/ct/", "/overlay/", "/result/"};
+        for (String anchor : anchors) {
+            int idx = raw.indexOf(anchor);
+            if (idx >= 0) {
+                return raw.substring(idx + 1);
+            }
+        }
+        return raw;
     }
 }

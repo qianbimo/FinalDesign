@@ -10,6 +10,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/upload")
 @PreAuthorize("hasAnyRole('DOCTOR','ADMIN')")
@@ -24,11 +28,20 @@ public class UploadController {
     }
 
     @PostMapping("/ct")
-    @Operation(summary = "Upload CT file")
-    public Result<CtUploadResponseVO> uploadCt(@RequestParam("studyId") Long studyId,
-                                               @RequestPart("file") MultipartFile file) {
+    @Operation(summary = "Upload CT files (single file or matched .mhd + .raw pair)")
+    public Result<List<CtUploadResponseVO>> uploadCt(@RequestParam("studyId") Long studyId,
+                                                     @RequestPart(value = "files", required = false) MultipartFile[] files,
+                                                     @RequestPart(value = "file", required = false) MultipartFile file) {
         studyAccessGuard.assertCurrentUserCanManageStudy(studyId);
-        return Result.success(uploadService.uploadCtFile(studyId, file, CurrentUserUtil.userId()));
+
+        List<MultipartFile> payload = new ArrayList<>();
+        if (files != null) {
+            payload.addAll(Arrays.asList(files));
+        }
+        if (file != null) {
+            payload.add(file);
+        }
+
+        return Result.success(uploadService.uploadCtFiles(studyId, payload, CurrentUserUtil.userId()));
     }
 }
-

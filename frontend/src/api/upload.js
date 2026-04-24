@@ -1,8 +1,13 @@
 import request from '@/utils/request'
 
-export function uploadCtFileApi(studyId, file) {
+export function uploadCtFileApi(studyId, files) {
+  const normalized = Array.isArray(files) ? files : [files]
   const formData = new FormData()
-  formData.append('file', file)
+  for (const file of normalized) {
+    if (file) {
+      formData.append('files', file)
+    }
+  }
 
   return request({
     url: `/api/upload/ct?studyId=${studyId}`,

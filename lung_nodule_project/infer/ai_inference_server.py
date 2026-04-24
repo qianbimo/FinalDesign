@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 import numpy as np
 import SimpleITK as sitk
-from PIL import Image
+from PIL import Image, ImageDraw
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -107,6 +107,38 @@ def _overlay_png(slice_img: np.ndarray, slice_mask: np.ndarray, out_path: Path, 
     ).astype(np.uint8)
     _ensure_dir(out_path.parent)
     Image.fromarray(rgb).save(out_path)
+
+
+def _save_ct_slice_png(slice_img: np.ndarray, out_path: Path) -> None:
+    gray = _normalize_uint8(slice_img)
+    rgb = np.stack([gray, gray, gray], axis=-1).astype(np.uint8)
+    _ensure_dir(out_path.parent)
+    Image.fromarray(rgb).save(out_path)
+
+
+def _save_annotated_png(
+    slice_img: np.ndarray,
+    slice_mask: np.ndarray,
+    out_path: Path,
+    bbox_xyxy: tuple[int, int, int, int],
+    label_text: str,
+) -> None:
+    gray = _normalize_uint8(slice_img)
+    rgb = np.stack([gray, gray, gray], axis=-1).astype(np.uint8)
+
+    mask = slice_mask.astype(bool)
+    alpha = 0.35
+    color = np.array([255, 0, 0], dtype=np.float32)
+    rgb[mask] = ((1.0 - alpha) * rgb[mask] + alpha * color).astype(np.uint8)
+
+    image = Image.fromarray(rgb)
+    draw = ImageDraw.Draw(image)
+    x1, y1, x2, y2 = bbox_xyxy
+    draw.rectangle([x1, y1, x2, y2], outline=(0, 255, 0), width=2)
+    draw.text((max(4, x1), max(4, y1 - 14)), label_text, fill=(255, 255, 0))
+
+    _ensure_dir(out_path.parent)
+    image.save(out_path)
 
 
 def _pick_center(volume_zyx: np.ndarray) -> tuple[int, int, int]:
@@ -211,8 +243,10 @@ def _fallback_predict(study_id: int, file_path: Path) -> dict[str, Any]:
     bbox = _bbox_from_mask(mask_zyx)
 
     result_dir = STORAGE_ROOT / "result" / str(study_id)
+    pipeline_fig_dir = result_dir / "pipeline" / "figures"
     overlay_dir = STORAGE_ROOT / "overlay" / str(study_id)
     _ensure_dir(result_dir)
+    _ensure_dir(pipeline_fig_dir)
     _ensure_dir(overlay_dir)
 
     mask_nii = result_dir / f"{study_id}_mask.nii.gz"
@@ -225,7 +259,21 @@ def _fallback_predict(study_id: int, file_path: Path) -> dict[str, Any]:
     axial_png = overlay_dir / "nodule1_axial.png"
     coronal_png = overlay_dir / "nodule1_coronal.png"
     sagittal_png = overlay_dir / "nodule1_sagittal.png"
+    pipeline_ct_png = pipeline_fig_dir / "pipeline_ct_slice.png"
+    pipeline_overlay_png = pipeline_fig_dir / "pipeline_overlay.png"
+    pipeline_annotated_png = pipeline_fig_dir / "pipeline_annotated.png"
+    legacy_original_png = result_dir / "original_preview.png"
 
+    _save_ct_slice_png(volume_zyx[center_z], pipeline_ct_png)
+    _save_ct_slice_png(volume_zyx[center_z], legacy_original_png)
+    _overlay_png(volume_zyx[center_z], mask_zyx[center_z], pipeline_overlay_png, "#FF0000")
+    _save_annotated_png(
+        volume_zyx[center_z],
+        mask_zyx[center_z],
+        pipeline_annotated_png,
+        bbox_xyxy=(bbox["x1"], bbox["y1"], bbox["x2"], bbox["y2"]),
+        label_text="Nodule Center Slice",
+    )
     _overlay_png(volume_zyx[center_z], mask_zyx[center_z], axial_png, "#FF0000")
     _overlay_png(volume_zyx[:, center_y, :], mask_zyx[:, center_y, :], coronal_png, "#00FF00")
     _overlay_png(volume_zyx[:, :, center_x], mask_zyx[:, :, center_x], sagittal_png, "#00BFFF")
@@ -266,7 +314,7 @@ def _fallback_predict(study_id: int, file_path: Path) -> dict[str, Any]:
                 "maskPath": _wsl_to_windows(mask_nii.resolve()),
                 "bbox": bbox,
                 "annotations": [
-                    {"viewType": "AXIAL", "overlayPath": _wsl_to_windows(axial_png.resolve()), "color": "#FF0000"},
+                    {"viewType": "AXIAL", "overlayPath": _wsl_to_windows(pipeline_overlay_png.resolve()), "color": "#FF0000"},
                     {"viewType": "CORONAL", "overlayPath": _wsl_to_windows(coronal_png.resolve()), "color": "#00FF00"},
                     {"viewType": "SAGITTAL", "overlayPath": _wsl_to_windows(sagittal_png.resolve()), "color": "#00BFFF"},
                 ],

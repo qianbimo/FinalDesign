@@ -10,13 +10,14 @@ const loading = ref(false)
 const confirmLoading = ref(false)
 const cancelLoading = ref(false)
 const uploadLoading = ref(false)
+const uploadRef = ref(null)
 
 const registrations = ref([])
 const studies = ref([])
 const patientNameMap = ref({})
 const selectedRegistrationId = ref(null)
 const selectedStudyId = ref(null)
-const file = ref(null)
+const uploadFiles = ref([])
 const uploadResult = ref(null)
 
 const form = reactive({
@@ -110,7 +111,8 @@ function syncDescriptionFromRegistration() {
 }
 
 function resetUploadState() {
-  file.value = null
+  uploadFiles.value = []
+  uploadRef.value?.clearFiles()
   uploadResult.value = null
 }
 
@@ -257,8 +259,60 @@ function onRegistrationChange() {
   resetUploadState()
 }
 
-function onFileChange(uploadFile) {
-  file.value = uploadFile.raw
+function onFileChange(uploadFile, fileList) {
+  uploadFiles.value = (fileList || []).map((item) => item.raw).filter(Boolean)
+}
+
+function onFileRemove(uploadFile, fileList) {
+  uploadFiles.value = (fileList || []).map((item) => item.raw).filter(Boolean)
+}
+
+function getExt(name) {
+  const lower = String(name || '').toLowerCase()
+  if (lower.endsWith('.nii.gz')) return 'nii.gz'
+  const idx = lower.lastIndexOf('.')
+  return idx >= 0 ? lower.slice(idx + 1) : ''
+}
+
+function getBaseName(name) {
+  const text = String(name || '')
+  const lower = text.toLowerCase()
+  if (lower.endsWith('.nii.gz')) return text.slice(0, -7)
+  const idx = text.lastIndexOf('.')
+  return idx >= 0 ? text.slice(0, idx) : text
+}
+
+function validateUploadRule(files) {
+  if (files.length === 0) {
+    return '请先选择CT文件'
+  }
+  if (files.length > 2) {
+    return '每个挂号单仅支持 1 个文件，或 1 组同名 .mhd + .raw'
+  }
+
+  const exts = files.map((item) => getExt(item.name))
+  if (files.length === 1) {
+    const ext = exts[0]
+    if (ext === 'mhd' || ext === 'raw') {
+      return '上传 .mhd 或 .raw 时，必须同时上传同名配对文件'
+    }
+    if (!['dcm', 'nii', 'nii.gz'].includes(ext)) {
+      return '单文件仅支持 .dcm、.nii、.nii.gz'
+    }
+    return ''
+  }
+
+  const set = new Set(exts)
+  if (!(set.has('mhd') && set.has('raw') && set.size === 2)) {
+    return '双文件上传必须是 1 个 .mhd + 1 个 .raw'
+  }
+
+  const baseA = getBaseName(files[0].name)
+  const baseB = getBaseName(files[1].name)
+  if (baseA.toLowerCase() !== baseB.toLowerCase()) {
+    return '.mhd 与 .raw 文件名（不含扩展名）必须一致'
+  }
+  return ''
 }
 
 async function submitUpload() {
@@ -267,20 +321,15 @@ async function submitUpload() {
     return
   }
 
-  if (!file.value) {
-    ElMessage.warning('请先选择CT文件')
-    return
-  }
-
-  const name = file.value.name.toLowerCase()
-  if (!(name.endsWith('.dcm') || name.endsWith('.nii') || name.endsWith('.nii.gz'))) {
-    ElMessage.error('仅支持 .dcm、.nii、.nii.gz 格式')
+  const errorText = validateUploadRule(uploadFiles.value)
+  if (errorText) {
+    ElMessage.warning(errorText)
     return
   }
 
   uploadLoading.value = true
   try {
-    uploadResult.value = await uploadCtFileApi(selectedStudyId.value, file.value)
+    uploadResult.value = await uploadCtFileApi(selectedStudyId.value, uploadFiles.value)
     ElMessage.success('CT上传成功')
     await loadStudies()
   } finally {
@@ -377,7 +426,15 @@ onMounted(refreshAll)
         </el-form-item>
 
         <el-form-item label="CT文件">
-          <el-upload :auto-upload="false" :limit="1" :on-change="onFileChange">
+          <el-upload
+            ref="uploadRef"
+            :auto-upload="false"
+            :limit="2"
+            :on-change="onFileChange"
+            :on-remove="onFileRemove"
+            multiple
+            accept=".dcm,.nii,.nii.gz,.mhd,.raw"
+          >
             <template #trigger>
               <el-button>选择文件</el-button>
             </template>
@@ -391,7 +448,7 @@ onMounted(refreshAll)
 
       <el-alert v-if="uploadResult" type="success" :closable="false" show-icon>
         <template #title>
-          上传成功：文件编号 {{ uploadResult.fileId }}，类型 {{ uploadResult.fileType }}
+          上传成功：共 {{ uploadResult.length || 0 }} 个文件，后续上传将覆盖本挂号单已有文件
         </template>
       </el-alert>
     </el-card>

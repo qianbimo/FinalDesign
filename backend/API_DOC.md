@@ -97,7 +97,12 @@ Header：`Authorization: Bearer {token}`
 - Content-Type: `multipart/form-data`
 - 参数：
   - `studyId`: Long
-  - `file`: `.dcm | .nii | .nii.gz`
+  - `files`: 支持以下两种上传模式
+    - 单文件：`.dcm | .nii | .nii.gz`
+    - 双文件：同名 `.mhd + .raw`
+- 规则：
+  - 每个检查记录仅保留当前一批上传文件
+  - 后续上传会覆盖并替换之前上传的文件与记录
 
 响应示例：
 
@@ -105,15 +110,17 @@ Header：`Authorization: Bearer {token}`
 {
   "code": 200,
   "message": "success",
-  "data": {
-    "fileId": 1,
-    "studyId": 1,
-    "fileName": "1001.nii.gz",
-    "fileType": "NII_GZ",
-    "filePath": "E:/code/FinalDesign/storage/ct/1001/ST.../20260414/xxx_1001.nii.gz",
-    "fileSize": 1024,
-    "accessUrl": "/files/ct/1001/ST.../20260414/xxx_1001.nii.gz"
-  }
+  "data": [
+    {
+      "fileId": 1,
+      "studyId": 1,
+      "fileName": "1001.nii.gz",
+      "fileType": "NII_GZ",
+      "filePath": "E:/code/FinalDesign/storage/ct/1001/ST.../1001.nii.gz",
+      "fileSize": 1024,
+      "accessUrl": "/files/ct/1001/ST.../1001.nii.gz"
+    }
+  ]
 }
 ```
 

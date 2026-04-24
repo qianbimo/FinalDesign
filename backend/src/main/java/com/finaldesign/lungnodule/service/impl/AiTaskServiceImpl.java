@@ -70,7 +70,7 @@ public class AiTaskServiceImpl implements AiTaskService {
         if (files.isEmpty()) {
             throw new BusinessException(400, "Please upload CT file first");
         }
-        CtFile sourceFile = files.get(0);
+        CtFile sourceFile = selectSourceFile(files);
 
         AiPredictRequest predictRequest = new AiPredictRequest();
         predictRequest.setStudyId(studyId);
@@ -196,5 +196,21 @@ public class AiTaskServiceImpl implements AiTaskService {
                 annotationResultMapper.insert(annotationResult);
             }
         }
+    }
+
+    private CtFile selectSourceFile(List<CtFile> files) {
+        for (CtFile file : files) {
+            if ("MHD".equalsIgnoreCase(file.getFileType())) {
+                return file;
+            }
+        }
+        for (CtFile file : files) {
+            if ("NII_GZ".equalsIgnoreCase(file.getFileType())
+                    || "NII".equalsIgnoreCase(file.getFileType())
+                    || "DCM".equalsIgnoreCase(file.getFileType())) {
+                return file;
+            }
+        }
+        return files.get(0);
     }
 }
