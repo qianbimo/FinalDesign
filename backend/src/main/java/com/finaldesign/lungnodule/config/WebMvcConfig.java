@@ -23,6 +23,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         if (!accessPrefix.endsWith("/**")) {
             accessPrefix = accessPrefix + "/**";
         }
-        registry.addResourceHandler(accessPrefix).addResourceLocations("file:" + basePath);
+        registry.addResourceHandler(accessPrefix)
+                .addResourceLocations("file:" + basePath)
+                .setCachePeriod(0);
     }
 }

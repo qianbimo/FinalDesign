@@ -77,12 +77,20 @@ function reportStatusTagType(status) {
 
 const canEditReport = computed(() => report.value && report.value.status !== 'FINAL')
 const canAuditReport = computed(() => report.value && report.value.status !== 'REVIEWED' && report.value.status !== 'FINAL')
+const previewVersion = computed(() => aiResult.value?.task?.id || '')
+
+function appendPreviewVersion(url) {
+  if (!url) return ''
+  const version = previewVersion.value
+  if (!version) return url
+  return `${url}${url.includes('?') ? '&' : '?'}v=${encodeURIComponent(version)}`
+}
 
 function toUniqueFileUrls(paths) {
   const seen = new Set()
   const urls = []
   for (const path of paths) {
-    const url = toFileUrl(path)
+    const url = appendPreviewVersion(toFileUrl(path))
     if (!url || seen.has(url)) continue
     seen.add(url)
     urls.push(url)
@@ -96,12 +104,7 @@ const originalPreviewCandidates = computed(() => {
     annotationData.value?.originalPreviewPath,
     annotationData.value?.annotatedPreviewPath,
     annotationData.value?.overlayPreviewPath,
-    imageFile?.filePath,
-    `result/${studyId}/pipeline/figures/pipeline_ct_slice.png`,
-    `result/${studyId}/original_preview.png`,
-    `result/${studyId}/pipeline_ct_slice.png`,
-    `overlay/${studyId}/nodule1_axial.png`,
-    `overlay/${studyId}/nodule1_coronal.png`
+    imageFile?.filePath
   ])
 })
 
@@ -126,20 +129,19 @@ function handleOriginalPreviewError() {
 }
 
 const annotatedPreviewUrl = computed(() => {
-  const path =
-    annotationData.value?.annotatedPreviewPath ||
-    annotationData.value?.overlayPreviewPath ||
-    `result/${studyId}/pipeline/figures/pipeline_annotated.png`
-  return toFileUrl(path)
+  const path = annotationData.value?.annotatedPreviewPath || annotationData.value?.overlayPreviewPath
+  return appendPreviewVersion(toFileUrl(path))
 })
+const annotatedPreviewList = computed(() => (annotatedPreviewUrl.value ? [annotatedPreviewUrl.value] : []))
 
 const overlayPreviewUrl = computed(() => {
-  const path = annotationData.value?.overlayPreviewPath || `result/${studyId}/pipeline/figures/pipeline_overlay.png`
-  return toFileUrl(path)
+  const path = annotationData.value?.overlayPreviewPath
+  return appendPreviewVersion(toFileUrl(path))
 })
+const overlayPreviewList = computed(() => (overlayPreviewUrl.value ? [overlayPreviewUrl.value] : []))
 
 function filePreviewUrl(file) {
-  return toFileUrl(file.filePath)
+  return appendPreviewVersion(toFileUrl(file.filePath))
 }
 
 function syncReportForm(reportData) {
@@ -322,7 +324,7 @@ onMounted(loadData)
             <div class="preview-card-title">标注图</div>
             <el-image
               :src="annotatedPreviewUrl"
-              :preview-src-list="[annotatedPreviewUrl]"
+              :preview-src-list="annotatedPreviewList"
               fit="cover"
               class="preview-card-image"
             >
@@ -339,7 +341,7 @@ onMounted(loadData)
             <div class="preview-card-title">叠加图</div>
             <el-image
               :src="overlayPreviewUrl"
-              :preview-src-list="[overlayPreviewUrl]"
+              :preview-src-list="overlayPreviewList"
               fit="cover"
               class="preview-card-image"
             >

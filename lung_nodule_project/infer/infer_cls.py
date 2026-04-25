@@ -124,23 +124,63 @@ def _build_model(model_type: str, cfg: Dict, num_classes: int):
     )
 
 
+def _unwrap_state_dict(state: Dict) -> Dict:
+    if isinstance(state, dict) and "model" in state and isinstance(state["model"], dict):
+        return state["model"]
+    return state
+
+
+def _infer_num_classes_from_state_dict(state_dict: Dict) -> int | None:
+    preferred_keys = [
+        "head.1.weight",
+        "head.weight",
+        "classifier.weight",
+        "fc.weight",
+    ]
+    for key in preferred_keys:
+        weight = state_dict.get(key)
+        if isinstance(weight, torch.Tensor) and weight.ndim >= 2:
+            out_dim = int(weight.shape[0])
+            if out_dim in (1, 2):
+                return out_dim
+
+    for key, weight in state_dict.items():
+        if not isinstance(weight, torch.Tensor) or weight.ndim < 2:
+            continue
+        key_lower = key.lower()
+        if "head" not in key_lower and "classifier" not in key_lower and not key_lower.endswith("fc.weight"):
+            continue
+        out_dim = int(weight.shape[0])
+        if out_dim in (1, 2):
+            return out_dim
+    return None
+
+
 def infer_cls(roi_path: str, config: Dict, ckpt_path: str, model_type: str) -> Dict:
     device = _pick_device(str(config.get("device", "auto")).lower())
     loss_type = str(config["train"].get("loss_type", "ce")).lower()
-    num_classes = 1 if loss_type == "bce" else int(config["model"].get("num_classes", 2))
-    model = _build_model(model_type, config, num_classes=num_classes).to(device)
+    cfg_num_classes = 1 if loss_type == "bce" else int(config["model"].get("num_classes", 2))
 
-    state = torch.load(ckpt_path, map_location="cpu")
-    if isinstance(state, dict) and "model" in state:
-        state = state["model"]
-    model.load_state_dict(state, strict=False)
+    raw_state = torch.load(ckpt_path, map_location="cpu")
+    state_dict = _unwrap_state_dict(raw_state)
+    ckpt_num_classes = _infer_num_classes_from_state_dict(state_dict)
+    num_classes = ckpt_num_classes if ckpt_num_classes is not None else cfg_num_classes
+
+    if ckpt_num_classes is not None and ckpt_num_classes != cfg_num_classes:
+        print(
+            f"[infer_cls] num_classes mismatch: config={cfg_num_classes}, checkpoint={ckpt_num_classes}. "
+            f"Use checkpoint value."
+        )
+
+    model = _build_model(model_type, config, num_classes=num_classes).to(device)
+    model.load_state_dict(state_dict, strict=False)
     model.eval()
 
     roi = load_roi(roi_path)
     x = torch.from_numpy(roi[None, None, ...]).to(device)
     with torch.no_grad():
         logits = model(x)
-        if loss_type == "bce":
+        if num_classes == 1:
             logit = logits.squeeze(1) if logits.ndim == 2 else logits
             prob_malignant = float(torch.sigmoid(logit).item())
         else:

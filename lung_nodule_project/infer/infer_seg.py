@@ -126,7 +126,8 @@ def run_sliding_window_inference(
     patch_zyx: Tuple[int, int, int],
     stride_zyx: Tuple[int, int, int],
     device: torch.device,
-) -> np.ndarray:
+    prob_threshold: float = 0.5,
+) -> Tuple[np.ndarray, np.ndarray]:
     """滑窗推理并对重叠区域做平均。"""
     vol = volume_zyx.astype(np.float32)
     d, h, w = vol.shape
@@ -168,8 +169,8 @@ def run_sliding_window_inference(
                     prob_cnt[z:z2, y:y2, x:x2] += 1.0
 
     prob_avg = prob_sum / np.maximum(prob_cnt, 1e-6)
-    mask = (prob_avg > 0.5).astype(np.uint8)
-    return mask
+    mask = (prob_avg > float(prob_threshold)).astype(np.uint8)
+    return mask, prob_avg
 
 
 def save_mask_outputs(mask_zyx: np.ndarray, out_npy: str, out_nii: Optional[str], meta: Dict) -> None:
@@ -196,9 +197,25 @@ def infer_seg(
     model = load_seg_model(config, ckpt_path, device)
     patch_zyx = tuple(config.get("infer", {}).get("patch_size_zyx", [96, 96, 96]))
     stride_zyx = tuple(config.get("infer", {}).get("stride_zyx", [64, 64, 64]))
-    mask = run_sliding_window_inference(model, vol, patch_zyx, stride_zyx, device)
+    prob_threshold = float(config.get("infer", {}).get("prob_threshold", 0.5))
+    mask, prob_map = run_sliding_window_inference(
+        model,
+        vol,
+        patch_zyx,
+        stride_zyx,
+        device,
+        prob_threshold=prob_threshold,
+    )
     save_mask_outputs(mask, out_npy=out_npy, out_nii=out_nii, meta=meta)
-    return {"mask_path": out_npy, "mask_nii_path": out_nii, "volume": vol, "mask": mask, "meta": meta}
+    return {
+        "mask_path": out_npy,
+        "mask_nii_path": out_nii,
+        "volume": vol,
+        "mask": mask,
+        "prob_map": prob_map,
+        "prob_threshold": prob_threshold,
+        "meta": meta,
+    }
 
 
 def parse_args() -> argparse.Namespace:

@@ -90,6 +90,39 @@ def _largest_component_center(mask_zyx: np.ndarray) -> Tuple[Tuple[int, int, int
     return center, (z1, z2, y1, y2, x1, x2)
 
 
+def _center_from_prob_map(prob_zyx: np.ndarray) -> Tuple[int, int, int]:
+    if prob_zyx is None or prob_zyx.size == 0:
+        raise ValueError("empty prob map")
+    idx = int(np.argmax(prob_zyx))
+    z, y, x = np.unravel_index(idx, prob_zyx.shape)
+    return int(z), int(y), int(x)
+
+
+def _choose_cls_center(
+    mask_zyx: np.ndarray,
+    prob_zyx: Optional[np.ndarray],
+    min_mask_voxels: int = 200,
+) -> Tuple[Tuple[int, int, int], Optional[Tuple[int, int, int, int, int, int]], str]:
+    """
+    Choose ROI center for classification:
+    1) Prefer largest-component center from segmentation mask.
+    2) If mask is too tiny/empty, fallback to probability-map peak center.
+    """
+    mask = (mask_zyx > 0).astype(np.uint8)
+    voxels = int(mask.sum())
+    center, bbox = _largest_component_center(mask)
+    if bbox is not None and voxels >= int(min_mask_voxels):
+        return center, bbox, "mask_component"
+
+    if prob_zyx is not None:
+        try:
+            pcenter = _center_from_prob_map(prob_zyx)
+            return pcenter, bbox, "prob_peak"
+        except Exception:
+            pass
+    return center, bbox, "volume_center"
+
+
 def _save_annotated_png(
     volume_zyx: np.ndarray,
     mask_zyx: np.ndarray,
@@ -154,8 +187,13 @@ def pipeline_predict(
     seg_out = infer_seg(ct_path, seg_cfg, seg_ckpt, out_npy=seg_npy, out_nii=seg_nii)
     volume_zyx = seg_out["volume"]
     mask_zyx = seg_out["mask"]
+    prob_zyx = seg_out.get("prob_map")
 
-    center, bbox_zyx = _largest_component_center(mask_zyx)
+    center, bbox_zyx, center_source = _choose_cls_center(
+        mask_zyx,
+        prob_zyx,
+        min_mask_voxels=200,
+    )
     roi_zyx = _crop_with_padding(volume_zyx, center_zyx=center, size_zyx=(64, 64, 64))
     roi_path = os.path.join(out_pred_dir, "pipeline_roi.npy")
     np.save(roi_path, roi_zyx.astype(np.float32))
@@ -191,6 +229,9 @@ def pipeline_predict(
         "pred_class": cls_result["pred_class"],
         "prob_malignant": cls_result["prob_malignant"],
         "prob_benign": cls_result["prob_benign"],
+        "center_zyx": [int(center[0]), int(center[1]), int(center[2])],
+        "center_source": center_source,
+        "mask_voxels": int((mask_zyx > 0).sum()),
         "figures": {
             "ct_slice": ct_png,
             "overlay": ov_png,
